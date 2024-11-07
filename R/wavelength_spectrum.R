@@ -1,17 +1,19 @@
 #' Create a wavelength spectrum
 #'
-#' @param wavelengths A tibble with columns `wavelength` and `amplitude`
+#' @param wavelength A numeric vector of wavelengths
+#' @param amplitude A numeric vector of amplitudes corresponding to each wavelength
 #'
 #' @return An object of class "wavelength_spectrum" containing the wavelengths and amplitudes
 #' @export
-wavelength_spectrum <- function(wavelengths) {
-  # Validate input
-  if (!("wavelength" %in% names(wavelengths)) || !("amplitude" %in% names(wavelengths))) {
-    stop("wavelengths must be a tibble with columns 'wavelength' and 'amplitude'")
+wavelength_spectrum <- function(wavelength, amplitude) {
+  # Validate inputs
+  if (length(wavelength) != length(amplitude)) {
+    stop("wavelength and amplitude must be the same length")
   }
 
+  # Return the structured object
   structure(
-    list(wavelengths = wavelengths),
+    list(wavelength = wavelength, amplitude = amplitude),
     class = "wavelength_spectrum"
   )
 }
