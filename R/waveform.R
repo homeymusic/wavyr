@@ -4,7 +4,7 @@
 #' @param wavelength_spectrum Optional: An object of class "wavelength_spectrum" for custom wavelength components.
 #' @param phase Optional: A numeric value representing the phase of the waveform.
 #'
-#' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase.
+#' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, phase, and indexed_spectra.
 #' @export
 waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
   # Validate inputs
@@ -17,13 +17,27 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
   if (!is.null(phase) && (!is.numeric(phase) || length(phase) != 1)) {
     stop("phase must be a single numeric value")
   }
+  # Check that spectra have matching sizes if both are provided
+  if (!is.null(wavelength_spectrum) &&
+      length(frequency_spectrum$frequency) != length(wavelength_spectrum$wavelength)) {
+    stop("frequency_spectrum and wavelength_spectrum must have the same number of components")
+  }
+
+  # Construct indexed_spectra tibble if both spectra are provided
+  indexed_spectra <- tibble::tibble(
+      frequency = frequency_spectrum$frequency,
+      wavelength = wavelength_spectrum$wavelength,
+      freq_amplitude = frequency_spectrum$amplitude,
+      wave_amplitude = wavelength_spectrum$amplitude
+  )
 
   # Return the structured object
   structure(
     list(
       frequency_spectrum = frequency_spectrum,
       wavelength_spectrum = wavelength_spectrum,
-      phase = phase
+      phase = phase,
+      indexed_spectra = indexed_spectra
     ),
     class = "waveform"
   )
