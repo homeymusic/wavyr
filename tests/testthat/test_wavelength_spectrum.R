@@ -52,8 +52,8 @@ test_that("wavelength_spectrum calculates fundamental_cycle_length correctly", {
   )
 
   # Test fundamental_cycle_length
-  expect_true(is.numeric(wavelength_spectrum_obj$fundamental_cycle_length()))
-  expect_gt(wavelength_spectrum_obj$fundamental_cycle_length(), 0)
+  expect_true(is.numeric(wavelength_spectrum_obj$cycle_length))
+  expect_gt(wavelength_spectrum_obj$cycle_length, 0)
 })
 
 test_that("wavelength_spectrum calculates fractions accurately", {
@@ -75,7 +75,7 @@ test_that("wavelength_spectrum fundamental_cycle_length for single component ret
   )
 
   # Expect the fundamental cycle length for a single component to be 1
-  expect_equal(wavelength_spectrum_obj$fundamental_cycle_length(), 1)
+  expect_equal(wavelength_spectrum_obj$cycle_length, 1)
 })
 
 test_that("wavelength_spectrum edge cases: zero or negative wavelengths", {

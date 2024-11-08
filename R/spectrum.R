@@ -72,7 +72,7 @@ spectrum.list <- function(x, ...) {
     list(
       component = component,
       amplitude = amplitude,
-      fundamental_cycle_length = fundamental_cycle_length,
+      cycle_length = fundamental_cycle_length(),
       fractions = fractions
     ),
     class = "spectrum"
@@ -107,3 +107,40 @@ combine_spectra <- function(spectrum, other_spectrum, tolerance = 1e-6) {
   }
 }
 
+#' Plot a spectrum with spikes
+#'
+#' Creates a spike plot for a spectrum (frequency or wavelength).
+#'
+#' @param x An object of class "spectrum" containing components and amplitudes.
+#' @param ... Additional parameters for plotting.
+#'
+#' @export
+plot.spectrum <- function(x, ...) {
+
+  # Determine the appropriate labels based on the class
+  if (inherits(x, "frequency_spectrum")) {
+    x_label <- "Frequency"
+    components <- x$frequency  # Use the frequency component
+  } else if (inherits(x, "wavelength_spectrum")) {
+    x_label <- "Wavelength"
+    components <- x$wavelength  # Use the wavelength component
+  } else {
+    stop("Unsupported spectrum type")
+  }
+
+  # Create a spike plot
+  plot(
+    components, x$amplitude,
+    type = "n",  # Set up the plot without points or lines
+    xlab = x_label, ylab = "Amplitude",
+    main = paste(x_label, "Spectrum"),
+    ...
+  )
+
+  # Draw spikes
+  segments(
+    x0 = components, y0 = 0,
+    x1 = components, y1 = x$amplitude,
+    lwd = 2
+  )
+}

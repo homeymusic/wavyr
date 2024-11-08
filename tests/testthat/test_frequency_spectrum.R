@@ -52,8 +52,8 @@ test_that("frequency_spectrum can calculate fundamental_cycle_length", {
   )
 
   # Test fundamental_cycle_length
-  expect_true(is.numeric(frequency_spectrum_obj$fundamental_cycle_length()))
-  expect_gt(frequency_spectrum_obj$fundamental_cycle_length(), 0)
+  expect_true(is.numeric(frequency_spectrum_obj$cycle_length))
+  expect_gt(frequency_spectrum_obj$cycle_length, 0)
 })
 
 test_that("frequency_spectrum calculates fractions accurately", {
@@ -87,7 +87,7 @@ test_that("frequency_spectrum fundamental_cycle_length handles single component"
   )
 
   # Expect the fundamental cycle length for a single component to return 1
-  expect_equal(frequency_spectrum_obj$fundamental_cycle_length(), 1)
+  expect_equal(frequency_spectrum_obj$cycle_length, 1)
 })
 
 test_that("frequency_spectrum edge cases: zero or negative frequencies", {

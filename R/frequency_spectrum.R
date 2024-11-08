@@ -37,28 +37,3 @@ frequency_spectrum <- function(frequency, amplitude = NULL) {
 
   return(spectrum_obj)
 }
-
-#' Plot a frequency_spectrum with spikes
-#'
-#' @param x An object of class "frequency_spectrum" containing component frequencies and amplitudes.
-#' @param ... Additional parameters for plotting.
-#'
-#' @export
-plot.frequency_spectrum <- function(x, ...) {
-
-  # Create a spike plot
-  plot(
-    x$frequency, x$amplitude,
-    type = "n",  # Set up the plot without points or lines
-    xlab = "Frequency", ylab = "Amplitude",
-    main = "Frequency Spectrum",
-    ...
-  )
-
-  # Draw spikes
-  segments(
-    x0 = x$frequency, y0 = 0,
-    x1 = x$frequency, y1 = x$amplitude,
-    lwd = 2
-  )
-}

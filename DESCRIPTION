@@ -15,6 +15,8 @@ Suggests:
     vdiffr
 Config/testthat/edition: 3
 Imports:
+    lattice,
+    gridExtra,
     magrittr,
     Rcpp,
     tibble

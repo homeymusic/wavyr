@@ -32,7 +32,7 @@ test_that("spectrum can calculate fundamental_cycle_length", {
   )
 
   # Test fundamental_cycle_length (result might vary with fractions implementation)
-  expect_true(is.numeric(spectrum_obj$fundamental_cycle_length()))
+  expect_true(is.numeric(spectrum_obj$cycle_length))
 })
 
 test_that("spectrum can calculate fractions", {

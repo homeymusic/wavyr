@@ -77,3 +77,34 @@ test_that("waveform with wavelength spectrum and frequency spectrum but no phase
   expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
   expect_equal(waveform_obj$phase,0)
 })
+
+# tests/testthat/test_waveform.R
+
+test_that("waveform plot generates correctly with time and space grid", {
+  # Create a frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create a wavelength_spectrum object with independent wavelengths
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(2.0, 1.0, 0.67),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj,
+    phase = 0
+  )
+
+  # Capture the plot using vdiffr for consistency checks
+  vdiffr::expect_doppelganger("Waveform",
+                              plot(waveform_obj,
+                                   time_range = c(0, 10),
+                                   space_range = c(0, 10),
+                                   resolution = 50)
+  )
+})

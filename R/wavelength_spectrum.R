@@ -37,28 +37,3 @@ wavelength_spectrum <- function(wavelength, amplitude = NULL) {
 
   return(spectrum_obj)
 }
-
-#' Plot a wavelength_spectrum with spikes
-#'
-#' @param x An object of class "wavelength_spectrum" containing component frequencies and amplitudes.
-#' @param ... Additional parameters for plotting.
-#'
-#' @export
-plot.wavelength_spectrum <- function(x, ...) {
-
-  # Create a spike plot
-  plot(
-    x$wavelength, x$amplitude,
-    type = "n",  # Set up the plot without points or lines
-    xlab = "Wavelength", ylab = "Amplitude",
-    main = "Wavelength Spectrum",
-    ...
-  )
-
-  # Draw spikes
-  segments(
-    x0 = x$wavelength, y0 = 0,
-    x1 = x$wavelength, y1 = x$amplitude,
-    lwd = 2
-  )
-}
