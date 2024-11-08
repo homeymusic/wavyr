@@ -39,14 +39,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_beats_cpp
-DataFrame compute_beats_cpp(NumericVector wavelength, NumericVector amplitude);
-RcppExport SEXP _wavyr_compute_beats_cpp(SEXP wavelengthSEXP, SEXP amplitudeSEXP) {
+DataFrame compute_beats_cpp(NumericVector wavelength, NumericVector amplitude, double tolerance);
+RcppExport SEXP _wavyr_compute_beats_cpp(SEXP wavelengthSEXP, SEXP amplitudeSEXP, SEXP toleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type wavelength(wavelengthSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type amplitude(amplitudeSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_beats_cpp(wavelength, amplitude));
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_beats_cpp(wavelength, amplitude, tolerance));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -66,7 +67,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 3},
     {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 5},
-    {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 2},
+    {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 3},
     {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}
 };

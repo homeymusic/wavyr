@@ -1,12 +1,15 @@
 #' Create a LinearWaveform for a linear medium
 #'
 #' @param frequency_spectrum An object of class "frequency_spectrum" containing frequencies and amplitudes.
+#' @param wavelength_spectrum Optional: An object of class "wavelength_spectrum" for custom wavelength components.
+#' @param phase Optional: A numeric value representing the phase of the waveform.
 #' @param speed_of_sound Numeric, the speed of sound in the medium (e.g., 343 for air in m/s).
 #'
 #' @return An object of class "linear_waveform" with combined wavelength and frequency spectra, and beat spectrum.
 #' @export
 linear_waveform <- function(
     frequency_spectrum,
+    wavelength_spectrum = NULL,
     phase = 0,
     speed_of_sound = 343
 ) {
@@ -25,17 +28,25 @@ linear_waveform <- function(
     stop("All amplitude values must be positive and non-NA.")
   }
 
-  # Calculate base wavelength spectrum
-  base_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = speed_of_sound / frequency_spectrum$component,
-    amplitude = frequency_spectrum$amplitude
-  )
-
-  if (is.null(base_wavelength_spectrum) || is.null(base_wavelength_spectrum$component)) {
-    stop("Failed to create base wavelength spectrum.")
+  # Generate or validate the wavelength spectrum
+  if (is.null(wavelength_spectrum)) {
+    # Calculate base wavelength spectrum if not provided
+    base_wavelength_spectrum <- wavelength_spectrum(
+      wavelength = speed_of_sound / frequency_spectrum$component,
+      amplitude = frequency_spectrum$amplitude
+    )
+  } else {
+    if (!inherits(wavelength_spectrum, "wavelength_spectrum")) {
+      stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
+    }
+    # Ensure that the size of wavelength_spectrum is greater than or equal to frequency_spectrum
+    if (length(wavelength_spectrum$wavelength) < length(frequency_spectrum$frequency)) {
+      stop("wavelength_spectrum must have a size greater than or equal to frequency_spectrum")
+    }
+    base_wavelength_spectrum <- wavelength_spectrum
   }
 
-  # Calculate beat spectrum
+  # Calculate beat spectrum based on base wavelength spectrum
   beat_spectrum <- compute_beats_cpp(
     wavelength = base_wavelength_spectrum$component,
     amplitude = base_wavelength_spectrum$amplitude
@@ -52,12 +63,35 @@ linear_waveform <- function(
     tolerance = 1e-6
   )
 
+  indexed_spectra <- purrr::map2_dfr(
+    combined_wavelength_spectrum$wavelength,
+    combined_wavelength_spectrum$amplitude,
+    function(wavelength, wavelength_amplitude) {
+      # Calculate the equivalent frequency
+      equivalent_frequency <- speed_of_sound / wavelength
+
+      # Find any matching frequency within tolerance
+      matched_indices <- which(abs(frequency_spectrum$frequency - equivalent_frequency) < 1e-6)
+
+      # Construct the tibble for matched or unmatched cases
+      tibble::tibble(
+        frequency = if (length(matched_indices) > 0) frequency_spectrum$frequency[matched_indices][1] else NA,
+        frequency_amplitude = if (length(matched_indices) > 0) {
+          sum(frequency_spectrum$amplitude[matched_indices])
+        } else NA,
+        wavelength = wavelength,
+        wavelength_amplitude = wavelength_amplitude
+      )
+    }
+  ) %>% dplyr::arrange(dplyr::desc(wavelength))
+
   # Construct the waveform object with metadata
   waveform_obj <- list(
     frequency_spectrum = frequency_spectrum,
     wavelength_spectrum = combined_wavelength_spectrum,
     base_wavelength_spectrum = base_wavelength_spectrum,
     beat_spectrum = beat_spectrum,
+    indexed_spectra = indexed_spectra,
     phase = phase
   )
 
@@ -65,14 +99,4 @@ linear_waveform <- function(
   class(waveform_obj) <- c("linear_waveform", "waveform", "list")
 
   return(waveform_obj)
-}
-
-#' @export
-print.linear_waveform <- function(x, ...) {
-  cat("Linear Waveform in a Linear Medium\n")
-  print.waveform(x)
-  if (!is.null(x$beat_spectrum)) {
-    cat("Beat Spectrum:\n")
-    print(x$beat_spectrum)
-  }
 }

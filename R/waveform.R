@@ -27,8 +27,8 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
   indexed_spectra <- tibble::tibble(
       frequency = frequency_spectrum$frequency,
       wavelength = wavelength_spectrum$wavelength,
-      freq_amplitude = frequency_spectrum$amplitude,
-      wave_amplitude = wavelength_spectrum$amplitude
+      frequency_amplitude = frequency_spectrum$amplitude,
+      wavelength_amplitude = wavelength_spectrum$amplitude
   )
 
   # Return the structured object

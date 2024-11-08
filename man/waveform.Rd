@@ -14,7 +14,7 @@ waveform(frequency_spectrum, wavelength_spectrum = NULL, phase = 0)
 \item{phase}{Optional: A numeric value representing the phase of the waveform.}
 }
 \value{
-An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase.
+An object of class "waveform" containing the frequency spectrum, wavelength spectrum, phase, and indexed_spectra.
 }
 \description{
 Create a general waveform

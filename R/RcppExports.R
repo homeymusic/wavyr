@@ -9,8 +9,8 @@ combine_spectra_cpp <- function(component1, amplitude1, component2, amplitude2, 
     .Call(`_wavyr_combine_spectra_cpp`, component1, amplitude1, component2, amplitude2, tolerance)
 }
 
-compute_beats_cpp <- function(wavelength, amplitude) {
-    .Call(`_wavyr_compute_beats_cpp`, wavelength, amplitude)
+compute_beats_cpp <- function(wavelength, amplitude, tolerance = 1e-6) {
+    .Call(`_wavyr_compute_beats_cpp`, wavelength, amplitude, tolerance)
 }
 
 stern_brocot_cpp <- function(x, uncertainty) {

@@ -2,7 +2,6 @@
 
 S3method(plot,spectrum)
 S3method(plot,waveform)
-S3method(print,linear_waveform)
 S3method(print,spectrum)
 S3method(spectrum,default)
 S3method(spectrum,list)

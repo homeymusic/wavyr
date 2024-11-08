@@ -133,17 +133,17 @@ test_that("waveform's indexed_spectra variable allows iteration to access all va
 
   # Expected values accounting for different amplitudes
   expected_values <- list(
-    list(frequency = 100, wavelength = 1, freq_amplitude = 1.0, wave_amplitude = 0.9),
-    list(frequency = 200, wavelength = 0.5, freq_amplitude = 0.8, wave_amplitude = 0.7),
-    list(frequency = 300, wavelength = 0.33, freq_amplitude = 0.5, wave_amplitude = 0.4)
+    list(frequency = 100, wavelength = 1, frequency_amplitude = 1.0, wavelength_amplitude = 0.9),
+    list(frequency = 200, wavelength = 0.5, frequency_amplitude = 0.8, wavelength_amplitude = 0.7),
+    list(frequency = 300, wavelength = 0.33, frequency_amplitude = 0.5, wavelength_amplitude = 0.4)
   )
 
   for (i in seq_len(nrow(indexed_spectrum))) {
     row_values <- indexed_spectrum[i, ]
     expect_equal(row_values$frequency, expected_values[[i]]$frequency)
     expect_equal(row_values$wavelength, expected_values[[i]]$wavelength)
-    expect_equal(row_values$freq_amplitude, expected_values[[i]]$freq_amplitude)
-    expect_equal(row_values$wave_amplitude, expected_values[[i]]$wave_amplitude)
+    expect_equal(row_values$frequency_amplitude, expected_values[[i]]$frequency_amplitude)
+    expect_equal(row_values$wavelength_amplitude, expected_values[[i]]$wavelength_amplitude)
   }
 })
 

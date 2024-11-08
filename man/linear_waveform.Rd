@@ -4,10 +4,19 @@
 \alias{linear_waveform}
 \title{Create a LinearWaveform for a linear medium}
 \usage{
-linear_waveform(frequency_spectrum, phase = 0, speed_of_sound = 343)
+linear_waveform(
+  frequency_spectrum,
+  wavelength_spectrum = NULL,
+  phase = 0,
+  speed_of_sound = 343
+)
 }
 \arguments{
 \item{frequency_spectrum}{An object of class "frequency_spectrum" containing frequencies and amplitudes.}
+
+\item{wavelength_spectrum}{Optional: An object of class "wavelength_spectrum" for custom wavelength components.}
+
+\item{phase}{Optional: A numeric value representing the phase of the waveform.}
 
 \item{speed_of_sound}{Numeric, the speed of sound in the medium (e.g., 343 for air in m/s).}
 }
