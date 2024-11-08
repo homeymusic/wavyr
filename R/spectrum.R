@@ -29,10 +29,10 @@ spectrum.default <- function(component, amplitude) {
 #' @export
 spectrum.list <- function(x, ...) {
   stopifnot(
-    length(x) == 2L,               # Ensure the list has two elements
-    is.numeric(x[[1]]),            # Ensure the first element is numeric
-    is.numeric(x[[2]]),            # Ensure the second element is numeric
-    length(x[[1]]) == length(x[[2]]) # Ensure both vectors are the same length
+    length(x) == 2L,
+    is.numeric(x[[1]]),
+    is.numeric(x[[2]]),
+    length(x[[1]]) == length(x[[2]])
   )
   .spectrum(component = x[[1]], amplitude = x[[2]])
 }
@@ -69,13 +69,32 @@ spectrum.list <- function(x, ...) {
     )
   }
 
+  combine_with <- function(other_spectrum, tolerance = 1e-6) {
+    combined_component <- c(component, other_spectrum$component)
+    combined_amplitude <- c(amplitude, other_spectrum$amplitude)
+
+    # Create a data frame and group within the tolerance
+    combined_df <- data.frame(component = combined_component, amplitude = combined_amplitude)
+    combined_df <- combined_df[order(combined_df$component), ]
+
+    combined_df$group <- cumsum(c(TRUE, diff(combined_df$component) > tolerance))
+
+    # Aggregate amplitudes within each group
+    aggregated <- aggregate(amplitude ~ group, data = combined_df, FUN = sum)
+    unique_components <- aggregate(component ~ group, data = combined_df, FUN = mean)
+
+    # Return the combined spectrum
+    spectrum(unique_components$component, aggregated$amplitude)
+  }
+
   # Return the spectrum object
   structure(
     list(
       component = component,
       amplitude = amplitude,
       fundamental_cycle_length = fundamental_cycle_length,
-      fractions = fractions
+      fractions = fractions,
+      combine_with = combine_with
     ),
     class = "spectrum"
   )
