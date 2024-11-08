@@ -100,3 +100,35 @@ test_that("frequency_spectrum edge cases: zero or negative frequencies", {
     "component values must be positive"
   )
 })
+
+test_that("frequency_spectrum can combine with another frequency_spectrum within tolerance", {
+  # Create two frequency_spectrum objects
+  frequency_spectrum1 <- frequency_spectrum(
+    frequency = c(1000, 500, 333),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+  frequency_spectrum2 <- frequency_spectrum(
+    frequency = c(1000, 500.1, 333),  # Close values to test tolerance
+    amplitude = c(0.5, 0.4, 0.3)
+  )
+
+  # Combine frequency_spectrum1 and frequency_spectrum2 with a tolerance of 0.1
+  combined_frequency_spectrum <- combine_two_spectra(
+    frequency_spectrum1,
+    frequency_spectrum2,
+    tolerance = 1
+  )
+
+  # Expected combined frequency and amplitude values
+  expected_frequencies <- c(1000, 500, 333)
+  expected_amplitudes <- c(1.5, 1.2, 0.8)
+
+  # Test the combined frequency_spectrum
+  expect_s3_class(combined_frequency_spectrum, "frequency_spectrum")
+  expect_equal(combined_frequency_spectrum$component %>% sort(),
+               expected_frequencies %>% sort(),
+               tolerance = 0.1)
+  expect_equal(combined_frequency_spectrum$amplitude %>% sort(),
+               expected_amplitudes %>% sort(),
+               tolerance = 0.1)
+})

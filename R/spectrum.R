@@ -1,5 +1,3 @@
-# spectrum.R
-
 #' Spectrum Constructor
 #'
 #' Creates a spectrum object with components and amplitudes.
@@ -69,26 +67,13 @@ spectrum.list <- function(x, ...) {
     )
   }
 
-  # spectrum.R
-
-  combine_with <- function(other_spectrum, tolerance = 1e-6) {
-    result <- combine_spectra(
-      component, amplitude,
-      other_spectrum$component, other_spectrum$amplitude,
-      tolerance
-    )
-
-    spectrum(result$component, result$amplitude)
-  }
-
   # Return the spectrum object
   structure(
     list(
       component = component,
       amplitude = amplitude,
       fundamental_cycle_length = fundamental_cycle_length,
-      fractions = fractions,
-      combine_with = combine_with
+      fractions = fractions
     ),
     class = "spectrum"
   )
@@ -100,3 +85,25 @@ print.spectrum <- function(x, ...) {
   cat("Components:", x$component, "\n")
   cat("Amplitudes:", x$amplitude, "\n")
 }
+
+combine_two_spectra <- function(spectrum, other_spectrum, tolerance = 1e-6) {
+  result <- combine_spectra(
+    spectrum$component, spectrum$amplitude,
+    other_spectrum$component, other_spectrum$amplitude,
+    tolerance
+  )
+
+  # Determine the class of the calling object to return the correct subclass
+  spectrum_class <- class(spectrum)[1]  # This gets the first class which should be the specific spectrum class
+
+  if (spectrum_class == "wavelength_spectrum") {
+    return(wavelength_spectrum(result$component, result$amplitude))
+  } else if (spectrum_class == "frequency_spectrum") {
+    return(frequency_spectrum(result$component, result$amplitude))
+  } else if (spectrum_class == "spectrum") {
+    return(spectrum(result$component, result$amplitude))
+  } else {
+    stop("Unsupported spectrum type.")
+  }
+}
+

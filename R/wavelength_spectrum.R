@@ -1,5 +1,3 @@
-# wavelength_spectrum.R
-
 #' Create a Wavelength Spectrum
 #'
 #' Extends the `spectrum` class specifically for wavelength spectra.

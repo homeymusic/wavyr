@@ -88,3 +88,35 @@ test_that("wavelength_spectrum edge cases: zero or negative wavelengths", {
     "All component values must be positive."
   )
 })
+
+test_that("wavelength_spectrum can combine with another wavelength_spectrum within tolerance", {
+  # Create two wavelength_spectrum objects
+  wavelength_spectrum1 <- wavelength_spectrum(
+    wavelength = c(2.0, 1.0, 0.67),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+  wavelength_spectrum2 <- wavelength_spectrum(
+    wavelength = c(2.0, 1.01, 0.67),  # Close values to test tolerance
+    amplitude = c(0.5, 0.4, 0.3)
+  )
+
+  # Combine wavelength_spectrum1 and wavelength_spectrum2 with a tolerance of 0.05
+  combined_wavelength_spectrum <- combine_two_spectra(
+    wavelength_spectrum1,
+    wavelength_spectrum2,
+    tolerance = 0.05
+  )
+
+  # Expected combined wavelength and amplitude values
+  expected_wavelengths <- c(2.0, 1.0, 0.67)
+  expected_amplitudes <- c(1.5, 1.2, 0.8)
+
+  # Test the combined wavelength_spectrum
+  expect_s3_class(combined_wavelength_spectrum, "wavelength_spectrum")
+  expect_equal(combined_wavelength_spectrum$component %>% sort(),
+               expected_wavelengths %>% sort(),
+               tolerance = 0.1)
+  expect_equal(combined_wavelength_spectrum$amplitude %>% sort(),
+               expected_amplitudes %>% sort(),
+               tolerance = 0.1)
+})

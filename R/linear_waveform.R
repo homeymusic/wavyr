@@ -3,54 +3,59 @@
 #' @param frequency_spectrum An object of class "frequency_spectrum" containing frequencies and amplitudes.
 #' @param speed_of_sound Numeric, the speed of sound in the medium (e.g., 343 for air in m/s).
 #'
-#' @return An object of class "LinearWaveform" with frequency and wavelength spectra, beat spectrum, and optional phase.
+#' @return An object of class "linear_waveform" with combined wavelength and frequency spectra, and beat spectrum.
 #' @export
 linear_waveform <- function(
     frequency_spectrum,
     speed_of_sound = 343
 ) {
+
   # Validate frequency_spectrum input
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
     stop("frequency_spectrum must be of class 'frequency_spectrum'")
   }
 
-  # Step 1: Calculate wavelengths for each frequency component
-  wavelengths <- frequency_spectrum$component %>%
-    {speed_of_sound / .}
+  if (any(is.na(frequency_spectrum$component)) || any(frequency_spectrum$component <= 0)) {
+    stop("All frequency components must be positive and non-NA.")
+  }
 
-  # Step 2: Calculate beat wavelengths and amplitudes using the Rcpp compute_beats function
-  beat_spectrum <- compute_beats(
-    wavelength = wavelengths,
+  # Calculate base wavelength spectrum
+  base_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = speed_of_sound / frequency_spectrum$component,
     amplitude = frequency_spectrum$amplitude
-  ) %>%
-    wavelength_spectrum()
-
-  # Step 3: Create the wavelength spectrum object, including both components and beat wavelengths
-  wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(wavelengths, beat_spectrum$component),
-    amplitude = c(frequency_spectrum$amplitude, beat_spectrum$amplitude)
   )
 
-  # Step 4: Construct the LinearWaveform as a specialized waveform
-  combined_waveform <- waveform(
-    frequency_spectrum = frequency_spectrum,
-    wavelength_spectrum = wavelength_spectrum
-  ) %>%
-    {structure(
-      list(
-        frequency_spectrum = frequency_spectrum,
-        wavelength_spectrum = wavelength_spectrum,
-        beat_spectrum = beat_spectrum, # Add the beat_spectrum to the object
-        phase = NULL
-      ),
-      class = c("LinearWaveform", class(.))
-    )}
+  if (is.null(base_wavelength_spectrum) || is.null(base_wavelength_spectrum$component)) {
+    stop("Failed to create base wavelength spectrum.")
+  }
 
-  return(combined_waveform)
+  # Calculate beat spectrum
+  beat_spectrum <- compute_beats(
+    wavelength = base_wavelength_spectrum$component,
+    amplitude = base_wavelength_spectrum$amplitude
+  ) %>% wavelength_spectrum()
+
+  if (is.null(beat_spectrum)) {
+    stop("Failed to create beat spectrum.")
+  }
+
+  # Combine the base wavelength spectrum and beat spectrum
+  combined_wavelength_spectrum <- base_wavelength_spectrum$combine_with(beat_spectrum)
+
+  # Construct the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum,
+    wavelength_spectrum = combined_wavelength_spectrum
+  )
+
+  # Assign the class to include "linear_waveform"
+  class(waveform_obj) <- c("linear_waveform", class(waveform_obj))
+
+  return(waveform_obj)
 }
 
 #' @export
-print.LinearWaveform <- function(x, ...) {
+print.linear_waveform <- function(x, ...) {
   cat("Linear Waveform in a Linear Medium\n")
   print.waveform(x)
   if (!is.null(x$beat_spectrum)) {
@@ -58,3 +63,16 @@ print.LinearWaveform <- function(x, ...) {
     print(x$beat_spectrum)
   }
 }
+
+
+# structure(
+#   list(
+#     combined_waveform = combined_waveform,
+#     frequency_spectrum = frequency_spectrum,
+#     wavelength_spectrum = wavelength_spectrum,
+#     base_wavelength_spectrum = base_wavelength_spectrum,
+#     beat_spectrum = beat_spectrum,
+#     phase = NULL
+#   ),
+#   class = c("LinearWaveform", class(.))
+# )

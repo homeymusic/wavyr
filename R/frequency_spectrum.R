@@ -1,5 +1,3 @@
-# frequency_spectrum.R
-
 #' Create a Frequency Spectrum
 #'
 #' Extends the `spectrum` class specifically for frequency spectra.

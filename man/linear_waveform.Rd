@@ -12,7 +12,7 @@ linear_waveform(frequency_spectrum, speed_of_sound = 343)
 \item{speed_of_sound}{Numeric, the speed of sound in the medium (e.g., 343 for air in m/s).}
 }
 \value{
-An object of class "LinearWaveform" with frequency and wavelength spectra, beat spectrum, and optional phase.
+An object of class "linear_waveform" with combined wavelength and frequency spectra, and beat spectrum.
 }
 \description{
 Create a LinearWaveform for a linear medium

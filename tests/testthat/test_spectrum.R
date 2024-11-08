@@ -59,7 +59,11 @@ test_that("spectrum can combine with another spectrum within tolerance", {
   )
 
   # Combine spectrum1 and spectrum2 with a tolerance of 0.001
-  combined_spectrum <- spectrum1$combine_with(spectrum2, tolerance = 0.001)
+  combined_spectrum <- combine_two_spectra(
+    spectrum1,
+    spectrum2,
+    tolerance = 0.001
+    )
 
   # Expected combined component and amplitude values
   expected_components <- c(1.0, 0.5, 0.33)
