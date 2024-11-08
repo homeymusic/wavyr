@@ -48,7 +48,8 @@ linear_waveform <- function(
   # Combine the base wavelength spectrum and beat spectrum
   combined_wavelength_spectrum <- combine_spectra(
     base_wavelength_spectrum,
-    beat_spectrum
+    beat_spectrum,
+    tolerance = 1e-6
   )
 
   # Construct the waveform object with metadata

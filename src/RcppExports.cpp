@@ -24,7 +24,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // combine_spectra_cpp
-List combine_spectra_cpp(NumericVector component1, NumericVector amplitude1, NumericVector component2, NumericVector amplitude2, double tolerance);
+List combine_spectra_cpp(NumericVector component1, NumericVector amplitude1, NumericVector component2, NumericVector amplitude2, const double tolerance);
 RcppExport SEXP _wavyr_combine_spectra_cpp(SEXP component1SEXP, SEXP amplitude1SEXP, SEXP component2SEXP, SEXP amplitude2SEXP, SEXP toleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -33,7 +33,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type amplitude1(amplitude1SEXP);
     Rcpp::traits::input_parameter< NumericVector >::type component2(component2SEXP);
     Rcpp::traits::input_parameter< NumericVector >::type amplitude2(amplitude2SEXP);
-    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP);
     rcpp_result_gen = Rcpp::wrap(combine_spectra_cpp(component1, amplitude1, component2, amplitude2, tolerance));
     return rcpp_result_gen;
 END_RCPP

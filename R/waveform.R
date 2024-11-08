@@ -44,62 +44,56 @@ plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), reso
   time_points <- seq(time_range[1], time_range[2], length.out = resolution)
   space_points <- seq(space_range[1], space_range[2], length.out = resolution)
 
-  # Create a matrix to store amplitude values for the waveform
-  amplitude_matrix <- matrix(0, nrow = resolution, ncol = resolution)
+  # Expand grid for time and space points
+  waveform_df <- tidyr::expand_grid(Time = time_points, Space = space_points)
 
-  # Calculate waveform using linear frequencies and wavelengths
-  for (i in seq_along(x$frequency_spectrum$component)) {
-    frequency <- x$frequency_spectrum$component[i]
-
-    for (j in seq_along(x$wavelength_spectrum$component)) {
-      wavelength <- x$wavelength_spectrum$component[j]
-
-      # Calculate linear wave number and frequency
-      angular_k <- (2 * pi) / wavelength
-      angular_f <- 2 * pi * frequency
-
-      # Generate the wave for this frequency and wavelength
-      wave <- outer(
-        time_points, space_points,
+  # Calculate the waveform amplitudes using linear frequencies and wavelengths
+  waveform_df <- waveform_df %>%
+    dplyr::mutate(
+      Amplitude = purrr::map2_dbl(
+        Time, Space,
         function(t, s) {
-          amplitude <- x$frequency_spectrum$amplitude[i]  # Use the amplitude of the current frequency
-          amplitude * cos(angular_k * s - angular_f * t + x$phase)
+          sum(
+            purrr::map2_dbl(
+              x$frequency_spectrum$component,
+              x$wavelength_spectrum$component,
+              function(frequency, wavelength) {
+                angular_k <- (2 * pi) / wavelength
+                angular_f <- 2 * pi * frequency
+                amplitude <- x$frequency_spectrum$amplitude[which(x$frequency_spectrum$component == frequency)] +
+                  x$wavelength_spectrum$amplitude[which(x$wavelength_spectrum$component == wavelength)]
+                amplitude * cos(angular_k * s - angular_f * t + x$phase)
+              }
+            ),
+            na.rm = TRUE
+          )
         }
       )
-
-      amplitude_matrix <- amplitude_matrix + wave
-    }
-  }
-
-  # Create a data frame for the waveform plot
-  waveform_df <- expand.grid(Time = time_points, Space = space_points)
-  waveform_df$Amplitude <- as.vector(amplitude_matrix)
+    )
 
   # Create the waveform plot
   waveform_plot <- lattice::levelplot(
     Amplitude ~ Time * Space, data = waveform_df,
     xlab = "Time", ylab = "Space",
     main = "Full Waveform",
-    scales = list(draw = FALSE),  # Remove axis ticks and labels
+    scales = list(draw = FALSE),
     col.regions = gray.colors(100),
-    aspect = "iso",  # Set aspect ratio to 1
-    colorkey=FALSE
+    aspect = "iso",
+    colorkey = FALSE
   )
 
-  # Create the fundamentals plot using the same time and space points
-  # Assuming linear_k and linear_f can be calculated once for the fundamental plot
+  # Create the fundamentals plot
+  linear_k <- 1 / x$wavelength_spectrum$cycle_length
+  linear_f <- 1 / x$frequency_spectrum$cycle_length
   fundamental_matrix <- outer(
     time_points, space_points,
     function(t, s) {
-      linear_k <- 1 / x$wavelength_spectrum$cycle_length  # Use the first wavelength as an example
-      linear_f <- 1 / x$frequency_spectrum$cycle_length    # Use the first frequency as an example
-      amplitude <- 1  # Use constant amplitude for the fundamental plot
+      amplitude <- 1
       amplitude * cos(linear_k * s - linear_f * t)
     }
   )
 
-  # Create a data frame for the fundamentals plot
-  fundamentals_df <- expand.grid(Time = time_points, Space = space_points)
+  fundamentals_df <- tidyr::expand_grid(Time = time_points, Space = space_points)
   fundamentals_df$Amplitude <- as.vector(fundamental_matrix)
 
   # Create the fundamentals plot
@@ -107,10 +101,10 @@ plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), reso
     Amplitude ~ Time * Space, data = fundamentals_df,
     xlab = "Time", ylab = "Space",
     main = "Fundamental Waveform",
-    scales = list(draw = FALSE),  # Remove axis ticks and labels
+    scales = list(draw = FALSE),
     col.regions = gray.colors(100),
-    aspect = "iso",  # Set aspect ratio to 1
-    colorkey=FALSE
+    aspect = "iso",
+    colorkey = FALSE
   )
 
   # Arrange the plots side by side

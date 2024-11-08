@@ -5,7 +5,7 @@ approximate_rational_fractions_cpp <- function(x, uncertainty, deviation) {
     .Call(`_wavyr_approximate_rational_fractions_cpp`, x, uncertainty, deviation)
 }
 
-combine_spectra_cpp <- function(component1, amplitude1, component2, amplitude2, tolerance = 1e-6) {
+combine_spectra_cpp <- function(component1, amplitude1, component2, amplitude2, tolerance) {
     .Call(`_wavyr_combine_spectra_cpp`, component1, amplitude1, component2, amplitude2, tolerance)
 }
 

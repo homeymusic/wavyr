@@ -86,7 +86,7 @@ print.spectrum <- function(x, ...) {
   cat("Amplitudes:", x$amplitude, "\n")
 }
 
-combine_spectra <- function(spectrum, other_spectrum, tolerance = 1e-6) {
+combine_spectra <- function(spectrum, other_spectrum, tolerance) {
   result <- combine_spectra_cpp(
     spectrum$component, spectrum$amplitude,
     other_spectrum$component, other_spectrum$amplitude,

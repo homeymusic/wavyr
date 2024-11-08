@@ -8,7 +8,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List combine_spectra_cpp(NumericVector component1, NumericVector amplitude1,
                      NumericVector component2, NumericVector amplitude2,
-                     double tolerance = 1e-6) {
+                     const double tolerance) {
 
   // Step 1: Convert NumericVectors to std::vectors for easier manipulation
   std::vector<double> combined_component(component1.begin(), component1.end());
