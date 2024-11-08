@@ -6,7 +6,7 @@
 #'
 #' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase.
 #' @export
-waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = NULL) {
+waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
   # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
     stop("frequency_spectrum must be of class 'frequency_spectrum'")

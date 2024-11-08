@@ -7,6 +7,7 @@
 #' @export
 linear_waveform <- function(
     frequency_spectrum,
+    phase = 0,
     speed_of_sound = 343
 ) {
 
@@ -17,6 +18,11 @@ linear_waveform <- function(
 
   if (any(is.na(frequency_spectrum$component)) || any(frequency_spectrum$component <= 0)) {
     stop("All frequency components must be positive and non-NA.")
+  }
+
+  # Check amplitude values are positive
+  if (any(is.na(frequency_spectrum$amplitude)) || any(frequency_spectrum$amplitude <= 0)) {
+    stop("All amplitude values must be positive and non-NA.")
   }
 
   # Calculate base wavelength spectrum
@@ -40,16 +46,22 @@ linear_waveform <- function(
   }
 
   # Combine the base wavelength spectrum and beat spectrum
-  combined_wavelength_spectrum <- base_wavelength_spectrum$combine_with(beat_spectrum)
+  combined_wavelength_spectrum <- combine_spectra(
+    base_wavelength_spectrum,
+    beat_spectrum
+  )
 
-  # Construct the waveform object
-  waveform_obj <- waveform(
+  # Construct the waveform object with metadata
+  waveform_obj <- list(
     frequency_spectrum = frequency_spectrum,
-    wavelength_spectrum = combined_wavelength_spectrum
+    wavelength_spectrum = combined_wavelength_spectrum,
+    base_wavelength_spectrum = base_wavelength_spectrum,
+    beat_spectrum = beat_spectrum,
+    phase = phase
   )
 
   # Assign the class to include "linear_waveform"
-  class(waveform_obj) <- c("linear_waveform", class(waveform_obj))
+  class(waveform_obj) <- c("linear_waveform", "waveform", "list")
 
   return(waveform_obj)
 }
@@ -63,16 +75,3 @@ print.linear_waveform <- function(x, ...) {
     print(x$beat_spectrum)
   }
 }
-
-
-# structure(
-#   list(
-#     combined_waveform = combined_waveform,
-#     frequency_spectrum = frequency_spectrum,
-#     wavelength_spectrum = wavelength_spectrum,
-#     base_wavelength_spectrum = base_wavelength_spectrum,
-#     beat_spectrum = beat_spectrum,
-#     phase = NULL
-#   ),
-#   class = c("LinearWaveform", class(.))
-# )

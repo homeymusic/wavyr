@@ -47,7 +47,7 @@ test_that("we can create a general waveform with only a frequency spectrum and n
   expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
   expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
   expect_null(waveform_obj$wavelength_spectrum)
-  expect_null(waveform_obj$phase)
+  expect_equal(waveform_obj$phase,0)
 })
 
 test_that("waveform with wavelength spectrum and frequency spectrum but no phase works as expected", {
@@ -75,5 +75,5 @@ test_that("waveform with wavelength spectrum and frequency spectrum but no phase
   expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
   expect_equal(waveform_obj$wavelength_spectrum$component, c(1, 0.5, 0.33))
   expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_null(waveform_obj$phase)
+  expect_equal(waveform_obj$phase,0)
 })
