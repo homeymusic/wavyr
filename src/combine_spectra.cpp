@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List combine_spectra(NumericVector component1, NumericVector amplitude1,
+List combine_spectra_cpp(NumericVector component1, NumericVector amplitude1,
                      NumericVector component2, NumericVector amplitude2,
                      double tolerance = 1e-6) {
 

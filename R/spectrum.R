@@ -51,7 +51,7 @@ spectrum.list <- function(x, ...) {
 
   # Define additional methods
   fundamental_cycle_length <- function() {
-    fractions <- approximate_rational_fractions(
+    fractions <- approximate_rational_fractions_cpp(
       component / min(component),
       1 / (4 * pi),
       0.11
@@ -60,7 +60,7 @@ spectrum.list <- function(x, ...) {
   }
 
   fractions <- function() {
-    approximate_rational_fractions(
+    approximate_rational_fractions_cpp(
       component / min(component),
       1 / (4 * pi),
       0.11
@@ -86,8 +86,8 @@ print.spectrum <- function(x, ...) {
   cat("Amplitudes:", x$amplitude, "\n")
 }
 
-combine_two_spectra <- function(spectrum, other_spectrum, tolerance = 1e-6) {
-  result <- combine_spectra(
+combine_spectra <- function(spectrum, other_spectrum, tolerance = 1e-6) {
+  result <- combine_spectra_cpp(
     spectrum$component, spectrum$amplitude,
     other_spectrum$component, other_spectrum$amplitude,
     tolerance

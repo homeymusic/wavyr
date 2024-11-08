@@ -4,7 +4,7 @@
 
 using namespace Rcpp;
 
- //' stern_brocot
+ //' stern_brocot_cpp
  //'
  //' Approximates a floating-point number to arbitrary uncertainty.
  //'
@@ -14,7 +14,7 @@ using namespace Rcpp;
  //' @return A ratio of num / den
  //' @export
  // [[Rcpp::export]]
- NumericVector stern_brocot(const double x, const double uncertainty) {
+ NumericVector stern_brocot_cpp(const double x, const double uncertainty) {
    if (x <= 0) stop("STOP: x must be greater than 0");
    if (uncertainty <= 0) stop("STOP: uncertainty must be greater than 0");
 

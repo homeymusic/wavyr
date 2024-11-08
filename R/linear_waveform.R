@@ -30,7 +30,7 @@ linear_waveform <- function(
   }
 
   # Calculate beat spectrum
-  beat_spectrum <- compute_beats(
+  beat_spectrum <- compute_beats_cpp(
     wavelength = base_wavelength_spectrum$component,
     amplitude = base_wavelength_spectrum$amplitude
   ) %>% wavelength_spectrum()

@@ -52,7 +52,7 @@
 #     speed_of_sound = 343
 #   )
 #
-#   # Extract expected beat wavelengths using the formula from compute_beats
+#   # Extract expected beat wavelengths using the formula from compute_beats_cpp
 #   wavelengths <- 343 / frequency_spectrum_obj$component
 #   beat_wavelengths <- outer(wavelengths, wavelengths, function(x, y) (x * y) / abs(x - y)) %>%
 #     .[lower.tri(.)]

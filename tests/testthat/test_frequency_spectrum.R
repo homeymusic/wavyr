@@ -113,7 +113,7 @@ test_that("frequency_spectrum can combine with another frequency_spectrum within
   )
 
   # Combine frequency_spectrum1 and frequency_spectrum2 with a tolerance of 0.1
-  combined_frequency_spectrum <- combine_two_spectra(
+  combined_frequency_spectrum <- combine_spectra(
     frequency_spectrum1,
     frequency_spectrum2,
     tolerance = 1

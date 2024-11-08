@@ -101,7 +101,7 @@ test_that("wavelength_spectrum can combine with another wavelength_spectrum with
   )
 
   # Combine wavelength_spectrum1 and wavelength_spectrum2 with a tolerance of 0.05
-  combined_wavelength_spectrum <- combine_two_spectra(
+  combined_wavelength_spectrum <- combine_spectra(
     wavelength_spectrum1,
     wavelength_spectrum2,
     tolerance = 0.05

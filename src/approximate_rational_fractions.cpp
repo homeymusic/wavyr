@@ -13,9 +13,6 @@ using namespace Rcpp;
  //' @param n  harmonic number
  //'
  //' @return Calculated pseudo octave
- //'
- //' @export
- // [[Rcpp::export]]
  const double compute_pseudo_octave(const double fn, const double f0, const int n) {
    if (n==1) {
      return 1.0;
@@ -33,9 +30,6 @@ using namespace Rcpp;
  //' @param deviation Deviation for estimating least common multiples
  //'
  //' @return A double of the best guess of the pseudo octave
- //'
- //' @export
- // [[Rcpp::export]]
  DataFrame approximate_harmonics(const NumericVector x,
                                  const double deviation) {
    const int x_size   = x.size();
@@ -98,9 +92,6 @@ using namespace Rcpp;
  //' @param approximate_harmonics List of candidate pseudo octaves
  //'
  //' @return A data frame of rational numbers and metadata
- //'
- //' @export
- // [[Rcpp::export]]
  const double pseudo_octave(NumericVector approximate_harmonics) {
    const IntegerVector counts = table(approximate_harmonics);
    IntegerVector idx = seq_along(counts) - 1;
@@ -110,7 +101,7 @@ using namespace Rcpp;
    return std::stod(std::string(names_of_count[0]));
  }
 
- //' approximate_rational_fractions
+ //' _approximate_rational_fractions_cpp
  //'
  //' Approximates floating-point numbers to arbitrary uncertainty.
  //'
@@ -122,7 +113,7 @@ using namespace Rcpp;
  //'
  //' @export
  // [[Rcpp::export]]
- DataFrame approximate_rational_fractions(NumericVector x,
+ DataFrame approximate_rational_fractions_cpp(NumericVector x,
                                           const double uncertainty,
                                           const double deviation) {
 
@@ -140,7 +131,7 @@ using namespace Rcpp;
 
    for (int i = 0; i < n; ++i) {
      pseudo_x[i]                  = pow(2.0, log(x[i]) / log(pseudo_octave_double));
-     const NumericVector fraction = stern_brocot(pseudo_x[i], uncertainty);
+     const NumericVector fraction = stern_brocot_cpp(pseudo_x[i], uncertainty);
      nums[i]                      = fraction[0];
      dens[i]                      = fraction[1];
      approximations[i]            = nums[i] / dens[i];

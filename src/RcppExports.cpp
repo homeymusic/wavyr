@@ -10,58 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// compute_pseudo_octave
-const double compute_pseudo_octave(const double fn, const double f0, const int n);
-RcppExport SEXP _wavyr_compute_pseudo_octave(SEXP fnSEXP, SEXP f0SEXP, SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const double >::type fn(fnSEXP);
-    Rcpp::traits::input_parameter< const double >::type f0(f0SEXP);
-    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_pseudo_octave(fn, f0, n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// approximate_harmonics
-DataFrame approximate_harmonics(const NumericVector x, const double deviation);
-RcppExport SEXP _wavyr_approximate_harmonics(SEXP xSEXP, SEXP deviationSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const double >::type deviation(deviationSEXP);
-    rcpp_result_gen = Rcpp::wrap(approximate_harmonics(x, deviation));
-    return rcpp_result_gen;
-END_RCPP
-}
-// pseudo_octave
-const double pseudo_octave(NumericVector approximate_harmonics);
-RcppExport SEXP _wavyr_pseudo_octave(SEXP approximate_harmonicsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type approximate_harmonics(approximate_harmonicsSEXP);
-    rcpp_result_gen = Rcpp::wrap(pseudo_octave(approximate_harmonics));
-    return rcpp_result_gen;
-END_RCPP
-}
-// approximate_rational_fractions
-DataFrame approximate_rational_fractions(NumericVector x, const double uncertainty, const double deviation);
-RcppExport SEXP _wavyr_approximate_rational_fractions(SEXP xSEXP, SEXP uncertaintySEXP, SEXP deviationSEXP) {
+// approximate_rational_fractions_cpp
+DataFrame approximate_rational_fractions_cpp(NumericVector x, const double uncertainty, const double deviation);
+RcppExport SEXP _wavyr_approximate_rational_fractions_cpp(SEXP xSEXP, SEXP uncertaintySEXP, SEXP deviationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< const double >::type uncertainty(uncertaintySEXP);
     Rcpp::traits::input_parameter< const double >::type deviation(deviationSEXP);
-    rcpp_result_gen = Rcpp::wrap(approximate_rational_fractions(x, uncertainty, deviation));
+    rcpp_result_gen = Rcpp::wrap(approximate_rational_fractions_cpp(x, uncertainty, deviation));
     return rcpp_result_gen;
 END_RCPP
 }
-// combine_spectra
-List combine_spectra(NumericVector component1, NumericVector amplitude1, NumericVector component2, NumericVector amplitude2, double tolerance);
-RcppExport SEXP _wavyr_combine_spectra(SEXP component1SEXP, SEXP amplitude1SEXP, SEXP component2SEXP, SEXP amplitude2SEXP, SEXP toleranceSEXP) {
+// combine_spectra_cpp
+List combine_spectra_cpp(NumericVector component1, NumericVector amplitude1, NumericVector component2, NumericVector amplitude2, double tolerance);
+RcppExport SEXP _wavyr_combine_spectra_cpp(SEXP component1SEXP, SEXP amplitude1SEXP, SEXP component2SEXP, SEXP amplitude2SEXP, SEXP toleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -70,43 +34,40 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type component2(component2SEXP);
     Rcpp::traits::input_parameter< NumericVector >::type amplitude2(amplitude2SEXP);
     Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
-    rcpp_result_gen = Rcpp::wrap(combine_spectra(component1, amplitude1, component2, amplitude2, tolerance));
+    rcpp_result_gen = Rcpp::wrap(combine_spectra_cpp(component1, amplitude1, component2, amplitude2, tolerance));
     return rcpp_result_gen;
 END_RCPP
 }
-// compute_beats
-DataFrame compute_beats(NumericVector wavelength, NumericVector amplitude);
-RcppExport SEXP _wavyr_compute_beats(SEXP wavelengthSEXP, SEXP amplitudeSEXP) {
+// compute_beats_cpp
+DataFrame compute_beats_cpp(NumericVector wavelength, NumericVector amplitude);
+RcppExport SEXP _wavyr_compute_beats_cpp(SEXP wavelengthSEXP, SEXP amplitudeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type wavelength(wavelengthSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type amplitude(amplitudeSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_beats(wavelength, amplitude));
+    rcpp_result_gen = Rcpp::wrap(compute_beats_cpp(wavelength, amplitude));
     return rcpp_result_gen;
 END_RCPP
 }
-// stern_brocot
-NumericVector stern_brocot(const double x, const double uncertainty);
-RcppExport SEXP _wavyr_stern_brocot(SEXP xSEXP, SEXP uncertaintySEXP) {
+// stern_brocot_cpp
+NumericVector stern_brocot_cpp(const double x, const double uncertainty);
+RcppExport SEXP _wavyr_stern_brocot_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double >::type x(xSEXP);
     Rcpp::traits::input_parameter< const double >::type uncertainty(uncertaintySEXP);
-    rcpp_result_gen = Rcpp::wrap(stern_brocot(x, uncertainty));
+    rcpp_result_gen = Rcpp::wrap(stern_brocot_cpp(x, uncertainty));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_wavyr_compute_pseudo_octave", (DL_FUNC) &_wavyr_compute_pseudo_octave, 3},
-    {"_wavyr_approximate_harmonics", (DL_FUNC) &_wavyr_approximate_harmonics, 2},
-    {"_wavyr_pseudo_octave", (DL_FUNC) &_wavyr_pseudo_octave, 1},
-    {"_wavyr_approximate_rational_fractions", (DL_FUNC) &_wavyr_approximate_rational_fractions, 3},
-    {"_wavyr_combine_spectra", (DL_FUNC) &_wavyr_combine_spectra, 5},
-    {"_wavyr_compute_beats", (DL_FUNC) &_wavyr_compute_beats, 2},
-    {"_wavyr_stern_brocot", (DL_FUNC) &_wavyr_stern_brocot, 2},
+    {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 3},
+    {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 5},
+    {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 2},
+    {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}
 };
 

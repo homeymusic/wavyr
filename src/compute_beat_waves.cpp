@@ -13,7 +13,7 @@ using namespace Rcpp;
  //' @return A DataFrame containing the spectrum, wavelengths, and amplitudes of the beats.
  //' @export
  // [[Rcpp::export]]
- DataFrame compute_beats(NumericVector wavelength, NumericVector amplitude) {
+ DataFrame compute_beats_cpp(NumericVector wavelength, NumericVector amplitude) {
 
    const int n = wavelength.size();
 
