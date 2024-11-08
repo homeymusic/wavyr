@@ -2,18 +2,19 @@
 % Please edit documentation in R/frequency_spectrum.R
 \name{frequency_spectrum}
 \alias{frequency_spectrum}
-\title{Create a frequency spectrum}
+\title{Create a Frequency Spectrum}
 \usage{
-frequency_spectrum(frequency, amplitude)
+frequency_spectrum(frequency, amplitude = NULL)
 }
 \arguments{
-\item{frequency}{A numeric vector of frequencies}
+\item{frequency}{Either a numeric vector of frequencies or a list with named \code{frequency} and \code{amplitude} vectors.}
 
-\item{amplitude}{A numeric vector of amplitudes}
+\item{amplitude}{A numeric vector of amplitudes, if \code{frequency} is a numeric vector.}
 }
 \value{
-An object of class "frequency_spectrum" that inherits from "spectrum"
+An object of class \code{frequency_spectrum} that inherits from \code{spectrum}.
 }
 \description{
-Create a frequency spectrum
+Extends the \code{spectrum} class specifically for frequency spectra.
+Accepts either direct numeric vectors or a list containing \code{frequency} and \code{amplitude}.
 }

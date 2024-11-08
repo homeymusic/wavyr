@@ -17,6 +17,10 @@ approximate_rational_fractions <- function(x, uncertainty, deviation) {
     .Call(`_wavyr_approximate_rational_fractions`, x, uncertainty, deviation)
 }
 
+combine_spectra <- function(component1, amplitude1, component2, amplitude2, tolerance = 1e-6) {
+    .Call(`_wavyr_combine_spectra`, component1, amplitude1, component2, amplitude2, tolerance)
+}
+
 compute_beats <- function(wavelength, amplitude) {
     .Call(`_wavyr_compute_beats`, wavelength, amplitude)
 }

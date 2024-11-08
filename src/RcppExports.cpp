@@ -59,6 +59,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// combine_spectra
+List combine_spectra(NumericVector component1, NumericVector amplitude1, NumericVector component2, NumericVector amplitude2, double tolerance);
+RcppExport SEXP _wavyr_combine_spectra(SEXP component1SEXP, SEXP amplitude1SEXP, SEXP component2SEXP, SEXP amplitude2SEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type component1(component1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type amplitude1(amplitude1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type component2(component2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type amplitude2(amplitude2SEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(combine_spectra(component1, amplitude1, component2, amplitude2, tolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
 // compute_beats
 DataFrame compute_beats(NumericVector wavelength, NumericVector amplitude);
 RcppExport SEXP _wavyr_compute_beats(SEXP wavelengthSEXP, SEXP amplitudeSEXP) {
@@ -89,6 +104,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_harmonics", (DL_FUNC) &_wavyr_approximate_harmonics, 2},
     {"_wavyr_pseudo_octave", (DL_FUNC) &_wavyr_pseudo_octave, 1},
     {"_wavyr_approximate_rational_fractions", (DL_FUNC) &_wavyr_approximate_rational_fractions, 3},
+    {"_wavyr_combine_spectra", (DL_FUNC) &_wavyr_combine_spectra, 5},
     {"_wavyr_compute_beats", (DL_FUNC) &_wavyr_compute_beats, 2},
     {"_wavyr_stern_brocot", (DL_FUNC) &_wavyr_stern_brocot, 2},
     {NULL, NULL, 0}

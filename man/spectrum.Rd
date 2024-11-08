@@ -3,27 +3,21 @@
 \name{spectrum}
 \alias{spectrum}
 \alias{spectrum.default}
-\alias{spectrum.list}
 \title{Spectrum Constructor}
 \usage{
 spectrum(component, amplitude = NULL)
 
 \method{spectrum}{default}(component, amplitude)
-
-\method{spectrum}{list}(x)
 }
 \arguments{
-\item{component}{Either a numeric vector for component values, or a list containing named \code{component} and \code{amplitude} vectors.}
+\item{component}{Either a numeric vector for component values or a list with named \code{component} and \code{amplitude} vectors.}
 
-\item{amplitude}{A numeric vector of amplitudes corresponding to each component (if \code{component} is a numeric vector).}
+\item{amplitude}{A numeric vector of amplitudes, if \code{component} is a numeric vector.}
 }
 \value{
 An object of class \code{spectrum}.
 }
 \description{
 Creates a spectrum object with components and amplitudes.
-}
-\details{
-A spectrum comprises a set of components (e.g., frequencies or wavelengths)
-and their corresponding amplitudes.
+Handles both direct vector inputs or a list containing named \code{component} and \code{amplitude}.
 }

@@ -69,22 +69,16 @@ spectrum.list <- function(x, ...) {
     )
   }
 
+  # spectrum.R
+
   combine_with <- function(other_spectrum, tolerance = 1e-6) {
-    combined_component <- c(component, other_spectrum$component)
-    combined_amplitude <- c(amplitude, other_spectrum$amplitude)
+    result <- combine_spectra(
+      component, amplitude,
+      other_spectrum$component, other_spectrum$amplitude,
+      tolerance
+    )
 
-    # Create a data frame and group within the tolerance
-    combined_df <- data.frame(component = combined_component, amplitude = combined_amplitude)
-    combined_df <- combined_df[order(combined_df$component), ]
-
-    combined_df$group <- cumsum(c(TRUE, diff(combined_df$component) > tolerance))
-
-    # Aggregate amplitudes within each group
-    aggregated <- aggregate(amplitude ~ group, data = combined_df, FUN = sum)
-    unique_components <- aggregate(component ~ group, data = combined_df, FUN = mean)
-
-    # Return the combined spectrum
-    spectrum(unique_components$component, aggregated$amplitude)
+    spectrum(result$component, result$amplitude)
   }
 
   # Return the spectrum object

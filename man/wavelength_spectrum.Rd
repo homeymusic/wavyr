@@ -2,18 +2,19 @@
 % Please edit documentation in R/wavelength_spectrum.R
 \name{wavelength_spectrum}
 \alias{wavelength_spectrum}
-\title{Create a wavelength spectrum}
+\title{Create a Wavelength Spectrum}
 \usage{
-wavelength_spectrum(wavelength, amplitude)
+wavelength_spectrum(wavelength, amplitude = NULL)
 }
 \arguments{
-\item{wavelength}{A numeric vector of wavelengths}
+\item{wavelength}{Either a numeric vector of wavelengths or a list with named \code{wavelength} and \code{amplitude} vectors.}
 
-\item{amplitude}{A numeric vector of amplitudes}
+\item{amplitude}{A numeric vector of amplitudes, if \code{wavelength} is a numeric vector.}
 }
 \value{
-An object of class "wavelength_spectrum" that inherits from "spectrum"
+An object of class \code{wavelength_spectrum} that inherits from \code{spectrum}.
 }
 \description{
-Create a wavelength spectrum
+Extends the \code{spectrum} class specifically for wavelength spectra.
+Accepts either direct numeric vectors or a list containing \code{wavelength} and \code{amplitude}.
 }
