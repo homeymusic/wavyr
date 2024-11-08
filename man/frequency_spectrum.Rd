@@ -9,10 +9,10 @@ frequency_spectrum(frequency, amplitude)
 \arguments{
 \item{frequency}{A numeric vector of frequencies}
 
-\item{amplitude}{A numeric vector of amplitudes corresponding to each frequency}
+\item{amplitude}{A numeric vector of amplitudes}
 }
 \value{
-An object of class "frequency_spectrum" containing the frequencies and amplitudes
+An object of class "frequency_spectrum" that inherits from "spectrum"
 }
 \description{
 Create a frequency spectrum

@@ -9,10 +9,10 @@ wavelength_spectrum(wavelength, amplitude)
 \arguments{
 \item{wavelength}{A numeric vector of wavelengths}
 
-\item{amplitude}{A numeric vector of amplitudes corresponding to each wavelength}
+\item{amplitude}{A numeric vector of amplitudes}
 }
 \value{
-An object of class "wavelength_spectrum" containing the wavelengths and amplitudes
+An object of class "wavelength_spectrum" that inherits from "spectrum"
 }
 \description{
 Create a wavelength spectrum

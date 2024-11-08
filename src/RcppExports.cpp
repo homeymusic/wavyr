@@ -59,6 +59,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_beats
+DataFrame compute_beats(NumericVector wavelength, NumericVector amplitude);
+RcppExport SEXP _wavyr_compute_beats(SEXP wavelengthSEXP, SEXP amplitudeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type wavelength(wavelengthSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type amplitude(amplitudeSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_beats(wavelength, amplitude));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stern_brocot
 NumericVector stern_brocot(const double x, const double uncertainty);
 RcppExport SEXP _wavyr_stern_brocot(SEXP xSEXP, SEXP uncertaintySEXP) {
@@ -77,6 +89,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_harmonics", (DL_FUNC) &_wavyr_approximate_harmonics, 2},
     {"_wavyr_pseudo_octave", (DL_FUNC) &_wavyr_pseudo_octave, 1},
     {"_wavyr_approximate_rational_fractions", (DL_FUNC) &_wavyr_approximate_rational_fractions, 3},
+    {"_wavyr_compute_beats", (DL_FUNC) &_wavyr_compute_beats, 2},
     {"_wavyr_stern_brocot", (DL_FUNC) &_wavyr_stern_brocot, 2},
     {NULL, NULL, 0}
 };

@@ -17,6 +17,10 @@ approximate_rational_fractions <- function(x, uncertainty, deviation) {
     .Call(`_wavyr_approximate_rational_fractions`, x, uncertainty, deviation)
 }
 
+compute_beats <- function(wavelength, amplitude) {
+    .Call(`_wavyr_compute_beats`, wavelength, amplitude)
+}
+
 stern_brocot <- function(x, uncertainty) {
     .Call(`_wavyr_stern_brocot`, x, uncertainty)
 }

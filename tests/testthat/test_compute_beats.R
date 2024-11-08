@@ -1,0 +1,55 @@
+# tests/testthat/test_compute_beats.R
+
+test_that("compute_beats handles basic beat calculation", {
+  # Input vectors
+  wavelength <- c(1.0, 0.5, 0.33)
+  amplitude <- c(1.0, 0.8, 0.5)
+
+  # Call the compute_beats function
+  result <- compute_beats(wavelength, amplitude)
+
+  # Check the structure of the result
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("wavelength", "amplitude") %in% names(result)))
+
+  # Check the number of results (3 beats from 3 pairs)
+  expect_equal(nrow(result), 3)
+
+  # Expected values based on the input
+  expected_wavelengths <- c(
+    (1.0 * 0.5) / abs(1.0 - 0.5),
+    (1.0 * 0.33) / abs(1.0 - 0.33),
+    (0.5 * 0.33) / abs(0.5 - 0.33)
+  )
+  expected_amplitudes <- c(1.8, 1.5, 1.3)
+
+  # Compare calculated values to expected values
+  expect_equal(result$wavelength, expected_wavelengths, tolerance = 1e-6)
+  expect_equal(result$amplitude, expected_amplitudes, tolerance = 1e-6)
+})
+
+test_that("compute_beats returns empty DataFrame for single element", {
+  # Single-element input
+  wavelength <- c(1.0)
+  amplitude <- c(1.0)
+
+  # Call the compute_beats function
+  result <- compute_beats(wavelength, amplitude)
+
+  # Check that the result is an empty data frame
+  expect_equal(nrow(result), 0)
+  expect_equal(ncol(result), 2)
+})
+
+test_that("compute_beats returns empty DataFrame for empty input", {
+  # Empty input vectors
+  wavelength <- numeric(0)
+  amplitude <- numeric(0)
+
+  # Call the compute_beats function
+  result <- compute_beats(wavelength, amplitude)
+
+  # Check that the result is an empty data frame
+  expect_equal(nrow(result), 0)
+  expect_equal(ncol(result), 2)
+})

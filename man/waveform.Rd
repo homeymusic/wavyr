@@ -2,20 +2,20 @@
 % Please edit documentation in R/waveform.R
 \name{waveform}
 \alias{waveform}
-\title{Create a waveform}
+\title{Create a general waveform}
 \usage{
-waveform(frequency_spectrum, wavelength_spectrum, phase)
+waveform(frequency_spectrum, wavelength_spectrum = NULL, phase = NULL)
 }
 \arguments{
-\item{frequency_spectrum}{An object of class "frequency_spectrum" containing frequencies and amplitudes}
+\item{frequency_spectrum}{An object of class "frequency_spectrum" containing frequencies and amplitudes.}
 
-\item{wavelength_spectrum}{An object of class "wavelength_spectrum" containing wavelengths and amplitudes}
+\item{wavelength_spectrum}{Optional: An object of class "wavelength_spectrum" for custom wavelength components.}
 
-\item{phase}{A numeric value representing the phase of the waveform}
+\item{phase}{Optional: A numeric value representing the phase of the waveform.}
 }
 \value{
-An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase
+An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase.
 }
 \description{
-Create a waveform
+Create a general waveform
 }
