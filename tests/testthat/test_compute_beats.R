@@ -53,3 +53,25 @@ test_that("compute_beats_cpp returns empty DataFrame for empty input", {
   expect_equal(nrow(result), 0)
   expect_equal(ncol(result), 2)
 })
+
+# tests/testthat/test_compute_beats_cpp.R
+
+test_that("compute_beats_cpp returns an empty beat spectrum for very small frequency differences", {
+  # Define frequency spectrum with very close frequencies
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 100.000001),
+    amplitude = c(1.0, 0.8)
+  )
+
+  # Set a minimum frequency difference tolerance
+  min_frequency_difference <- 1e-6
+
+  # Calculate beat spectrum using compute_beats_cpp with very close frequencies
+  beat_spectrum <- compute_beats_cpp(
+    wavelength = 343 / frequency_spectrum_obj$frequency,
+    amplitude = frequency_spectrum_obj$amplitude
+  )
+
+  # Test that beat_spectrum is empty
+  expect_true(nrow(beat_spectrum) == 0)
+})

@@ -13,7 +13,9 @@ using namespace Rcpp;
  //' @return A DataFrame containing the spectrum, wavelengths, and amplitudes of the beats.
  //' @export
  // [[Rcpp::export]]
- DataFrame compute_beats_cpp(NumericVector wavelength, NumericVector amplitude) {
+ DataFrame compute_beats_cpp(NumericVector wavelength,
+                             NumericVector amplitude,
+                             double tolerance = 1e-6) {
 
    const int n = wavelength.size();
 
@@ -33,7 +35,7 @@ using namespace Rcpp;
    // Calculate the beats
    for (int i = 0; i < n; i++) {
      for (int j = i + 1; j < n; j++) {
-       if (wavelength[i] != wavelength[j]) {
+       if (std::abs(wavelength[i] - wavelength[j]) > tolerance) {
          // Compute the raw beat wavelength
          double computed_wavelength = (wavelength[i] * wavelength[j]) / std::abs(wavelength[i] - wavelength[j]);
          beat_wavelength[count] = computed_wavelength;
