@@ -136,3 +136,16 @@ test_that("wavelength_spectrum has accessible wavelength field", {
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
 })
+
+test_that("wavelength_spectrum plot works as expected", {
+  # Create a frequency_spectrum object
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = 343 / c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Capture the plot with vdiffr
+  vdiffr::expect_doppelganger("wavelength spectrum plot", function() {
+    plot(wavelength_spectrum_obj)
+  })
+})

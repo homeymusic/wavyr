@@ -147,3 +147,16 @@ test_that("frequency_spectrum has accessible frequency field", {
   expect_s3_class(frequency_spectrum_obj, "frequency_spectrum")
   expect_s3_class(frequency_spectrum_obj, "spectrum")
 })
+
+test_that("frequency_spectrum plot works as expected", {
+  # Create a frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Capture the plot with vdiffr
+  vdiffr::expect_doppelganger("frequency spectrum plot", function() {
+    plot(frequency_spectrum_obj)
+  })
+})

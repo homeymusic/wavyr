@@ -4,7 +4,7 @@
 \alias{waveform}
 \title{Create a general waveform}
 \usage{
-waveform(frequency_spectrum, wavelength_spectrum = NULL, phase = NULL)
+waveform(frequency_spectrum, wavelength_spectrum = NULL, phase = 0)
 }
 \arguments{
 \item{frequency_spectrum}{An object of class "frequency_spectrum" containing frequencies and amplitudes.}

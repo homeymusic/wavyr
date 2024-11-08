@@ -4,7 +4,7 @@
 \alias{linear_waveform}
 \title{Create a LinearWaveform for a linear medium}
 \usage{
-linear_waveform(frequency_spectrum, speed_of_sound = 343)
+linear_waveform(frequency_spectrum, phase = 0, speed_of_sound = 343)
 }
 \arguments{
 \item{frequency_spectrum}{An object of class "frequency_spectrum" containing frequencies and amplitudes.}
