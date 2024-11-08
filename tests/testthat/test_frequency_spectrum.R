@@ -132,3 +132,18 @@ test_that("frequency_spectrum can combine with another frequency_spectrum within
                expected_amplitudes %>% sort(),
                tolerance = 0.1)
 })
+# tests/testthat/test_frequency_spectrum.R
+
+test_that("frequency_spectrum has accessible frequency field", {
+  # Create a frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(1000, 500, 333),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Check that `frequency` field is accessible and correct
+  expect_equal(frequency_spectrum_obj$frequency, c(1000, 500, 333))
+  expect_equal(frequency_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_s3_class(frequency_spectrum_obj, "frequency_spectrum")
+  expect_s3_class(frequency_spectrum_obj, "spectrum")
+})

@@ -120,3 +120,19 @@ test_that("wavelength_spectrum can combine with another wavelength_spectrum with
                expected_amplitudes %>% sort(),
                tolerance = 0.1)
 })
+
+# tests/testthat/test_wavelength_spectrum.R
+
+test_that("wavelength_spectrum has accessible wavelength field", {
+  # Create a wavelength_spectrum object
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(2.0, 1.0, 0.67),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Check that `wavelength` field is accessible and correct
+  expect_equal(wavelength_spectrum_obj$wavelength, c(2.0, 1.0, 0.67))
+  expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
+  expect_s3_class(wavelength_spectrum_obj, "spectrum")
+})
