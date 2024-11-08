@@ -10,6 +10,55 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// compute_pseudo_octave
+const double compute_pseudo_octave(const double fn, const double f0, const int n);
+RcppExport SEXP _wavyr_compute_pseudo_octave(SEXP fnSEXP, SEXP f0SEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type fn(fnSEXP);
+    Rcpp::traits::input_parameter< const double >::type f0(f0SEXP);
+    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_pseudo_octave(fn, f0, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// approximate_harmonics
+DataFrame approximate_harmonics(const NumericVector x, const double deviation);
+RcppExport SEXP _wavyr_approximate_harmonics(SEXP xSEXP, SEXP deviationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const double >::type deviation(deviationSEXP);
+    rcpp_result_gen = Rcpp::wrap(approximate_harmonics(x, deviation));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pseudo_octave
+const double pseudo_octave(NumericVector approximate_harmonics);
+RcppExport SEXP _wavyr_pseudo_octave(SEXP approximate_harmonicsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type approximate_harmonics(approximate_harmonicsSEXP);
+    rcpp_result_gen = Rcpp::wrap(pseudo_octave(approximate_harmonics));
+    return rcpp_result_gen;
+END_RCPP
+}
+// approximate_rational_fractions
+DataFrame approximate_rational_fractions(NumericVector x, const double uncertainty, const double deviation);
+RcppExport SEXP _wavyr_approximate_rational_fractions(SEXP xSEXP, SEXP uncertaintySEXP, SEXP deviationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const double >::type uncertainty(uncertaintySEXP);
+    Rcpp::traits::input_parameter< const double >::type deviation(deviationSEXP);
+    rcpp_result_gen = Rcpp::wrap(approximate_rational_fractions(x, uncertainty, deviation));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stern_brocot
 NumericVector stern_brocot(const double x, const double uncertainty);
 RcppExport SEXP _wavyr_stern_brocot(SEXP xSEXP, SEXP uncertaintySEXP) {
@@ -24,6 +73,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_wavyr_compute_pseudo_octave", (DL_FUNC) &_wavyr_compute_pseudo_octave, 3},
+    {"_wavyr_approximate_harmonics", (DL_FUNC) &_wavyr_approximate_harmonics, 2},
+    {"_wavyr_pseudo_octave", (DL_FUNC) &_wavyr_pseudo_octave, 1},
+    {"_wavyr_approximate_rational_fractions", (DL_FUNC) &_wavyr_approximate_rational_fractions, 3},
     {"_wavyr_stern_brocot", (DL_FUNC) &_wavyr_stern_brocot, 2},
     {NULL, NULL, 0}
 };

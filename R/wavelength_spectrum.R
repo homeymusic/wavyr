@@ -11,9 +11,22 @@ wavelength_spectrum <- function(wavelength, amplitude) {
     stop("wavelength and amplitude must be the same length")
   }
 
+  # Define the fundamental_cycle_length stub method
+  fundamental_cycle_length <- function() {
+    fractions = approximate_rational_fractions(
+      wavelength / min(wavelength),
+      1 / (4*pi),
+      0.11
+    )
+    lcm_integers(fractions$den)
+  }
+  lcm_integers <- function(x) Reduce(gmp::lcm.bigz, x) %>% as.numeric()
+
   # Return the structured object
   structure(
-    list(wavelength = wavelength, amplitude = amplitude),
+    list(wavelength = wavelength,
+         amplitude = amplitude,
+         fundamental_cycle_length = fundamental_cycle_length),
     class = "wavelength_spectrum"
   )
 }

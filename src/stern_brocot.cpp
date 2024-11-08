@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <tuple>
+#include "stern_brocot.h"
 
 using namespace Rcpp;
 
