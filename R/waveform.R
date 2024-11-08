@@ -1,54 +1,24 @@
-#' Create a waveform
+#' Create a general waveform
 #'
-#' @param frequency_spectrum An object of class "frequency_spectrum" containing frequencies and amplitudes
-#' @param wavelength_spectrum (Optional) An object of class "wavelength_spectrum" containing wavelengths and amplitudes
-#' @param phase (Optional) A numeric value representing the phase of the waveform
-#' @param speed_of_sound (Optional) Numeric, speed of sound in the medium (used only if wavelength_spectrum is not provided)
+#' @param frequency_spectrum An object of class "frequency_spectrum" containing frequencies and amplitudes.
+#' @param wavelength_spectrum Optional: An object of class "wavelength_spectrum" for custom wavelength components.
+#' @param phase Optional: A numeric value representing the phase of the waveform.
 #'
-#' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase
+#' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, and phase.
 #' @export
-waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = NULL, speed_of_sound = 343) {
-  # Validate frequency_spectrum input
+waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = NULL) {
+  # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
     stop("frequency_spectrum must be of class 'frequency_spectrum'")
   }
-
-  # If wavelength_spectrum is not provided, calculate it
-  if (is.null(wavelength_spectrum)) {
-    wavelengths <- speed_of_sound / frequency_spectrum$component
-
-    # Calculate beat wavelengths
-    beat_wavelengths <- c()
-    beat_amplitudes <- c()
-    for (i in seq_along(wavelengths)) {
-      for (j in (i + 1):length(wavelengths)) {
-        beat_wavelength <- abs(wavelengths[i] - wavelengths[j])
-        beat_amplitude <- frequency_spectrum$amplitude[i] + frequency_spectrum$amplitude[j]
-        beat_wavelengths <- c(beat_wavelengths, beat_wavelength)
-        beat_amplitudes <- c(beat_amplitudes, beat_amplitude)
-      }
-    }
-
-    # Create wavelength_spectrum object with both primary wavelengths and beat wavelengths
-    wavelength_spectrum <- wavelength_spectrum(
-      wavelength = c(wavelengths, beat_wavelengths),
-      amplitude = c(frequency_spectrum$amplitude, beat_amplitudes)
-    )
-  } else {
-    # Validate wavelength_spectrum input if it is provided
-    if (!inherits(wavelength_spectrum, "wavelength_spectrum")) {
-      stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
-    }
+  if (!is.null(wavelength_spectrum) && !inherits(wavelength_spectrum, "wavelength_spectrum")) {
+    stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
   }
-
-  # Check if phase is provided; if not, set a default
-  if (is.null(phase)) {
-    phase <- 0  # or any default value you'd like
-  } else if (!is.numeric(phase) || length(phase) != 1) {
+  if (!is.null(phase) && (!is.numeric(phase) || length(phase) != 1)) {
     stop("phase must be a single numeric value")
   }
 
-  # Return the structured waveform object
+  # Return the structured object
   structure(
     list(
       frequency_spectrum = frequency_spectrum,
@@ -57,4 +27,18 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = NUL
     ),
     class = "waveform"
   )
+}
+
+#' @export
+print.waveform <- function(x, ...) {
+  cat("General Waveform\n")
+  cat("Frequency Spectrum:\n")
+  print(x$frequency_spectrum)
+  if (!is.null(x$wavelength_spectrum)) {
+    cat("Wavelength Spectrum:\n")
+    print(x$wavelength_spectrum)
+  }
+  if (!is.null(x$phase)) {
+    cat("Phase:", x$phase, "\n")
+  }
 }

@@ -1,7 +1,6 @@
 # tests/testthat/test_waveform.R
 
-test_that("we can create a new waveform based on a frequency spectrum, wavelength spectrum, and phase", {
-
+test_that("we can create a new waveform with a frequency spectrum, wavelength spectrum, and phase", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200, 300),
@@ -17,7 +16,7 @@ test_that("we can create a new waveform based on a frequency spectrum, wavelengt
   # Define a phase for the waveform
   phase <- pi / 4  # An arbitrary phase
 
-  # Create the waveform object with all parameters
+  # Create the waveform object
   waveform_obj <- waveform(
     frequency_spectrum = frequency_spectrum_obj,
     wavelength_spectrum = wavelength_spectrum_obj,
@@ -33,28 +32,48 @@ test_that("we can create a new waveform based on a frequency spectrum, wavelengt
   expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
 })
 
-test_that("waveform can be created with a frequency spectrum and automatically generates wavelength spectrum and beat wavelengths", {
+test_that("we can create a general waveform with only a frequency spectrum and no wavelength spectrum or phase", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Create the waveform object without specifying wavelength_spectrum or phase
-  waveform_obj <- waveform(frequency_spectrum = frequency_spectrum_obj, speed_of_sound = 343)
+  # Create a waveform with only frequency spectrum
+  waveform_obj <- waveform(frequency_spectrum = frequency_spectrum_obj)
 
   # Expectations to check waveform creation
   expect_s3_class(waveform_obj, "waveform")
+  expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
+  expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_null(waveform_obj$wavelength_spectrum)
+  expect_null(waveform_obj$phase)
+})
 
-  # Check that wavelength components match expected values
-  expected_wavelengths <- 343 / c(100, 200, 300)
-  expect_equal(waveform_obj$wavelength_spectrum$component[1:3], expected_wavelengths)
+test_that("waveform with wavelength spectrum and frequency spectrum but no phase works as expected", {
+  # Create a frequency spectrum
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
 
-  # Check that beat wavelengths are correctly added
-  beat_wavelengths <- abs(outer(expected_wavelengths, expected_wavelengths, "-"))
-  beat_wavelengths <- beat_wavelengths[lower.tri(beat_wavelengths)]
-  expect_true(all(beat_wavelengths %in% waveform_obj$wavelength_spectrum$component[4:length(waveform_obj$wavelength_spectrum$component)]))
+  # Create a wavelength spectrum
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(1, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
 
-  # Check default phase is set to 0
-  expect_equal(waveform_obj$phase, 0)
+  # Create the waveform object without specifying phase
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj
+  )
+
+  # Expectations to check waveform creation
+  expect_s3_class(waveform_obj, "waveform")
+  expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
+  expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(waveform_obj$wavelength_spectrum$component, c(1, 0.5, 0.33))
+  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_null(waveform_obj$phase)
 })
