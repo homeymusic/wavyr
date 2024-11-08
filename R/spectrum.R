@@ -12,19 +12,28 @@ spectrum <- function(component, amplitude) {
     stop("component and amplitude must be the same length")
   }
 
-  # Define the fundamental_cycle_length method
-  fundamental_cycle_length <- function() {
-    fractions <- approximate_rational_fractions(
+  # Define the ratios function to generate fractions
+  fractions <- function() {
+    approximate_rational_fractions(
       component / min(component),
       1 / (4 * pi),
       0.11
     )
-    lcm_integers(fractions$den)
+  }
+
+  # Define the fundamental_cycle_length method
+  fundamental_cycle_length <- function() {
+    lcm_integers(fractions()$den)
   }
 
   # Return the structured object
   structure(
-    list(component = component, amplitude = amplitude, fundamental_cycle_length = fundamental_cycle_length),
+    list(
+      component                = component,
+      amplitude                = amplitude,
+      fundamental_cycle_length = fundamental_cycle_length,
+      fractions                = fractions  # Expose ratios for external use if needed
+    ),
     class = "spectrum"
   )
 }
