@@ -1,12 +1,13 @@
 Package: wavyr
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Working with waveforms
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: 
+    person("Brian", "Mulloy", , "brian@homeymusic.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1803-3172"))
+Maintainer: Brian McAuliff Mulloy <brian@homeymusic.net>
+Description: Allows researchers to explore waveforms.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
@@ -14,5 +15,10 @@ Suggests:
 Config/testthat/edition: 3
 Imports:
     magrittr,
+    Rcpp,
     tibble
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+LinkingTo: 
+    Rcpp
+SystemRequirements: C++17

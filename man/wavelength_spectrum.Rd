@@ -4,10 +4,12 @@
 \alias{wavelength_spectrum}
 \title{Create a wavelength spectrum}
 \usage{
-wavelength_spectrum(wavelengths)
+wavelength_spectrum(wavelength, amplitude)
 }
 \arguments{
-\item{wavelengths}{A tibble with columns `wavelength` and `amplitude`}
+\item{wavelength}{A numeric vector of wavelengths}
+
+\item{amplitude}{A numeric vector of amplitudes corresponding to each wavelength}
 }
 \value{
 An object of class "wavelength_spectrum" containing the wavelengths and amplitudes
