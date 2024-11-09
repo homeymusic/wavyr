@@ -117,8 +117,8 @@ test_that("LinearWaveform correctly computes combined spectra", {
   )
 
   # Check if the combined wavelength spectrum correctly aggregates with the beat spectrum
-  expect_equal(length(linear_waveform_obj$wavelength),
-               5)
+  expect_equal(length(linear_waveform_obj$wavelength_spectrum$wavelength),
+               4)
 })
 
 test_that("LinearWaveform validates amplitude correctly", {
