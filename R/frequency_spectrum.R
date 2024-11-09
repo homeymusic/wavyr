@@ -29,8 +29,9 @@ frequency_spectrum <- function(frequency, amplitude = NULL) {
     spectrum_obj <- spectrum(component = frequency, amplitude = amplitude)
   }
 
-  # Add wavelength field that references component directly
+  # Add frequency-specific fields
   spectrum_obj$frequency <- spectrum_obj$component
+  spectrum_obj$fundamental_frequency <- min(spectrum_obj$frequency) * spectrum_obj$cycle_length
 
   # Set class to frequency_spectrum
   class(spectrum_obj) <- c("frequency_spectrum", class(spectrum_obj))

@@ -160,3 +160,21 @@ test_that("frequency_spectrum plot works as expected", {
     plot(frequency_spectrum_obj)
   })
 })
+
+test_that("fundamental_frequency is correctly calculated in frequency_spectrum", {
+  # Define frequency components and amplitudes
+  freq_components <- c(100, 200, 300)
+  amplitudes <- c(1.0, 0.8, 0.5)
+
+  # Create frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = freq_components,
+    amplitude = amplitudes
+  )
+
+  # Calculate expected fundamental frequency
+  expected_fundamental_frequency <- min(freq_components) * frequency_spectrum_obj$cycle_length
+
+  # Test that fundamental_frequency is correctly assigned
+  expect_equal(frequency_spectrum_obj$fundamental_frequency, expected_fundamental_frequency)
+})
