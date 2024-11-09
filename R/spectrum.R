@@ -140,8 +140,13 @@ plot.spectrum <- function(x, rectangles = numeric(0), ...) {
 
   # Get the plot's current x-axis limits (from usr parameter)
   plot_limits <- par("usr")
+  x_left <- plot_limits[1]   # The left x limit
+  x_right <- plot_limits[2]  # The right x limit
+  plot_width <- x_right - x_left
   y_bottom <- plot_limits[3]   # The lower y limit
   y_top <- plot_limits[4]      # The upper y limit
+
+  rect_width <- plot_width * 0.0075  # 1% of the total width for the width
 
   # Draw spikes
   segments(
@@ -150,15 +155,12 @@ plot.spectrum <- function(x, rectangles = numeric(0), ...) {
     lwd = 2
   )
 
-  # Draw red dashed segments at the positions given in 'rectangles'
+  # Draw rectangles at the positions given in 'rectangles'
   if (length(rectangles) > 0) {
     for (x_pos in rectangles) {
-      # Draw a dashed red segment instead of a rectangle
-      segments(
-        x0 = x_pos, y0 = y_bottom,
-        x1 = x_pos, y1 = y_top,
-        col = "red", lwd = 2, lty = 2  # Dashed red segment
-      )
+      # Draw the rectangle on top of the spikes
+      rect(x_pos - rect_width / 2, y_bottom, x_pos + rect_width / 2, y_top,
+           border = "red", lwd = 2, lty = 2)  # Dashed rectangle
     }
   }
 }

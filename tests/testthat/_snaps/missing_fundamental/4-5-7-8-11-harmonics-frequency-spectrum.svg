@@ -54,11 +54,11 @@
 <line x1='432.80' y1='720.80' x2='432.80' y2='352.04' style='stroke-width: 1.50;' />
 <line x1='491.20' y1='720.80' x2='491.20' y2='398.13' style='stroke-width: 1.50;' />
 <line x1='666.40' y1='720.80' x2='666.40' y2='486.13' style='stroke-width: 1.50;' />
-<line x1='82.40' y1='502.56' x2='82.40' y2='59.04' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
-<line x1='140.80' y1='502.56' x2='140.80' y2='59.04' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
-<line x1='199.20' y1='502.56' x2='199.20' y2='59.04' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
-<line x1='374.40' y1='502.56' x2='374.40' y2='59.04' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
-<line x1='549.60' y1='502.56' x2='549.60' y2='59.04' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
-<line x1='608.00' y1='502.56' x2='608.00' y2='59.04' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
+<rect x='80.03' y='59.04' width='4.73' height='443.52' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
+<rect x='138.43' y='59.04' width='4.73' height='443.52' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
+<rect x='196.83' y='59.04' width='4.73' height='443.52' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
+<rect x='372.03' y='59.04' width='4.73' height='443.52' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
+<rect x='547.23' y='59.04' width='4.73' height='443.52' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
+<rect x='605.63' y='59.04' width='4.73' height='443.52' style='stroke-width: 1.50; stroke: #FF0000; stroke-dasharray: 8.00,8.00;' />
 </g>
 </svg>
