@@ -149,3 +149,21 @@ test_that("wavelength_spectrum plot works as expected", {
     plot(wavelength_spectrum_obj)
   })
 })
+
+test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum", {
+  # Define wavelength components and amplitudes
+  wavelength_components <- c(3.43, 1.715, 1.1433)  # Corresponding to frequencies 100, 200, 300 Hz in meters
+  amplitudes <- c(1.0, 0.8, 0.5)
+
+  # Create wavelength_spectrum object
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = wavelength_components,
+    amplitude = amplitudes
+  )
+
+  # Calculate expected fundamental wavelength
+  expected_fundamental_wavelength <- max(wavelength_components) * wavelength_spectrum_obj$cycle_length
+
+  # Test that fundamental_wavelength is correctly assigned
+  expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)
+})
