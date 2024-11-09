@@ -31,13 +31,22 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
       wavelength_amplitude = wavelength_spectrum$amplitude
   )
 
+  # Define the fundamental amplitude function
+  fundamental_amplitude <- function(x, t) {
+    f0 <- frequency_spectrum$fundamental_frequency
+    l0 <- wavelength_spectrum$fundamental_wavelength
+    A0  <- frequency_spectrum$amplitude[which.min(frequency_spectrum$frequency)]
+    A0 * cos((2 * pi / l0) * x - (2 * pi * f0) * t + phase)
+  }
+
   # Return the structured object
   structure(
     list(
       frequency_spectrum = frequency_spectrum,
       wavelength_spectrum = wavelength_spectrum,
       phase = phase,
-      indexed_spectra = indexed_spectra
+      indexed_spectra = indexed_spectra,
+      fundamental_amplitude = fundamental_amplitude
     ),
     class = "waveform"
   )

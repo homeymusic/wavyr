@@ -169,3 +169,30 @@ test_that("error is thrown if frequency_spectrum and wavelength_spectrum have di
     "frequency_spectrum and wavelength_spectrum must have the same number of components"
   )
 })
+test_that("fundamental_amplitude correctly computes amplitude for the fundamental component", {
+  # Define frequency components, corresponding wavelengths, and amplitudes
+  freq_components <- c(100, 200, 300)  # Frequencies in Hz
+  amplitudes <- c(1.0, 0.8, 0.5)
+  speed_of_sound <- 343  # Speed of sound in m/s
+
+  # Create frequency_spectrum and wavelength_spectrum objects
+  frequency_spectrum_obj <- frequency_spectrum(frequency = freq_components, amplitude = amplitudes)
+  wavelength_spectrum_obj <- wavelength_spectrum(wavelength = speed_of_sound / freq_components, amplitude = amplitudes)
+
+  # Create waveform object with phase = 0 for simplicity
+  waveform_obj <- waveform(frequency_spectrum = frequency_spectrum_obj, wavelength_spectrum = wavelength_spectrum_obj, phase = 0)
+
+  # Set (x, t) values to test the amplitude at
+  x <- 1
+  t <- 0.01
+
+  # Use the waveform's own fundamental frequency and wavelength
+  fundamental_frequency <- waveform_obj$frequency_spectrum$fundamental_frequency
+  fundamental_wavelength <- waveform_obj$wavelength_spectrum$fundamental_wavelength
+
+  # Calculate the expected amplitude based on the fundamental component of the waveform
+  expected_fundamental_amplitude <- amplitudes[1] * cos((2 * pi / fundamental_wavelength) * x - (2 * pi * fundamental_frequency) * t)
+
+  # Test the computed fundamental amplitude
+  expect_equal(waveform_obj$fundamental_amplitude(x, t), expected_fundamental_amplitude)
+})
