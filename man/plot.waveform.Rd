@@ -4,14 +4,12 @@
 \alias{plot.waveform}
 \title{Plot a waveform in 2D with time and space using lattice}
 \usage{
-\method{plot}{waveform}(x, time_range = c(0, 10), space_range = c(0, 10), resolution = 100, ...)
+\method{plot}{waveform}(x, time_range = c(0, 10), resolution = 100, ...)
 }
 \arguments{
 \item{x}{A \code{waveform} object containing independent frequency and wavelength spectra.}
 
 \item{time_range}{A numeric vector of two elements specifying the time range for the plot.}
-
-\item{space_range}{A numeric vector of two elements specifying the spatial range for the plot.}
 
 \item{resolution}{A numeric value to set the resolution of the plot grid.}
 

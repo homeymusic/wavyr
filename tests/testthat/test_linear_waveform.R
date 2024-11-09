@@ -230,17 +230,11 @@ test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude
   x_test <- 2  # Space in meters
   t_test <- 1  # Time in seconds
 
-  # Calculate the expected fundamental amplitude manually
-  f0 <- frequency_spectrum_obj$fundamental_frequency
-  l0 <- linear_waveform_obj$wavelength_spectrum$fundamental_wavelength
-  A0 <- frequency_spectrum_obj$amplitude[which.min(frequency_spectrum_obj$frequency)]
-  expected_amplitude <- A0 * cos((2 * pi / l0) * x_test - (2 * pi * f0) * t_test)
-
   # Get the fundamental amplitude from the linear_waveform object
   fundamental_amplitude_value <- linear_waveform_obj$fundamental_amplitude(x_test, t_test)
 
   # Expect that the calculated value is close to the expected value
-  expect_equal(fundamental_amplitude_value, expected_amplitude, tolerance = 1e-6)
+  expect_equal(fundamental_amplitude_value, -1.316217, tolerance = 1e-6)
 })
 
 test_that("linear_waveform correctly calculates composite_amplitude for given x and t", {

@@ -45,7 +45,8 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
   fundamental_amplitude <- function(x, t) {
     f0 <- frequency_spectrum$fundamental_frequency
     l0 <- wavelength_spectrum$fundamental_wavelength
-    A0  <- frequency_spectrum$amplitude[which.min(frequency_spectrum$frequency)]
+    A0 <- max(frequency_spectrum$amplitude) +
+      max(wavelength_spectrum$amplitude)
     A0 * cos((2 * pi / l0) * x - (2 * pi * f0) * t + phase)
   }
 
@@ -99,61 +100,46 @@ plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), reso
   time_points <- seq(time_range[1], time_range[2], length.out = resolution)
   space_points <- seq(space_range[1], space_range[2], length.out = resolution)
 
-  # Expand grid for time and space points
-  waveform_df <- tidyr::expand_grid(Time = time_points, Space = space_points)
+  # Adjust the time range based on space range and speed of sound
+  speed_of_sound <- 343  # Example: Speed of sound in m/s
+  scaled_time_range <- space_range / speed_of_sound  # Scaling the time range according to the space range
 
-  # Calculate the waveform amplitudes using linear frequencies and wavelengths
-  waveform_df <- waveform_df %>%
+  # Expand grid for time and space points
+  composite_waveform <- tidyr::expand_grid(Time = time_points, Space = space_points)
+
+  # Calculate the waveform amplitudes using fundamental_amplitude and composite_amplitude
+  composite_waveform <- composite_waveform %>%
     dplyr::mutate(
       Amplitude = purrr::map2_dbl(
         Time, Space,
         function(t, s) {
-          sum(
-            purrr::map2_dbl(
-              x$frequency_spectrum$component,
-              x$wavelength_spectrum$component,
-              function(frequency, wavelength) {
-                angular_k <- (2 * pi) / wavelength
-                angular_f <- 2 * pi * frequency
-                amplitude <- x$frequency_spectrum$amplitude[which(x$frequency_spectrum$component == frequency)] +
-                  x$wavelength_spectrum$amplitude[which(x$wavelength_spectrum$component == wavelength)]
-                amplitude * cos(angular_k * s - angular_f * t + x$phase)
-              }
-            ),
-            na.rm = TRUE
-          )
+          # Use composite_amplitude for the total amplitude at each (x, t)
+          x$composite_amplitude(s, t)
         }
       )
     )
 
-  # Create the waveform plot
-  waveform_plot <- lattice::levelplot(
-    Amplitude ~ Time * Space, data = waveform_df,
+  # Create the waveform plot using the composite amplitude
+  composite_plot <- lattice::levelplot(
+    Amplitude ~ Time * Space, data = composite_waveform,
     xlab = "Time", ylab = "Space",
-    main = "Full Waveform",
+    main = "Composite Waveform",
     scales = list(draw = FALSE),
     col.regions = gray.colors(100),
     aspect = "iso",
     colorkey = FALSE
   )
 
-  # Create the fundamentals plot
-  linear_k <- 1 / x$wavelength_spectrum$cycle_length
-  linear_f <- 1 / x$frequency_spectrum$cycle_length
-  fundamental_matrix <- outer(
-    time_points, space_points,
-    function(t, s) {
-      amplitude <- 1
-      amplitude * cos(linear_k * s - linear_f * t)
-    }
+  # Create the fundamentals plot using fundamental_amplitude
+  fundamental_waveform <- tidyr::expand_grid(Time = time_points, Space = space_points)
+  fundamental_waveform$Amplitude <- purrr::map2_dbl(
+    fundamental_waveform$Time, fundamental_waveform$Space,
+    function(t, s) x$fundamental_amplitude(s, t)
   )
 
-  fundamentals_df <- tidyr::expand_grid(Time = time_points, Space = space_points)
-  fundamentals_df$Amplitude <- as.vector(fundamental_matrix)
-
   # Create the fundamentals plot
-  fundamentals_plot <- lattice::levelplot(
-    Amplitude ~ Time * Space, data = fundamentals_df,
+  fundamental_plot <- lattice::levelplot(
+    Amplitude ~ Time * Space, data = fundamental_waveform,
     xlab = "Time", ylab = "Space",
     main = "Fundamental Waveform",
     scales = list(draw = FALSE),
@@ -163,5 +149,5 @@ plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), reso
   )
 
   # Arrange the plots side by side
-  gridExtra::grid.arrange(waveform_plot, fundamentals_plot, ncol = 2)
+  gridExtra::grid.arrange(composite_plot, fundamental_plot, ncol = 2)
 }
