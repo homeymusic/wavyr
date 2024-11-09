@@ -242,3 +242,25 @@ test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude
   # Expect that the calculated value is close to the expected value
   expect_equal(fundamental_amplitude_value, expected_amplitude, tolerance = 1e-6)
 })
+
+test_that("linear_waveform correctly calculates composite_amplitude for given x and t", {
+  # Create a frequency spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the LinearWaveform object
+  linear_waveform_obj <- linear_waveform(
+    frequency_spectrum = frequency_spectrum_obj
+  )
+
+  # Define test values for x (space) and t (time)
+  x <- 1.0  # space in meters
+  t <- 0.5  # time in seconds
+
+  # Call the composite_amplitude function on the linear_waveform object
+  composite_amplitude_value <- linear_waveform_obj$composite_amplitude(x, t)
+
+  expect_equal(composite_amplitude_value, -3.297773, tolerance = 1e-6)
+})

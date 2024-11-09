@@ -49,6 +49,27 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     A0 * cos((2 * pi / l0) * x - (2 * pi * f0) * t + phase)
   }
 
+  composite_amplitude <- function(x, t) {
+    sum(
+      purrr::pmap_dbl(indexed_spectra, function(frequency,
+                                                frequency_amplitude,
+                                                wavelength,
+                                                wavelength_amplitude) {
+
+        # Handle NA values and compute angular frequencies and wavenumbers
+        angular_f <- ifelse(is.na(frequency), 0, 2 * pi * frequency)
+        angular_k <- ifelse(is.na(wavelength), 0, (2 * pi) / wavelength)
+
+        # Handle NA values in amplitudes
+        An <- ifelse(is.na(frequency_amplitude), 0, frequency_amplitude) +
+          ifelse(is.na(wavelength_amplitude), 0, wavelength_amplitude)
+
+        # Compute the amplitude contribution from this component
+        An * cos(angular_k * x - angular_f * t + phase)
+      })
+    )
+  }
+
   # Return the structured object
   structure(
     list(
@@ -56,7 +77,8 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
       wavelength_spectrum = wavelength_spectrum,
       phase = phase,
       indexed_spectra = indexed_spectra,
-      fundamental_amplitude = fundamental_amplitude
+      fundamental_amplitude = fundamental_amplitude,
+      composite_amplitude = composite_amplitude
     ),
     class = "waveform"
   )

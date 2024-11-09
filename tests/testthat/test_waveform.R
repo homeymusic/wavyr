@@ -177,3 +177,32 @@ test_that("fundamental_amplitude correctly computes amplitude for the fundamenta
   # Test the computed fundamental amplitude
   expect_equal(waveform_obj$fundamental_amplitude(x, t), expected_fundamental_amplitude)
 })
+test_that("composite_amplitude calculates correct values for given x and t", {
+  # Create frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+
+  # Create wavelength_spectrum object
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(3.43, 1.72),  # Corresponding wavelengths to 100 Hz and 200 Hz
+    amplitude = c(1.0, 0.8)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj
+  )
+
+  # Define test values for x (space) and t (time)
+  x <- 1.0  # space in meters
+  t <- 0.5  # time in seconds
+
+  # Call the composite_amplitude function on the waveform object
+  composite_amplitude_value <- waveform_obj$composite_amplitude(x, t)
+
+  # Check that the computed composite amplitude matches the expected value
+  expect_equal(composite_amplitude_value, -1.213803, tolerance = 1e-6)
+})
