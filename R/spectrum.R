@@ -115,7 +115,7 @@ combine_spectra <- function(spectrum, other_spectrum, tolerance) {
 #' @param ... Additional parameters for plotting.
 #'
 #' @export
-plot.spectrum <- function(x, ...) {
+plot.spectrum <- function(x, rectangles = numeric(0), ...) {
 
   # Determine the appropriate labels based on the class
   if (inherits(x, "frequency_spectrum")) {
@@ -134,8 +134,14 @@ plot.spectrum <- function(x, ...) {
     type = "n",  # Set up the plot without points or lines
     xlab = x_label, ylab = "Amplitude",
     main = paste(x_label, "Spectrum"),
+    xlim = c(min(c(rectangles, components)), max(c(rectangles, components))),
     ...
   )
+
+  # Get the plot's current x-axis limits (from usr parameter)
+  plot_limits <- par("usr")
+  y_bottom <- plot_limits[3]   # The lower y limit
+  y_top <- plot_limits[4]      # The upper y limit
 
   # Draw spikes
   segments(
@@ -143,4 +149,16 @@ plot.spectrum <- function(x, ...) {
     x1 = components, y1 = x$amplitude,
     lwd = 2
   )
+
+  # Draw red dashed segments at the positions given in 'rectangles'
+  if (length(rectangles) > 0) {
+    for (x_pos in rectangles) {
+      # Draw a dashed red segment instead of a rectangle
+      segments(
+        x0 = x_pos, y0 = y_bottom,
+        x1 = x_pos, y1 = y_top,
+        col = "red", lwd = 2, lty = 2  # Dashed red segment
+      )
+    }
+  }
 }
