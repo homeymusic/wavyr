@@ -6,30 +6,40 @@
 #'
 #' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, phase, and indexed_spectra.
 #' @export
-waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
+waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
   # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
     stop("frequency_spectrum must be of class 'frequency_spectrum'")
   }
-  if (!is.null(wavelength_spectrum) && !inherits(wavelength_spectrum, "wavelength_spectrum")) {
+  if (!inherits(wavelength_spectrum, "wavelength_spectrum")) {
     stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
   }
   if (!is.null(phase) && (!is.numeric(phase) || length(phase) != 1)) {
     stop("phase must be a single numeric value")
   }
-  # Check that spectra have matching sizes if both are provided
-  if (!is.null(wavelength_spectrum) &&
-      length(frequency_spectrum$frequency) != length(wavelength_spectrum$wavelength)) {
-    stop("frequency_spectrum and wavelength_spectrum must have the same number of components")
-  }
 
-  # Construct indexed_spectra tibble if both spectra are provided
-  indexed_spectra <- tibble::tibble(
-      frequency = frequency_spectrum$frequency,
-      wavelength = wavelength_spectrum$wavelength,
-      frequency_amplitude = frequency_spectrum$amplitude,
-      wavelength_amplitude = wavelength_spectrum$amplitude
-  )
+  indexed_spectra <- purrr::map2_dfr(
+    wavelength_spectrum$wavelength,
+    wavelength_spectrum$amplitude,
+    function(wavelength, wavelength_amplitude) {
+
+      # Calculate the equivalent frequency
+      equivalent_frequency <- SPEED_OF_SOUND / wavelength
+
+      # Find any matching frequency within tolerance
+      matched_indices <- which(abs(frequency_spectrum$frequency - equivalent_frequency) < 1e-6)
+
+      # Construct the tibble for matched or unmatched cases
+      tibble::tibble(
+        frequency = if (length(matched_indices) > 0) frequency_spectrum$frequency[matched_indices][1] else NA,
+        frequency_amplitude = if (length(matched_indices) > 0) {
+          sum(frequency_spectrum$amplitude[matched_indices])
+        } else NA,
+        wavelength = wavelength,
+        wavelength_amplitude = wavelength_amplitude
+      )
+    }
+  ) %>% dplyr::arrange(dplyr::desc(wavelength))
 
   # Define the fundamental amplitude function
   fundamental_amplitude <- function(x, t) {

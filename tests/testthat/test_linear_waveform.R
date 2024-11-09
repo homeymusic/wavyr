@@ -7,8 +7,7 @@ test_that("we can create a LinearWaveform with a frequency spectrum and speed of
 
   # Create a LinearWaveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Expectations to check LinearWaveform creation
@@ -26,8 +25,7 @@ test_that("LinearWaveform calculates correct wavelengths for given frequencies",
 
   # Create the LinearWaveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Calculate expected wavelengths
@@ -48,8 +46,7 @@ test_that("LinearWaveform includes beat_spectrum as a separate attribute", {
 
   # Create the LinearWaveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Extract expected beat wavelengths using the formula from compute_beats_cpp
@@ -88,8 +85,7 @@ test_that("LinearWaveform includes base_wavelength_spectrum as a separate attrib
 
   # Create the LinearWaveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Verify that base_wavelength_spectrum is included and correctly structured
@@ -112,8 +108,7 @@ test_that("LinearWaveform correctly computes combined spectra", {
 
   # Create the LinearWaveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Check if the combined wavelength spectrum correctly aggregates with the beat spectrum
@@ -129,7 +124,7 @@ test_that("LinearWaveform validates amplitude correctly", {
 
   # Expect an error due to invalid amplitude values
   expect_error(
-    linear_waveform(frequency_spectrum = frequency_spectrum_obj, speed_of_sound = 343),
+    linear_waveform(frequency_spectrum = frequency_spectrum_obj),
     "must be positive"
   )
 })
@@ -166,8 +161,7 @@ test_that("indexed_spectra includes beat wavelength with sum amplitude and NA fo
 
   # Create the linear_waveform object, passing only frequency_spectrum
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343  # Speed of sound in air, m/s
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Access indexed_spectra
@@ -198,8 +192,7 @@ test_that("indexed_spectra treats frequencies within tolerance as the same and s
 
   # Create the linear_waveform object, passing only frequency_spectrum
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343  # Speed of sound in air, m/s
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Access indexed_spectra
@@ -220,4 +213,32 @@ test_that("indexed_spectra treats frequencies within tolerance as the same and s
 
   # Check that indexed_spectra matches expected values
   expect_equal(indexed_spectrum, expected_indexed_spectrum)
+})
+test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude", {
+  # Create a frequency spectrum object with frequencies and amplitudes
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the LinearWaveform object
+  linear_waveform_obj <- linear_waveform(
+    frequency_spectrum = frequency_spectrum_obj
+  )
+
+  # Set test values for x (space) and t (time)
+  x_test <- 2  # Space in meters
+  t_test <- 1  # Time in seconds
+
+  # Calculate the expected fundamental amplitude manually
+  f0 <- frequency_spectrum_obj$fundamental_frequency
+  l0 <- linear_waveform_obj$wavelength_spectrum$fundamental_wavelength
+  A0 <- frequency_spectrum_obj$amplitude[which.min(frequency_spectrum_obj$frequency)]
+  expected_amplitude <- A0 * cos((2 * pi / l0) * x_test - (2 * pi * f0) * t_test)
+
+  # Get the fundamental amplitude from the linear_waveform object
+  fundamental_amplitude_value <- linear_waveform_obj$fundamental_amplitude(x_test, t_test)
+
+  # Expect that the calculated value is close to the expected value
+  expect_equal(fundamental_amplitude_value, expected_amplitude, tolerance = 1e-6)
 })

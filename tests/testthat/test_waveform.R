@@ -38,15 +38,23 @@ test_that("we can create a general waveform with only a frequency spectrum and n
     frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = SPEED_OF_SOUND / c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
 
   # Create a waveform with only frequency spectrum
-  waveform_obj <- waveform(frequency_spectrum = frequency_spectrum_obj)
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj
+  )
 
   # Expectations to check waveform creation
   expect_s3_class(waveform_obj, "waveform")
-  expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
+  expect_equal(waveform_obj$frequency_spectrum$frequency, c(100, 200, 300))
   expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_null(waveform_obj$wavelength_spectrum)
+  expect_equal(waveform_obj$wavelength_spectrum$wavelength, SPEED_OF_SOUND / c(100, 200, 300))
+  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
   expect_equal(waveform_obj$phase,0)
 })
 
@@ -118,7 +126,7 @@ test_that("waveform's indexed_spectra variable allows iteration to access all va
 
   # Create a wavelength spectrum with different amplitudes
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    wavelength = SPEED_OF_SOUND  / c(100, 200, 300),
     amplitude = c(0.9, 0.7, 0.4)
   )
 
@@ -132,52 +140,25 @@ test_that("waveform's indexed_spectra variable allows iteration to access all va
   indexed_spectrum <- waveform_obj$indexed_spectra
 
   # Expected values accounting for different amplitudes
-  expected_values <- list(
-    list(frequency = 100, wavelength = 1, frequency_amplitude = 1.0, wavelength_amplitude = 0.9),
-    list(frequency = 200, wavelength = 0.5, frequency_amplitude = 0.8, wavelength_amplitude = 0.7),
-    list(frequency = 300, wavelength = 0.33, frequency_amplitude = 0.5, wavelength_amplitude = 0.4)
+  expected_values <-tibble::tibble(
+    frequency = c(100,200,300),
+    frequency_amplitude = c(1,0.8,0.5),
+    wavelength = c(3.43,1.72,1.14),
+    wavelength_amplitude = c(0.9,0.7,0.4)
   )
 
-  for (i in seq_len(nrow(indexed_spectrum))) {
-    row_values <- indexed_spectrum[i, ]
-    expect_equal(row_values$frequency, expected_values[[i]]$frequency)
-    expect_equal(row_values$wavelength, expected_values[[i]]$wavelength)
-    expect_equal(row_values$frequency_amplitude, expected_values[[i]]$frequency_amplitude)
-    expect_equal(row_values$wavelength_amplitude, expected_values[[i]]$wavelength_amplitude)
-  }
+  expect_equal(indexed_spectrum,expected_values, tolerance=0.1)
+
 })
 
-test_that("error is thrown if frequency_spectrum and wavelength_spectrum have different sizes", {
-  # Create a frequency spectrum with 3 components
-  frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
-    amplitude = c(1.0, 0.8, 0.5)
-  )
-
-  # Create a wavelength spectrum with 2 components
-  wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5),
-    amplitude = c(0.9, 0.7)
-  )
-
-  # Expect an error when trying to create the waveform with mismatched spectra sizes
-  expect_error(
-    waveform(
-      frequency_spectrum = frequency_spectrum_obj,
-      wavelength_spectrum = wavelength_spectrum_obj
-    ),
-    "frequency_spectrum and wavelength_spectrum must have the same number of components"
-  )
-})
 test_that("fundamental_amplitude correctly computes amplitude for the fundamental component", {
   # Define frequency components, corresponding wavelengths, and amplitudes
   freq_components <- c(100, 200, 300)  # Frequencies in Hz
   amplitudes <- c(1.0, 0.8, 0.5)
-  speed_of_sound <- 343  # Speed of sound in m/s
 
   # Create frequency_spectrum and wavelength_spectrum objects
   frequency_spectrum_obj <- frequency_spectrum(frequency = freq_components, amplitude = amplitudes)
-  wavelength_spectrum_obj <- wavelength_spectrum(wavelength = speed_of_sound / freq_components, amplitude = amplitudes)
+  wavelength_spectrum_obj <- wavelength_spectrum(wavelength = SPEED_OF_SOUND / freq_components, amplitude = amplitudes)
 
   # Create waveform object with phase = 0 for simplicity
   waveform_obj <- waveform(frequency_spectrum = frequency_spectrum_obj, wavelength_spectrum = wavelength_spectrum_obj, phase = 0)

@@ -4,7 +4,7 @@
 \alias{plot.spectrum}
 \title{Plot a spectrum with spikes}
 \usage{
-\method{plot}{spectrum}(x, ...)
+\method{plot}{spectrum}(x, rectangles = numeric(0), ...)
 }
 \arguments{
 \item{x}{An object of class "spectrum" containing components and amplitudes.}

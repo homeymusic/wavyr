@@ -12,8 +12,7 @@ test_that("veryifry what happen with 11 harmonics", {
 
   # Create the linear_waveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343  # Speed of sound in air, m/s
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Confirm that the fundamental frequency (100 Hz) is not in linear_waveform_obj$frequency_spectrum
@@ -51,8 +50,7 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
 
   # Create the linear_waveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343  # Speed of sound in air, m/s
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Confirm that the fundamental frequency (100 Hz) is not in linear_waveform_obj$frequency_spectrum
@@ -95,8 +93,7 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
 
   # Create the linear_waveform object
   linear_waveform_obj <- linear_waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    speed_of_sound = 343  # Speed of sound in air, m/s
+    frequency_spectrum = frequency_spectrum_obj
   )
 
   # Confirm that the fundamental frequency (100 Hz) is not in linear_waveform_obj$frequency_spectrum
