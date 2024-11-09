@@ -198,5 +198,5 @@ test_that("composite_amplitude calculates correct values for given x and t", {
   composite_amplitude_value <- waveform_obj$composite_amplitude(x, t)
 
   # Check that the computed composite amplitude matches the expected value
-  expect_equal(composite_amplitude_value, -1.213803, tolerance = 1e-6)
+  expect_equal(composite_amplitude_value, -0.9557212, tolerance = 1e-6)
 })

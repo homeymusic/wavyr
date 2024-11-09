@@ -101,7 +101,7 @@ plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), reso
   space_points <- seq(space_range[1], space_range[2], length.out = resolution)
 
   # Adjust the time range based on space range and speed of sound
-  speed_of_sound <- 343  # Example: Speed of sound in m/s
+  speed_of_sound <- SPEED_OF_SOUND  # Example: Speed of sound in m/s
   scaled_time_range <- space_range / speed_of_sound  # Scaling the time range according to the space range
 
   # Expand grid for time and space points
@@ -151,3 +151,9 @@ plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), reso
   # Arrange the plots side by side
   gridExtra::grid.arrange(composite_plot, fundamental_plot, ncol = 2)
 }
+
+midi_to_freq <- function(midi) {
+  440 * 2^((midi - 69) / 12)
+}
+
+SPEED_OF_SOUND = midi_to_freq(65)

@@ -19,7 +19,7 @@ test_that("veryifry what happen with 11 harmonics", {
   expect_true(any(linear_waveform_obj$frequency_spectrum$frequency == fundamental_freq))
 
   # Calculate the fundamental wavelength
-  fundamental_wavelength <- 343 / fundamental_freq
+  fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
@@ -57,7 +57,7 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
   expect_false(any(linear_waveform_obj$frequency_spectrum$frequency == fundamental_freq))
 
   # Calculate the fundamental wavelength
-  fundamental_wavelength <- 343 / fundamental_freq
+  fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
@@ -103,7 +103,7 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
   expect_equal(harmonics, round(linear_waveform_obj$frequency_spectrum$frequency / fundamental_freq))
 
   # Calculate the fundamental wavelength
-  fundamental_wavelength <- 343 / fundamental_freq
+  fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
@@ -122,7 +122,7 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
   })
 
   vdiffr::expect_doppelganger("4,5,7,8,11 harmonics wavelength spectrum", function() {
-    plot(linear_waveform_obj$wavelength_spectrum, rectangles = 343 / missing_freqs)
+    plot(linear_waveform_obj$wavelength_spectrum, rectangles = SPEED_OF_SOUND / missing_freqs)
   })
 
 

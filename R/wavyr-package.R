@@ -9,5 +9,3 @@
 
 ## usethis namespace: end
 NULL
-
-SPEED_OF_SOUND = 343
