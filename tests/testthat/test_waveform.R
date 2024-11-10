@@ -165,7 +165,7 @@ test_that("fundamental_amplitude correctly computes amplitude for the fundamenta
   t <- 0.01
 
   # Test the computed fundamental amplitude
-  expect_equal(waveform_obj$fundamental_amplitude(x, t), -0.048,
+  expect_equal(waveform_obj$fundamental_amplitude(x, t), -1.996,
                tolerance=0.1)
 })
 test_that("composite_amplitude calculates correct values for given x and t", {

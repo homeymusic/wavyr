@@ -43,12 +43,15 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
 
   # Define the fundamental amplitude function
   fundamental_amplitude <- function(x, t) {
-    f0 <- frequency_spectrum$fundamental_frequency
-    l0 <- wavelength_spectrum$fundamental_wavelength
-    A0 <- max(frequency_spectrum$amplitude) +
-      max(wavelength_spectrum$amplitude)
-    A0 * cos((2 * pi / l0) * x - (2 * pi * f0) * t + phase)
+    relative_f0 <- 1 / frequency_spectrum$cycle_length
+    relative_k0 <- 1 / wavelength_spectrum$cycle_length
+    A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
+    A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
+
+
+  # grid$amplitude <- base::sin(2 * base::pi * relative_f0 * grid$time - 2 * base::pi * relative_k0 * grid$space)
+
 
   composite_amplitude <- function(x, t) {
     sum(
@@ -158,7 +161,9 @@ theme_homey <- function(aspect.ratio=NULL){
     aspect.ratio = aspect.ratio,
   )
 }
+
 # Define the function to plot time vs. space as a 2D heatmap
+#' @export
 plot.waveform <- function(x, label='',
                           time_range = 25, space_range = 25,
                           resolution = 100, ...) {
@@ -168,10 +173,6 @@ plot.waveform <- function(x, label='',
 
   time_cycle_length  = x$frequency_spectrum$cycle_length
   space_cycle_length = x$wavelength_spectrum$cycle_length
-
-  # Define relative frequencies
-  relative_f0 <- 1 / time_cycle_length
-  relative_k0 <- 1 / space_cycle_length
 
   # Determine tonality based on majorness
   tonality <- if (time_cycle_length > space_cycle_length) {
@@ -192,8 +193,7 @@ plot.waveform <- function(x, label='',
   # Create a data frame for the grid
   grid <- base::expand.grid(time = time_values, space = space_values)
 
-  # Define a wave pattern as a function of time and space
-  grid$amplitude <- base::sin(2 * base::pi * relative_f0 * grid$time - 2 * base::pi * relative_k0 * grid$space)
+  grid$amplitude = x$fundamental_amplitude(grid$space, grid$time)
 
   # Define scaling factors to adjust the axis labels
   scale_time <- time_range / time_cycle_length * (1 / f0)
