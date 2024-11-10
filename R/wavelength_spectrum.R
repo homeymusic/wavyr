@@ -31,7 +31,7 @@ wavelength_spectrum <- function(wavelength, amplitude = NULL) {
 
   # Add wavelength-specific fields
   spectrum_obj$wavelength <- spectrum_obj$component
-  spectrum_obj$fundamental_wavelength <- spectrum_obj$cycle_length / max(spectrum_obj$wavelength)  # Fixed line
+  spectrum_obj$fundamental_wavelength <- spectrum_obj$fundamental_cycle_length / max(spectrum_obj$wavelength)  # Fixed line
 
   # Set class to wavelength_spectrum
   class(spectrum_obj) <- c("wavelength_spectrum", class(spectrum_obj))

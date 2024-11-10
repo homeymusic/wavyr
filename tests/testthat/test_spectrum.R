@@ -32,7 +32,7 @@ test_that("spectrum can calculate fundamental_cycle_length", {
   )
 
   # Test fundamental_cycle_length (result might vary with fractions implementation)
-  expect_true(is.numeric(spectrum_obj$cycle_length))
+  expect_true(is.numeric(spectrum_obj$fundamental_cycle_length))
 })
 
 test_that("spectrum can calculate fractions", {
@@ -42,7 +42,7 @@ test_that("spectrum can calculate fractions", {
   )
 
   # Test fractions output
-  fractions <- spectrum_obj$fractions()
+  fractions <- spectrum_obj$fractions
   expect_equal(fractions$num, c(3, 1, 3))
   expect_equal(fractions$den, c(1, 1, 2))
 })
@@ -77,4 +77,20 @@ test_that("spectrum can combine with another spectrum within tolerance", {
   expect_equal(combined_spectrum$amplitude %>% sort(),
                expected_amplitudes %>% sort(),
                tolerance=0.01)
+})
+
+test_that("cycle length per component", {
+  # Create a spectrum object with separate vectors
+  spectrum_obj <- spectrum(
+    component = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Expectations to check spectrum creation
+  expect_s3_class(spectrum_obj, "spectrum")
+  expect_equal(spectrum_obj$component, c(1, 0.5, 0.33))
+  expect_equal(spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(spectrum_obj$cycle_length, c(1,1,2))
+  expect_equal(spectrum_obj$fundamental_cycle_length, 2)
+
 })

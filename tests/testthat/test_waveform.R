@@ -140,8 +140,10 @@ test_that("waveform's indexed_spectra variable allows iteration to access all va
   expected_values <-tibble::tibble(
     frequency = c(100,200,300),
     frequency_amplitude = c(1,0.8,0.5),
-    wavelength = c(3.43,1.72,1.14),
-    wavelength_amplitude = c(0.9,0.7,0.4)
+    frequency_cycle_length = c(1,1,1),
+    wavelength = c(3.49,1.75,1.16),
+    wavelength_amplitude = c(0.9,0.7,0.4),
+    wavelength_cycle_length = c(2,1,1)
   )
 
   expect_equal(indexed_spectrum,expected_values, tolerance=0.1)
@@ -195,5 +197,5 @@ test_that("composite_amplitude calculates correct values for given x and t", {
   composite_amplitude_value <- waveform_obj$composite_amplitude(x, t)
 
   # Check that the computed composite amplitude matches the expected value
-  expect_equal(composite_amplitude_value, -0.9557212, tolerance = 1e-6)
+  expect_equal(composite_amplitude_value, 1.8, tolerance = 1e-6)
 })

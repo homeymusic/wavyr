@@ -18,10 +18,13 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     stop("phase must be a single numeric value")
   }
 
-  indexed_spectra <- purrr::map2_dfr(
-    wavelength_spectrum$wavelength,
-    wavelength_spectrum$amplitude,
-    function(wavelength, wavelength_amplitude) {
+  indexed_spectra <- purrr::pmap_dfr(
+    list(
+      wavelength = wavelength_spectrum$wavelength,
+      wavelength_amplitude = wavelength_spectrum$amplitude,
+      wavelength_cycle_length = wavelength_spectrum$cycle_length
+    ),
+    function(wavelength, wavelength_amplitude, wavelength_cycle_length) {
 
       # Calculate the equivalent frequency
       equivalent_frequency <- SPEED_OF_SOUND / wavelength
@@ -32,19 +35,19 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
       # Construct the tibble for matched or unmatched cases
       tibble::tibble(
         frequency = if (length(matched_indices) > 0) frequency_spectrum$frequency[matched_indices][1] else NA,
-        frequency_amplitude = if (length(matched_indices) > 0) {
-          sum(frequency_spectrum$amplitude[matched_indices])
-        } else NA,
+        frequency_amplitude = if (length(matched_indices) > 0) {sum(frequency_spectrum$amplitude[matched_indices])} else NA,
+        frequency_cycle_length = if (length(matched_indices) > 0) frequency_spectrum$cycle_length[matched_indices][1] else NA,
         wavelength = wavelength,
-        wavelength_amplitude = wavelength_amplitude
+        wavelength_amplitude = wavelength_amplitude,
+        wavelength_cycle_length = wavelength_cycle_length
       )
     }
   ) %>% dplyr::arrange(dplyr::desc(wavelength))
 
   # Define the fundamental amplitude function
   fundamental_amplitude <- function(x, t) {
-    relative_f0 <- 1 / frequency_spectrum$cycle_length
-    relative_k0 <- 1 / wavelength_spectrum$cycle_length
+    relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
+    relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
     A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
     A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
@@ -57,19 +60,23 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     sum(
       purrr::pmap_dbl(indexed_spectra, function(frequency,
                                                 frequency_amplitude,
+                                                frequency_cycle_length,
                                                 wavelength,
-                                                wavelength_amplitude) {
+                                                wavelength_amplitude,
+                                                wavelength_cycle_length) {
 
-        # Handle NA values and compute angular frequencies and wavenumbers
-        angular_f <- ifelse(is.na(frequency), 0, 2 * pi * frequency)
-        angular_k <- ifelse(is.na(wavelength), 0, (2 * pi) / wavelength)
+
+
+        relative_f0 <- ifelse(is.na(frequency_cycle_length ), 0, 1 / frequency_cycle_length )
+        relative_k0 <- ifelse(is.na(wavelength_cycle_length ), 0, 1 / wavelength_cycle_length )
 
         # Handle NA values in amplitudes
         An <- ifelse(is.na(frequency_amplitude), 0, frequency_amplitude) +
           ifelse(is.na(wavelength_amplitude), 0, wavelength_amplitude)
 
         # Compute the amplitude contribution from this component
-        An * cos(angular_k * x - angular_f * t + phase)
+        An * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
+
       })
     )
   }
@@ -171,13 +178,13 @@ plot.waveform <- function(x, label='',
   f0 = x$frequency_spectrum$fundamental_frequency
   k0 = 1/x$wavelength_spectrum$fundamental_wavelength
 
-  time_cycle_length  = x$frequency_spectrum$cycle_length
-  space_cycle_length = x$wavelength_spectrum$cycle_length
+  time_fundamental_cycle_length  = x$frequency_spectrum$fundamental_cycle_length
+  space_fundamental_cycle_length = x$wavelength_spectrum$fundamental_cycle_length
 
   # Determine tonality based on majorness
-  tonality <- if (time_cycle_length > space_cycle_length) {
+  tonality <- if (time_fundamental_cycle_length > space_fundamental_cycle_length) {
     'minor'
-  } else if (time_cycle_length == space_cycle_length) {
+  } else if (time_fundamental_cycle_length == space_fundamental_cycle_length) {
     'neutral'
   } else {
     'major'
@@ -196,8 +203,8 @@ plot.waveform <- function(x, label='',
   grid$amplitude = x$fundamental_amplitude(grid$space, grid$time)
 
   # Define scaling factors to adjust the axis labels
-  scale_time <- time_range / time_cycle_length * (1 / f0)
-  scale_space <- space_range / space_cycle_length * (1 / k0)
+  scale_time <- time_range / time_fundamental_cycle_length * (1 / f0)
+  scale_space <- space_range / space_fundamental_cycle_length * (1 / k0)
 
   # Plot using ggplot2 with adjusted labels for time and space
   ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = amplitude)) +

@@ -49,30 +49,22 @@ spectrum.list <- function(x, ...) {
     stop("All component values must be positive.")
   }
 
-  # Define additional methods
-  fundamental_cycle_length <- function() {
-    fractions <- approximate_rational_fractions_cpp(
-      component / min(component),
-      1 / (4 * pi),
-      0.11
-    )
-    lcm_integers(fractions$den)
-  }
+  fractions <- approximate_rational_fractions_cpp(
+    component / min(component),
+    1 / (4 * pi),
+    0.11
+  )
 
-  fractions <- function() {
-    approximate_rational_fractions_cpp(
-      component / min(component),
-      1 / (4 * pi),
-      0.11
-    )
-  }
+  # Define additional methods
+  fundamental_cycle_length <- lcm_integers(fractions$den)
 
   # Return the spectrum object
   structure(
     list(
       component = component,
       amplitude = amplitude,
-      cycle_length = fundamental_cycle_length(),
+      cycle_length = fractions$den,
+      fundamental_cycle_length = fundamental_cycle_length,
       fractions = fractions
     ),
     class = "spectrum"

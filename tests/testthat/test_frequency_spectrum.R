@@ -52,8 +52,8 @@ test_that("frequency_spectrum can calculate fundamental_cycle_length", {
   )
 
   # Test fundamental_cycle_length
-  expect_true(is.numeric(frequency_spectrum_obj$cycle_length))
-  expect_gt(frequency_spectrum_obj$cycle_length, 0)
+  expect_true(is.numeric(frequency_spectrum_obj$fundamental_cycle_length))
+  expect_gt(frequency_spectrum_obj$fundamental_cycle_length, 0)
 })
 
 test_that("frequency_spectrum calculates fractions accurately", {
@@ -62,10 +62,8 @@ test_that("frequency_spectrum calculates fractions accurately", {
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Test fractions output
-  fractions <- frequency_spectrum_obj$fractions()
-  expect_equal(fractions$num, c(2, 3, 1))
-  expect_equal(fractions$den, c(1, 1, 1))
+  expect_equal(frequency_spectrum_obj$fractions$num, c(2, 3, 1))
+  expect_equal(frequency_spectrum_obj$fractions$den, c(1, 1, 1))
 })
 
 test_that("frequency_spectrum calculates fractions for simple ratios", {
@@ -75,7 +73,7 @@ test_that("frequency_spectrum calculates fractions for simple ratios", {
   )
 
   # Test fractions output for simple ratio
-  fractions <- frequency_spectrum_obj$fractions()
+  fractions <- frequency_spectrum_obj$fractions
   expect_equal(fractions$num, c(2, 1))
   expect_equal(fractions$den, c(1, 1))
 })
@@ -87,7 +85,7 @@ test_that("frequency_spectrum fundamental_cycle_length handles single component"
   )
 
   # Expect the fundamental cycle length for a single component to return 1
-  expect_equal(frequency_spectrum_obj$cycle_length, 1)
+  expect_equal(frequency_spectrum_obj$fundamental_cycle_length, 1)
 })
 
 test_that("frequency_spectrum edge cases: zero or negative frequencies", {
@@ -173,7 +171,7 @@ test_that("fundamental_frequency is correctly calculated in frequency_spectrum",
   )
 
   # Calculate expected fundamental frequency
-  expected_fundamental_frequency <- min(freq_components) * frequency_spectrum_obj$cycle_length
+  expected_fundamental_frequency <- min(freq_components) * frequency_spectrum_obj$fundamental_cycle_length
 
   # Test that fundamental_frequency is correctly assigned
   expect_equal(frequency_spectrum_obj$fundamental_frequency, expected_fundamental_frequency)
@@ -208,3 +206,4 @@ test_that("fundamental_frequency or tritone is lower than P1", {
 
   expect_true(tt_frequency_spectrum_obj$fundamental_frequency < P1_frequency_spectrum_obj$fundamental_frequency)
 })
+

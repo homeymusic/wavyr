@@ -52,8 +52,8 @@ test_that("wavelength_spectrum calculates fundamental_cycle_length correctly", {
   )
 
   # Test fundamental_cycle_length
-  expect_true(is.numeric(wavelength_spectrum_obj$cycle_length))
-  expect_gt(wavelength_spectrum_obj$cycle_length, 0)
+  expect_true(is.numeric(wavelength_spectrum_obj$fundamental_cycle_length))
+  expect_gt(wavelength_spectrum_obj$fundamental_cycle_length, 0)
 })
 
 test_that("wavelength_spectrum calculates fractions accurately", {
@@ -63,7 +63,7 @@ test_that("wavelength_spectrum calculates fractions accurately", {
   )
 
   # Test fractions output
-  fractions <- wavelength_spectrum_obj$fractions()
+  fractions <- wavelength_spectrum_obj$fractions
   expect_equal(fractions$num, c(3, 1, 3))
   expect_equal(fractions$den, c(1, 1, 2))
 })
@@ -75,7 +75,7 @@ test_that("wavelength_spectrum fundamental_cycle_length for single component ret
   )
 
   # Expect the fundamental cycle length for a single component to be 1
-  expect_equal(wavelength_spectrum_obj$cycle_length, 1)
+  expect_equal(wavelength_spectrum_obj$fundamental_cycle_length, 1)
 })
 
 test_that("wavelength_spectrum edge cases: zero or negative wavelengths", {
@@ -162,7 +162,7 @@ test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum
   )
 
   # Calculate expected fundamental wavelength
-  expected_fundamental_wavelength <- wavelength_spectrum_obj$cycle_length / max(wavelength_components)
+  expected_fundamental_wavelength <- wavelength_spectrum_obj$fundamental_cycle_length / max(wavelength_components)
 
   # Test that fundamental_wavelength is correctly assigned
   expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)
