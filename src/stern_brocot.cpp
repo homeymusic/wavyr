@@ -19,9 +19,16 @@ using namespace Rcpp;
    if (uncertainty <= 0) stop("STOP: uncertainty must be greater than 0");
 
    int cycles = 0;
+
+
+
    if (x <= uncertainty) {
      cycles = 1;
-     return NumericVector::create(1, static_cast<int>(1 / uncertainty));
+     if (uncertainty < 1) {
+       return NumericVector::create(1, static_cast<int>(1 / uncertainty));
+     } else {
+       return NumericVector::create(1, static_cast<int>(uncertainty));
+     }
    }
 
    double approximation;

@@ -37,3 +37,14 @@ test_that("stern_brocot_cpp function returns correct rational approximation", {
   expect_equal(result[1], 3)
   expect_equal(result[2], 1)
 })
+
+# Define the test for the decimal_to_fraction function
+test_that("stern_brocot does not return zero numerator or denominator", {
+  x <- 0.1666667
+  uncertainty <- 3.0
+
+  result <- stern_brocot_cpp(x, uncertainty)
+
+  expect_true(result[1] != 0, info = "Stern-Brocot should never return a 0 numerator")
+  expect_true(result[2] != 0, info = "Stern-Brocot should never return a 0 denominator")
+})
