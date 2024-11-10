@@ -190,6 +190,9 @@ test_that("fundamental_frequency or tritone is lower than P1", {
     amplitude = tt_amplitudes
   )
 
+  expect_equal(tt_frequency_spectrum_obj$fundamental_frequency, 13.08,
+               tolerance = 0.1)
+
   # Define frequency components and amplitudes
   P1_freq_components <- c(261.6256, 523.2511, 1046.5023)
   P1_amplitudes <- c(1.0000000, 1.3395254, 0.8912509)
@@ -199,6 +202,9 @@ test_that("fundamental_frequency or tritone is lower than P1", {
     frequency = P1_freq_components,
     amplitude = P1_amplitudes
   )
+
+  expect_equal(P1_frequency_spectrum_obj$fundamental_frequency, 261.63,
+               tolerance = 0.1)
 
   expect_true(tt_frequency_spectrum_obj$fundamental_frequency < P1_frequency_spectrum_obj$fundamental_frequency)
 })

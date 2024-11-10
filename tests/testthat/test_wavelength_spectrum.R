@@ -178,6 +178,9 @@ test_that("fundamental wavelength of tritone is longer than P1", {
     amplitude = tt_amplitudes
   )
 
+  expect_equal(tt_wavelength_spectrum_obj$fundamental_wavelength, 1 / 0.07,
+               tolerance = 0.1)
+
   # Define wavelength components and amplitudes
   P1_wavelength_components <- SPEED_OF_SOUND / c(261.6256, 523.2511, 1046.5023)
   P1_amplitudes <- c(1.0000000, 1.3395254, 0.8912509)
@@ -187,6 +190,10 @@ test_that("fundamental wavelength of tritone is longer than P1", {
     wavelength = P1_wavelength_components,
     amplitude = P1_amplitudes
   )
+
+  expect_equal(P1_wavelength_spectrum_obj$fundamental_wavelength, 1 / 1.31,
+               tolerance = 0.1)
+
 
   expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
 })

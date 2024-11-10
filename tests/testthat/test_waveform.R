@@ -109,12 +109,9 @@ test_that("waveform plot generates correctly with time and space grid", {
     phase = 0
   )
 
-  # Capture the plot using vdiffr for consistency checks
-  vdiffr::expect_doppelganger("Waveform",
-                              plot(waveform_obj,
-                                   time_range = c(0, 10),
-                                   resolution = 100)
-  )
+  label = 'P1 3 Harmonics'
+  plot <- plot(waveform_obj, label = label)
+  vdiffr::expect_doppelganger(paste(label), plot)
 })
 
 test_that("waveform's indexed_spectra variable allows iteration to access all values at once, accounting for different amplitudes", {

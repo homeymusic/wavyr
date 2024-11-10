@@ -85,75 +85,129 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
   )
 }
 
-#' Plot a waveform in 2D with time and space using lattice
-#'
-#' @param x A `waveform` object containing independent frequency and wavelength spectra.
-#' @param time_range A numeric vector of two elements specifying the time range for the plot.
-#' @param space_range A numeric vector of two elements specifying the spatial range for the plot.
-#' @param resolution A numeric value to set the resolution of the plot grid.
-#' @param ... Additional graphical parameters for plotting.
-#'
-#' @export
-plot.waveform <- function(x, time_range = c(0, 10), space_range = c(0, 10), resolution = 100, ...) {
-
-  # Set up the grid of time and space
-  time_points <- seq(time_range[1], time_range[2], length.out = resolution)
-  space_points <- seq(space_range[1], space_range[2], length.out = resolution)
-
-  # Adjust the time range based on space range and speed of sound
-  speed_of_sound <- SPEED_OF_SOUND  # Example: Speed of sound in m/s
-  scaled_time_range <- space_range / speed_of_sound  # Scaling the time range according to the space range
-
-  # Expand grid for time and space points
-  composite_waveform <- tidyr::expand_grid(Time = time_points, Space = space_points)
-
-  # Calculate the waveform amplitudes using fundamental_amplitude and composite_amplitude
-  composite_waveform <- composite_waveform %>%
-    dplyr::mutate(
-      Amplitude = purrr::map2_dbl(
-        Time, Space,
-        function(t, s) {
-          # Use composite_amplitude for the total amplitude at each (x, t)
-          x$composite_amplitude(s, t)
-        }
-      )
-    )
-
-  # Create the waveform plot using the composite amplitude
-  composite_plot <- lattice::levelplot(
-    Amplitude ~ Time * Space, data = composite_waveform,
-    xlab = "Time", ylab = "Space",
-    main = "Composite Waveform",
-    scales = list(draw = FALSE),
-    col.regions = gray.colors(100),
-    aspect = "iso",
-    colorkey = FALSE
-  )
-
-  # Create the fundamentals plot using fundamental_amplitude
-  fundamental_waveform <- tidyr::expand_grid(Time = time_points, Space = space_points)
-  fundamental_waveform$Amplitude <- purrr::map2_dbl(
-    fundamental_waveform$Time, fundamental_waveform$Space,
-    function(t, s) x$fundamental_amplitude(s, t)
-  )
-
-  # Create the fundamentals plot
-  fundamental_plot <- lattice::levelplot(
-    Amplitude ~ Time * Space, data = fundamental_waveform,
-    xlab = "Time", ylab = "Space",
-    main = "Fundamental Waveform",
-    scales = list(draw = FALSE),
-    col.regions = gray.colors(100),
-    aspect = "iso",
-    colorkey = FALSE
-  )
-
-  # Arrange the plots side by side
-  gridExtra::grid.arrange(composite_plot, fundamental_plot, ncol = 2)
-}
-
 midi_to_freq <- function(midi) {
   440 * 2^((midi - 69) / 12)
 }
 
 SPEED_OF_SOUND = midi_to_freq(65)
+
+colors_homey <- list(
+  'background'        = '#664433',
+  'highlight'         = '#C18160',
+  'foreground'        = '#291B14',
+  'subtle_foreground' = '#7F745A',
+  'minor'             = '#8AC5FF',
+  'minor_dark'        = '#6894BF',
+  'neutral'           = '#F3DDAB',
+  'major'             = '#FFB000',
+  'major_dark'        = '#BF8400',
+  'light_neutral'     = '#FFF6E2',
+  'fundamental'       = '#FF5500',
+  'green'             = '#74DE7E',
+  'gray'              = '#C0C0C0'
+)
+
+saturation_colors_homey <- list(
+  major = list(
+    hi = '#FF9700',
+    lo = '#FFE0B2'
+  ),
+  neutral = list(
+    hi = '#FF5500',
+    lo = '#FFCCB2'
+  ),
+  minor = list(
+    hi = '#0084EC',
+    lo = '#A5CDEC'
+  )
+)
+
+color_factor_homey <- function(x,column_name) {
+  cut(x[[column_name]],c(-Inf,-1e-6,1e-6,Inf),labels=c("minor","neutral","major"))
+}
+color_values_homey <- function() {
+  c("minor"=colors_homey$minor,
+    "neutral"=colors_homey$fundamental,
+    "major"=colors_homey$major,
+    'behavioral'=colors_homey$neutral)
+}
+space_time_colors <- function() {
+  c('space'=colors_homey$minor,
+    'time'=colors_homey$major,
+    'behavioral'=colors_homey$neutral)
+}
+theme_homey <- function(aspect.ratio=NULL){
+  font <- "Helvetica"   #assign font family up front
+
+  ggplot2::theme_minimal()
+
+  ggplot2::`%+replace%`  #replace elements we want to change
+
+  ggplot2::theme(
+    plot.title = ggplot2::element_text(color=colors_homey$foreground),
+    axis.title = ggplot2::element_text(color=colors_homey$foreground),
+    axis.text = ggplot2::element_text(color=colors_homey$foreground),
+    axis.ticks = ggplot2::element_blank(),
+    plot.background = ggplot2::element_rect(fill = colors_homey$neutral),
+    panel.background = ggplot2::element_rect(fill = colors_homey$background),
+    panel.grid.major = ggplot2::element_line(color = colors_homey$foreground, linewidth=0.2),
+    panel.grid.minor = ggplot2::element_line(color = colors_homey$foreground, linewidth=0.05, linetype ="dashed"),
+    legend.background = ggplot2::element_rect(fill = colors_homey$light_neutral),
+    legend.key = ggplot2::element_rect(fill = colors_homey$background, color = NA),
+    legend.position='bottom',
+    aspect.ratio = aspect.ratio,
+  )
+}
+# Define the function to plot time vs. space as a 2D heatmap
+plot.waveform <- function(x, label='',
+                          time_range = 25, space_range = 25,
+                          resolution = 100, ...) {
+
+  f0 = x$frequency_spectrum$fundamental_frequency
+  k0 = 1/x$wavelength_spectrum$fundamental_wavelength
+
+  time_cycle_length  = x$frequency_spectrum$cycle_length
+  space_cycle_length = x$wavelength_spectrum$cycle_length
+
+  # Define relative frequencies
+  relative_f0 <- 1 / time_cycle_length
+  relative_k0 <- 1 / space_cycle_length
+
+  # Determine tonality based on majorness
+  tonality <- if (time_cycle_length > space_cycle_length) {
+    'minor'
+  } else if (time_cycle_length == space_cycle_length) {
+    'neutral'
+  } else {
+    'major'
+  }
+
+  # Select the color set based on tonality
+  color_set <- saturation_colors_homey[[tonality]]
+
+  # Generate a higher-resolution grid of time and space values
+  time_values <- seq(0, time_range, length.out = resolution)
+  space_values <- seq(0, space_range, length.out = resolution)
+
+  # Create a data frame for the grid
+  grid <- base::expand.grid(time = time_values, space = space_values)
+
+  # Define a wave pattern as a function of time and space
+  grid$amplitude <- base::sin(2 * base::pi * relative_f0 * grid$time - 2 * base::pi * relative_k0 * grid$space)
+
+  # Define scaling factors to adjust the axis labels
+  scale_time <- time_range / time_cycle_length * (1 / f0)
+  scale_space <- space_range / space_cycle_length * (1 / k0)
+
+  # Plot using ggplot2 with adjusted labels for time and space
+  ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = amplitude)) +
+    ggplot2::geom_tile() +
+    ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
+    ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * scale_time)) +
+    ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * scale_space)) +
+    ggplot2::labs(
+      title = bquote(.(label) ~ ": Traveling Wave " ~ f[0] == .(sprintf("%.2f", f0)) ~ "," ~ k[0] == .(sprintf("%.2f", k0)))
+    ) +
+    ggplot2::coord_fixed(ratio = 1) +
+    theme_homey()
+}
