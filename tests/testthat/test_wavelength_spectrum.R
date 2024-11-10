@@ -162,12 +162,12 @@ test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum
   )
 
   # Calculate expected fundamental wavelength
-  expected_fundamental_wavelength <- max(wavelength_components) / wavelength_spectrum_obj$cycle_length
+  expected_fundamental_wavelength <- wavelength_spectrum_obj$cycle_length / max(wavelength_components)
 
   # Test that fundamental_wavelength is correctly assigned
   expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)
 })
-test_that("fundamental wavelength of tritone is lower than P1", {
+test_that("fundamental wavelength of tritone is longer than P1", {
   # Define wavelength components and amplitudes
   tt_wavelength_components <- SPEED_OF_SOUND / c(261.6256 , 369.9944 , 523.2511 , 739.9888 ,1046.5023)
   tt_amplitudes <- c(1.0000000 ,1.0000000 ,1.3395254, 0.8912509 ,0.8912509)
@@ -188,5 +188,5 @@ test_that("fundamental wavelength of tritone is lower than P1", {
     amplitude = P1_amplitudes
   )
 
-  expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength < P1_wavelength_spectrum_obj$fundamental_wavelength)
+  expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
 })
