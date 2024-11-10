@@ -175,8 +175,10 @@ test_that("indexed_spectra includes beat wavelength with sum amplitude and NA fo
   expected_indexed_spectrum <- tibble::tibble(
     frequency = c(NA, 100, 107),
     frequency_amplitude = c(NA, 1.0, 0.8),
+    frequency_cycle_length = c(NA,1,1),
     wavelength = c(beat_wavelength, SPEED_OF_SOUND / 100, SPEED_OF_SOUND / 107),
-    wavelength_amplitude = c(expected_amplitude_sum, 1.0, 0.8)
+    wavelength_amplitude = c(expected_amplitude_sum, 1.0, 0.8),
+    wavelength_cycle_length = c(1,3,1)
   )
 
   # Check that indexed_spectra matches expected values
@@ -200,20 +202,21 @@ test_that("indexed_spectra treats frequencies within tolerance as the same and s
 
   # Calculate expected beat wavelength (from the difference frequency, 7 Hz)
   beat_wavelength <- SPEED_OF_SOUND / 7  # Speed of sound / difference frequency
-  expected_amplitude_sum <- 0.8 + 0.8  # Sum of amplitudes for 100 Hz and 107 Hz
   close_waves_amplitude_sum <- 1.0 + 1.0 + 0.8 + 0.8 # Sum of close frequencies' amplitudes
 
-  # Expected indexed_spectra tibble
   expected_indexed_spectrum <- tibble::tibble(
     frequency = c(NA, 100, 107),
-    frequency_amplitude = c(NA, 1.0, expected_amplitude_sum),
+    frequency_amplitude = c(NA, 1.0, 1.6),
+    frequency_cycle_length = c(NA,1,1),
     wavelength = c(beat_wavelength, SPEED_OF_SOUND / 100, SPEED_OF_SOUND / 107),
-    wavelength_amplitude = c(close_waves_amplitude_sum, 1.0, expected_amplitude_sum)
+    wavelength_amplitude = c(3.6,1,1.6),
+    wavelength_cycle_length = c(1,3,1)
   )
 
-  # Check that indexed_spectra matches expected values
+    # Check that indexed_spectra matches expected values
   expect_equal(indexed_spectrum, expected_indexed_spectrum)
 })
+
 test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude", {
   # Create a frequency spectrum object with frequencies and amplitudes
   frequency_spectrum_obj <- frequency_spectrum(
@@ -256,5 +259,5 @@ test_that("linear_waveform correctly calculates composite_amplitude for given x 
   # Call the composite_amplitude function on the linear_waveform object
   composite_amplitude_value <- linear_waveform_obj$composite_amplitude(x, t)
 
-  expect_equal(composite_amplitude_value, -3.30, tolerance = 0.1)
+  expect_equal(composite_amplitude_value, -7.2, tolerance = 0.1)
 })
