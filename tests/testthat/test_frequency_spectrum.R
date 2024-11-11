@@ -207,3 +207,22 @@ test_that("fundamental_frequency or tritone is lower than P1", {
   expect_true(tt_frequency_spectrum_obj$fundamental_frequency < P1_frequency_spectrum_obj$fundamental_frequency)
 })
 
+test_that("cycle lengths vary correctly for JI major triad in frequency_spectrum", {
+  # Define frequency components based on a JI major triad on 100 Hz
+  freq_components <- c(100, 125, 150)  # Corresponding to ratios 1/1, 5/4, and 3/2
+  amplitudes <- c(1.0, 0.8, 0.5)  # Arbitrary amplitude values
+
+  # Create frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = freq_components,
+    amplitude = amplitudes
+  )
+
+  # Define the expected cycle lengths based on the JI ratios (1, 4, and 2)
+  expected_cycle_lengths <- c(1, 4, 2)
+
+  # Check if the calculated cycle lengths match the expected values
+  expect_equal(frequency_spectrum_obj$fractions$rational_number %>% sort(), c(1,1.25,1.5))
+  expect_equal(frequency_spectrum_obj$fractions$den %>% sort(), c(1,2,4))
+  expect_equal(frequency_spectrum_obj$cycle_length %>% sort(), c(1,2,4))
+})

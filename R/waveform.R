@@ -44,19 +44,13 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     }
   ) %>% dplyr::arrange(dplyr::desc(wavelength))
 
-  # Define the fundamental amplitude function
-  fundamental_amplitude <- function(x, t) {
-    relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
-    relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
-    A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
-    A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
-  }
-
-
-  # grid$amplitude <- base::sin(2 * base::pi * relative_f0 * grid$time - 2 * base::pi * relative_k0 * grid$space)
-
-
   composite_amplitude <- function(x, t) {
+    # Check that x and t are scalar values
+    if (length(x) != 1 || length(t) != 1) {
+      stop("x and t must be scalar values")
+    }
+
+    # Calculate the composite amplitude as a sum of contributions
     sum(
       purrr::pmap_dbl(indexed_spectra, function(frequency,
                                                 frequency_amplitude,
@@ -65,20 +59,36 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
                                                 wavelength_amplitude,
                                                 wavelength_cycle_length) {
 
-
-
-        relative_f0 <- ifelse(is.na(frequency_cycle_length ), 0, 1 / frequency_cycle_length )
-        relative_k0 <- ifelse(is.na(wavelength_cycle_length ), 0, 1 / wavelength_cycle_length )
-
-        # Handle NA values in amplitudes
+        # Calculate amplitude component
         An <- ifelse(is.na(frequency_amplitude), 0, frequency_amplitude) +
           ifelse(is.na(wavelength_amplitude), 0, wavelength_amplitude)
 
-        # Compute the amplitude contribution from this component
-        An * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
+        # Calculate relative frequencies
+        relative_f0 <- ifelse(is.na(frequency_cycle_length), 0, 1 / frequency_cycle_length)
+        relative_k0 <- ifelse(is.na(wavelength_cycle_length), 0, 1 / wavelength_cycle_length)
 
+        # Return the amplitude contribution for this component as a traveling wave
+        An * cos(2 * pi * (relative_f0 * t - relative_k0 * x) + phase)
       })
     )
+  }
+
+  # Define the fundamental amplitude function
+  fundamental_amplitude <- function(x, t) {
+    # Check that x and t are scalar values
+    if (length(x) != 1 || length(t) != 1) {
+      stop("x and t must be scalar values")
+    }
+
+    # Calculate relative frequency and wavenumber
+    relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
+    relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
+
+    # Calculate maximum amplitude
+    A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
+
+    # Compute and return the amplitude at (x, t)
+    A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
 
   # Return the structured object
@@ -171,15 +181,15 @@ theme_homey <- function(aspect.ratio=NULL){
 
 # Define the function to plot time vs. space as a 2D heatmap
 #' @export
-plot.waveform <- function(x, label='',
-                          time_range = 25, space_range = 25,
+plot.waveform <- function(x, label = '',
+                          space_time_range = 25,
                           resolution = 100, ...) {
 
-  f0 = x$frequency_spectrum$fundamental_frequency
-  k0 = 1/x$wavelength_spectrum$fundamental_wavelength
+  f0 <- x$frequency_spectrum$fundamental_frequency
+  k0 <- 1 / x$wavelength_spectrum$fundamental_wavelength
 
-  time_fundamental_cycle_length  = x$frequency_spectrum$fundamental_cycle_length
-  space_fundamental_cycle_length = x$wavelength_spectrum$fundamental_cycle_length
+  time_fundamental_cycle_length <- x$frequency_spectrum$fundamental_cycle_length
+  space_fundamental_cycle_length <- x$wavelength_spectrum$fundamental_cycle_length
 
   # Determine tonality based on majorness
   tonality <- if (time_fundamental_cycle_length > space_fundamental_cycle_length) {
@@ -194,27 +204,50 @@ plot.waveform <- function(x, label='',
   color_set <- saturation_colors_homey[[tonality]]
 
   # Generate a higher-resolution grid of time and space values
-  time_values <- seq(0, time_range, length.out = resolution)
-  space_values <- seq(0, space_range, length.out = resolution)
+  time_values <- seq(0, space_time_range, length.out = resolution)
+  space_values <- seq(0, space_time_range, length.out = resolution)
 
   # Create a data frame for the grid
   grid <- base::expand.grid(time = time_values, space = space_values)
 
-  grid$amplitude = x$fundamental_amplitude(grid$space, grid$time)
-
   # Define scaling factors to adjust the axis labels
-  scale_time <- time_range / time_fundamental_cycle_length * (1 / f0)
-  scale_space <- space_range / space_fundamental_cycle_length * (1 / k0)
+  scale_time <- space_time_range / time_fundamental_cycle_length * (1 / f0)
+  scale_space <- space_time_range / space_fundamental_cycle_length * (1 / k0)
 
-  # Plot using ggplot2 with adjusted labels for time and space
-  ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = amplitude)) +
+  # Calculate composite amplitude at each (space, time) coordinate as a scalar
+  grid$composite_amplitude <- mapply(
+    function(space, time) x$composite_amplitude(space, time),
+    grid$space, grid$time
+  )
+
+  composite_plot <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = composite_amplitude)) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
     ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * scale_time)) +
     ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * scale_space)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ ": Traveling Wave " ~ f[0] == .(sprintf("%.2f", f0)) ~ "," ~ k[0] == .(sprintf("%.2f", k0)))
+      title = bquote(.(label) ~ ": Composite " ~ f[0] == .(sprintf("%.2f", f0)) ~ "," ~ k[0] == .(sprintf("%.2f", k0)))
     ) +
     ggplot2::coord_fixed(ratio = 1) +
     theme_homey()
+
+  # Calculate fundamental amplitude at each (space, time) coordinate as a scalar
+  grid$fundamental_amplitude <- mapply(
+    function(space, time) x$fundamental_amplitude(space, time),
+    grid$space, grid$time
+  )
+
+  fundamental_plot <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = fundamental_amplitude)) +
+    ggplot2::geom_tile() +
+    ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
+    ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * scale_time)) +
+    ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * scale_space)) +
+    ggplot2::labs(
+      title = bquote(.(label) ~ ": Fundamental " ~ f[0] == .(sprintf("%.2f", f0)) ~ "," ~ k[0] == .(sprintf("%.2f", k0)))
+    ) +
+    ggplot2::coord_fixed(ratio = 1) +
+    theme_homey()
+
+  # Arrange the fundamental and composite plots side by side
+  gridExtra::grid.arrange(composite_plot, fundamental_plot, ncol = 2)
 }

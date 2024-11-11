@@ -257,7 +257,7 @@ test_that("linear_waveform correctly calculates composite_amplitude for given x 
   t <- 0.5  # time in seconds
 
   # Call the composite_amplitude function on the linear_waveform object
-  composite_amplitude_value <- linear_waveform_obj$composite_amplitude(x, t)
+  a <- linear_waveform_obj$composite_amplitude(x, t)
 
-  expect_equal(composite_amplitude_value, -7.2, tolerance = 0.1)
+  expect_equal(a, -7.2, tolerance = 0.1)
 })

@@ -199,3 +199,70 @@ test_that("composite_amplitude calculates correct values for given x and t", {
   # Check that the computed composite amplitude matches the expected value
   expect_equal(composite_amplitude_value, 1.8, tolerance = 1e-6)
 })
+
+test_that("composite_amplitude only accepts scalar values for x and t", {
+  # Create frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+
+  # Create wavelength_spectrum object
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(3.43, 1.72),  # Corresponding wavelengths to 100 Hz and 200 Hz
+    amplitude = c(1.0, 0.8)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj
+  )
+
+  # Define test values for x and t as vectors
+  x_vector <- c(1.0, 2.0)  # space in meters
+  t_vector <- c(0.5, 1.0)  # time in seconds
+
+  # Expect an error when vectors are passed instead of scalars
+  expect_error(
+    waveform_obj$composite_amplitude(x_vector, t_vector),
+    "x and t must be scalar values",
+    fixed = TRUE
+  )
+
+  # Also test with only one of them as a vector to ensure both are checked individually
+  expect_error(
+    waveform_obj$composite_amplitude(x_vector, 0.5),
+    "x and t must be scalar values",
+    fixed = TRUE
+  )
+
+  expect_error(
+    waveform_obj$composite_amplitude(1.0, t_vector),
+    "x and t must be scalar values",
+    fixed = TRUE
+  )
+})
+test_that("fundamental_amplitude throws an error for non-scalar x or t values", {
+  # Create frequency_spectrum and wavelength_spectrum objects
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(1, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj,
+    phase = 0
+  )
+
+  # Test that passing vector values to fundamental_amplitude throws an error
+  expect_error(waveform_obj$fundamental_amplitude(c(1, 2), 0.01), "x and t must be scalar values")
+  expect_error(waveform_obj$fundamental_amplitude(1, c(0.01, 0.02)), "x and t must be scalar values")
+  expect_error(waveform_obj$fundamental_amplitude(c(1, 2), c(0.01, 0.02)), "x and t must be scalar values")
+})
