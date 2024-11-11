@@ -211,10 +211,11 @@ plot.waveform <- function(x, label = '',
     ggplot2::scale_y_continuous(name = "") +
     theme_homey()
 
-  frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum))
-  wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$wavelength_spectrum))
+  frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum, title = paste(label, "~ Frequency Spectrum")))
+  wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$wavelength_spectrum, title = paste(label, "~ Wavelength Spectrum")))
 
   # Arrange the plots in the grid layout
+  min_height_unit <- 50
   gridExtra::grid.arrange(
     frequency_spectrum_grob,
     composite_time, fundamental_time,
@@ -223,6 +224,6 @@ plot.waveform <- function(x, label = '',
     wavelength_spectrum_grob,
     ncol = 2,
     layout_matrix = rbind(c(1, 1), c(2, 3), c(4, 5), c(6, 7), c(8,8)),
-    heights = 5*c(1,1,2,1,1)  # Make the frequency plot span both columns with extra height
+    heights = min_height_unit*c(1,1,2,1,1)  # Make the frequency plot span both columns with extra height
   )
 }
