@@ -175,7 +175,6 @@ theme_homey <- function(aspect.ratio = NULL) {
   )
 }
 
-
 #' @export
 plot.waveform <- function(x, label = '',
                           space_time_range = 25,
