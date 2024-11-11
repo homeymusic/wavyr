@@ -26,10 +26,14 @@ test_that("veryifry what happen with 11 harmonics", {
   wavelength_spectrum <- linear_waveform_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
 
+  sub_t = 'All Harmonics'
+  t = paste(sub_t, '~ Frequency Spectrum')
+
   vdiffr::expect_doppelganger("all harmonics frequency spectrum", function() {
     plot(linear_waveform_obj$frequency_spectrum,)
   })
 
+  t = paste(sub_t, '~ Wavelength Spectrum')
   vdiffr::expect_doppelganger("all harmonics wavelength spectrum", function() {
     plot(linear_waveform_obj$wavelength_spectrum)
   })
@@ -69,12 +73,16 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
   fundamental_amplitude <- wavelength_spectrum$amplitude[which(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance)]
   expect_true(fundamental_amplitude > total_amplitude)
 
-  vdiffr::expect_doppelganger("missing fundamental frequency spectrum", function() {
-    plot(linear_waveform_obj$frequency_spectrum, rectangles = c(fundamental_freq))
+  t = 'Missing Fundamental ~ Frequency Spectrum'
+  vdiffr::expect_doppelganger(t, function() {
+    plot(linear_waveform_obj$frequency_spectrum, rectangles = c(fundamental_freq),
+         title = t)
   })
 
-  vdiffr::expect_doppelganger("missing fundamental wavelength spectrum", function() {
-    plot(linear_waveform_obj$wavelength_spectrum, rectangles = c(fundamental_wavelength))
+  t = 'Missing Fundamental ~ Wavelength Spectrum'
+  vdiffr::expect_doppelganger(t, function() {
+    plot(linear_waveform_obj$wavelength_spectrum, rectangles = c(fundamental_wavelength),
+         title=t)
   })
 
 })
@@ -117,12 +125,17 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
 
   missing_freqs = setdiff(1:11, harmonics) * fundamental_freq
 
-  vdiffr::expect_doppelganger("4,5,7,8,11 harmonics frequency spectrum", function() {
-    plot(linear_waveform_obj$frequency_spectrum, rectangles = missing_freqs)
+  sub_t = 'Missing 1, 2, 3, 6, 9, 10x Harmonics'
+  t = paste(sub_t, '~ Frequency Spectrum')
+  vdiffr::expect_doppelganger(t, function() {
+    plot(linear_waveform_obj$frequency_spectrum, rectangles = missing_freqs,
+         title=t)
   })
 
-  vdiffr::expect_doppelganger("4,5,7,8,11 harmonics wavelength spectrum", function() {
-    plot(linear_waveform_obj$wavelength_spectrum, rectangles = SPEED_OF_SOUND / missing_freqs)
+  t = paste(sub_t, '~ Wavelength Spectrum')
+  vdiffr::expect_doppelganger(t, function() {
+    plot(linear_waveform_obj$wavelength_spectrum, rectangles = SPEED_OF_SOUND / missing_freqs,
+         title=t)
   })
 
 

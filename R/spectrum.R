@@ -99,60 +99,65 @@ combine_spectra <- function(spectrum, other_spectrum, tolerance) {
   }
 }
 
-#' Plot a spectrum with spikes
+#' Plot a spectrum with spikes using ggplot2 and theme_homey
 #'
 #' Creates a spike plot for a spectrum (frequency or wavelength).
 #'
 #' @param x An object of class "spectrum" containing components and amplitudes.
+#' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
+#' @param title An optional character string for the plot title.
 #' @param ... Additional parameters for plotting.
 #'
 #' @export
-plot.spectrum <- function(x, rectangles = numeric(0), ...) {
+plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
 
   # Determine the appropriate labels based on the class
   if (inherits(x, "frequency_spectrum")) {
-    x_label <- "Frequency"
-    components <- x$frequency  # Use the frequency component
+    x_label <- "Frequency (Hz)"
+    components <- x$component  # Frequency components
   } else if (inherits(x, "wavelength_spectrum")) {
-    x_label <- "Wavelength"
-    components <- x$wavelength  # Use the wavelength component
+    x_label <- "Wavelength (m)"
+    components <- x$component  # Wavelength components
   } else {
     stop("Unsupported spectrum type")
   }
 
-  # Create a spike plot
-  plot(
-    components, x$amplitude,
-    type = "n",  # Set up the plot without points or lines
-    xlab = x_label, ylab = "Amplitude",
-    main = paste(x_label, "Spectrum"),
-    xlim = c(min(c(rectangles, components)), max(c(rectangles, components))),
-    ...
-  )
-
-  # Get the plot's current x-axis limits (from usr parameter)
-  plot_limits <- par("usr")
-  x_left <- plot_limits[1]   # The left x limit
-  x_right <- plot_limits[2]  # The right x limit
-  plot_width <- x_right - x_left
-  y_bottom <- plot_limits[3]   # The lower y limit
-  y_top <- plot_limits[4]      # The upper y limit
-
-  rect_width <- plot_width * 0.0075  # 1% of the total width for the width
-
-  # Draw spikes
-  segments(
-    x0 = components, y0 = 0,
-    x1 = components, y1 = x$amplitude,
-    lwd = 2
-  )
-
-  # Draw rectangles at the positions given in 'rectangles'
-  if (length(rectangles) > 0) {
-    for (x_pos in rectangles) {
-      # Draw the rectangle on top of the spikes
-      rect(x_pos - rect_width / 2, y_bottom, x_pos + rect_width / 2, y_top,
-           border = "red", lwd = 2, lty = 2)  # Dashed rectangle
-    }
+  # Set a default title if none is provided
+  if (is.null(title)) {
+    title <- paste(x_label, "Spectrum")
   }
+
+  # Create a data frame for ggplot
+  spectrum_data <- data.frame(component = components, amplitude = x$amplitude)
+
+  # Plot using ggplot2
+  p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
+    ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = colors_homey$neutral, lwd = 1.5) +  # Use 'neutral' color for spikes
+    ggplot2::scale_x_continuous(name = x_label) +
+    ggplot2::scale_y_continuous(name = "Amplitude") +
+    ggplot2::labs(title = title) +  # Set the dynamic title
+    theme_homey()
+
+  # Add optional rectangles if specified
+  if (length(rectangles) > 0) {
+    # Calculate a slight width for rectangles based on the range of components
+    rect_width <- 0.005 * (max(components) - min(components))
+
+    # Create a data frame for rectangles
+    rectangle_data <- data.frame(
+      xmin = rectangles - rect_width / 2,
+      xmax = rectangles + rect_width / 2,
+      ymin = 0,  # Start from zero
+      ymax = max(spectrum_data$amplitude)  # Up to the maximum amplitude
+    )
+
+    p <- p + ggplot2::geom_rect(
+      data = rectangle_data,
+      mapping = ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+      inherit.aes = FALSE,  # Do not inherit the spectrum_data aesthetics
+      color = "red", linetype = "dashed", fill = NA
+    )
+  }
+
+  print(p)
 }
