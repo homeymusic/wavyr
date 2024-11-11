@@ -22,7 +22,7 @@ framed_intervals <- purrr::map(intervals, ~c(.x, 72))
 test_that("waveform plot for each interval matches snapshot", {
   purrr::walk2(framed_intervals, names(framed_intervals), function(interval_midi, label) {
 
-    f = hrep::sparse_fr_spectrum(interval_midi, num_harmonics=2)
+    f <- hrep::sparse_fr_spectrum(interval_midi, num_harmonics = 2)
 
     # Create frequency_spectrum and wavelength_spectrum
     f_spectrum <- frequency_spectrum(
@@ -35,16 +35,16 @@ test_that("waveform plot for each interval matches snapshot", {
       amplitude  = f$y
     )
 
-    # Create a dummy waveform object with frequency_spectrum and wavelength_spectrum
+    # Create the waveform object with frequency_spectrum and wavelength_spectrum
     waveform <- waveform(
       frequency_spectrum = f_spectrum,
       wavelength_spectrum = l_spectrum
     )
 
-    # Generate the plot
-    plot <- plot(waveform, label = label)
-
-    # Use vdiffr to verify the plot against the snapshot
-    vdiffr::expect_doppelganger(paste(label), plot)
+    # Use vdiffr to capture the plot
+    vdiffr::expect_doppelganger(
+      paste(label),
+      function() plot(waveform, label = label, resolution = 100)
+    )
   })
 })

@@ -86,11 +86,9 @@ test_that("waveform with wavelength spectrum and frequency spectrum but no phase
   expect_equal(waveform_obj$phase,0)
 })
 
-# tests/testthat/test_waveform.R
-
 test_that("waveform plot generates correctly with time and space grid", {
   # Create a frequency_spectrum object
-  f = c(100, 200, 300)
+  f <- c(100, 200, 300)
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = f,
     amplitude = c(1.0, 0.8, 0.5)
@@ -109,9 +107,9 @@ test_that("waveform plot generates correctly with time and space grid", {
     phase = 0
   )
 
-  label = 'P1 3 Harmonics'
-  plot <- plot(waveform_obj, label = label)
-  vdiffr::expect_doppelganger(paste(label), plot)
+  # Generate the plot and capture it with vdiffr
+  label <- 'P1 3 Harmonics'
+  vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))
 })
 
 test_that("waveform's indexed_spectra variable allows iteration to access all values at once, accounting for different amplitudes", {
