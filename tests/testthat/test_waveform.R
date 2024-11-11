@@ -86,32 +86,6 @@ test_that("waveform with wavelength spectrum and frequency spectrum but no phase
   expect_equal(waveform_obj$phase,0)
 })
 
-test_that("waveform plot generates correctly with time and space grid", {
-  # Create a frequency_spectrum object
-  f <- c(100, 200, 300)
-  frequency_spectrum_obj <- frequency_spectrum(
-    frequency = f,
-    amplitude = c(1.0, 0.8, 0.5)
-  )
-
-  # Create a wavelength_spectrum object with independent wavelengths
-  wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / f,
-    amplitude = c(1.0, 0.8, 0.5)
-  )
-
-  # Create the waveform object
-  waveform_obj <- waveform(
-    frequency_spectrum = frequency_spectrum_obj,
-    wavelength_spectrum = wavelength_spectrum_obj,
-    phase = 0
-  )
-
-  # Generate the plot and capture it with vdiffr
-  label <- 'P1 3 Harmonics'
-  vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))
-})
-
 test_that("waveform's indexed_spectra variable allows iteration to access all values at once, accounting for different amplitudes", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
@@ -291,3 +265,31 @@ test_that('frequency_spectrum is correct for M3', {
   expect_equal(waveform$indexed_spectra$frequency_cycle_length, c(1,3,1,2,1), tolerance=0.1)
 
 })
+
+
+test_that("waveform plot generates correctly with time and space grid", {
+  # Create a frequency_spectrum object
+  f <- c(100, 200, 300)
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = f,
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create a wavelength_spectrum object with independent wavelengths
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = SPEED_OF_SOUND / f,
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    wavelength_spectrum = wavelength_spectrum_obj,
+    phase = 0
+  )
+
+  # Generate the plot and capture it with vdiffr
+  label <- 'P1 3 Harmonics'
+  vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))
+})
+

@@ -60,9 +60,9 @@ space_time_colors <- function() {
 theme_homey <- function(aspect.ratio = NULL, font = "Helvetica", panel_background_fill = colors_homey$background) {
   ggplot2::theme_minimal() +
     ggplot2::theme(
-      plot.title = ggplot2::element_text(color = colors_homey$foreground, face = "bold"),
-      axis.title = ggplot2::element_text(color = colors_homey$foreground),
-      axis.text = ggplot2::element_text(color = colors_homey$foreground),
+      plot.title = ggplot2::element_text(color = colors_homey$foreground, face = "bold", size = ggplot2::rel(0.8)),
+      axis.title = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.7)),
+      axis.text = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.6)),
       axis.ticks = ggplot2::element_blank(),
       plot.background = ggplot2::element_rect(fill = colors_homey$neutral, color = colors_homey$foreground),
       panel.background = ggplot2::element_rect(fill = panel_background_fill),
@@ -72,6 +72,8 @@ theme_homey <- function(aspect.ratio = NULL, font = "Helvetica", panel_backgroun
       legend.key = ggplot2::element_rect(fill = colors_homey$background, color = NA),
       legend.position = "right",  # Position the legend to the right of the plot
       legend.direction = "vertical",  # Set legend orientation to vertical
+      legend.title = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.7)),
+      legend.text = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.6)),
       aspect.ratio = aspect.ratio
     )
 }

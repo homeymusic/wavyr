@@ -89,6 +89,7 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     class = "waveform"
   )
 }
+
 #' @export
 plot.waveform <- function(x, label = '',
                           space_time_range = 25,
@@ -148,6 +149,7 @@ plot.waveform <- function(x, label = '',
     ggplot2::labs(
       title = bquote(.(label) ~ "Composite Time Slice")
     ) +
+    ggplot2::scale_y_continuous(name = "") +
     theme_homey()
 
   # Space-only Composite with computed axis limits
@@ -161,6 +163,7 @@ plot.waveform <- function(x, label = '',
     ggplot2::labs(
       title = bquote(.(label) ~ "Composite Space Slice")
     ) +
+    ggplot2::scale_y_continuous(name = "") +
     theme_homey()
 
   # 2D Fundamental Amplitude
@@ -191,6 +194,7 @@ plot.waveform <- function(x, label = '',
     ggplot2::labs(
       title = bquote(.(label) ~ "Fundamental Time Slice f0:" ~ .(formatC(f0, format = "f", digits = 1)) ~ "Hz")
     ) +
+    ggplot2::scale_y_continuous(name = "") +
     theme_homey()
 
   # Space-only Fundamental with computed axis limits
@@ -204,15 +208,21 @@ plot.waveform <- function(x, label = '',
     ggplot2::labs(
       title = bquote(.(label) ~ "Fundamental Space Slice k0:" ~ .(formatC(k0, format = "f", digits = 1)) ~ m^-1)
     ) +
+    ggplot2::scale_y_continuous(name = "") +
     theme_homey()
 
-  # Arrange in grid with label at the top
+  frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum))
+  wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$wavelength_spectrum))
+
+  # Arrange the plots in the grid layout
   gridExtra::grid.arrange(
+    frequency_spectrum_grob,
     composite_time, fundamental_time,
     composite_2d, fundamental_2d,
     composite_space, fundamental_space,
+    wavelength_spectrum_grob,
     ncol = 2,
-    heights = c(1, 1.5, 1),  # Set the middle row to 1.5 times the height of the other rows
-    top = grid::textGrob(label, gp = grid::gpar(fontsize = 16, fontface = "bold"))
+    layout_matrix = rbind(c(1, 1), c(2, 3), c(4, 5), c(6, 7), c(8,8)),
+    heights = 5*c(1,1,2,1,1)  # Make the frequency plot span both columns with extra height
   )
 }

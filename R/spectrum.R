@@ -134,7 +134,7 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
     ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = colors_homey$neutral, lwd = 1.5) +  # Use 'neutral' color for spikes
     ggplot2::scale_x_continuous(name = x_label) +
-    ggplot2::scale_y_continuous(name = "Amplitude") +
+    ggplot2::scale_y_continuous(name = "") +
     ggplot2::labs(title = title) +  # Set the dynamic title
     theme_homey()
 

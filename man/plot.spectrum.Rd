@@ -2,12 +2,16 @@
 % Please edit documentation in R/spectrum.R
 \name{plot.spectrum}
 \alias{plot.spectrum}
-\title{Plot a spectrum with spikes}
+\title{Plot a spectrum with spikes using ggplot2 and theme_homey}
 \usage{
-\method{plot}{spectrum}(x, rectangles = numeric(0), ...)
+\method{plot}{spectrum}(x, rectangles = numeric(0), title = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class "spectrum" containing components and amplitudes.}
+
+\item{rectangles}{Optional: A numeric vector specifying positions for additional rectangles.}
+
+\item{title}{An optional character string for the plot title.}
 
 \item{...}{Additional parameters for plotting.}
 }
