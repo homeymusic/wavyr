@@ -156,34 +156,31 @@ space_time_colors <- function() {
     'time'=colors_homey$major,
     'behavioral'=colors_homey$neutral)
 }
-theme_homey <- function(aspect.ratio=NULL){
-  font <- "Helvetica"   #assign font family up front
+theme_homey <- function(aspect.ratio = NULL) {
+  font <- "Helvetica"   # Assign font family up front
 
-  ggplot2::theme_minimal()
-
-  ggplot2::`%+replace%`  #replace elements we want to change
-
-  ggplot2::theme(
-    plot.title = ggplot2::element_text(color=colors_homey$foreground),
-    axis.title = ggplot2::element_text(color=colors_homey$foreground),
-    axis.text = ggplot2::element_text(color=colors_homey$foreground),
+  ggplot2::theme_minimal() %+replace% ggplot2::theme(
+    plot.title = ggplot2::element_text(color = colors_homey$foreground),
+    axis.title = ggplot2::element_text(color = colors_homey$foreground),
+    axis.text = ggplot2::element_text(color = colors_homey$foreground),
     axis.ticks = ggplot2::element_blank(),
     plot.background = ggplot2::element_rect(fill = colors_homey$neutral),
     panel.background = ggplot2::element_rect(fill = colors_homey$background),
-    panel.grid.major = ggplot2::element_line(color = colors_homey$foreground, linewidth=0.2),
-    panel.grid.minor = ggplot2::element_line(color = colors_homey$foreground, linewidth=0.05, linetype ="dashed"),
+    panel.grid.major = ggplot2::element_line(color = colors_homey$foreground, linewidth = 0.2),
+    panel.grid.minor = ggplot2::element_line(color = colors_homey$foreground, linewidth = 0.05, linetype = "dashed"),
     legend.background = ggplot2::element_rect(fill = colors_homey$light_neutral),
     legend.key = ggplot2::element_rect(fill = colors_homey$background, color = NA),
-    legend.position='bottom',
-    aspect.ratio = aspect.ratio,
+    legend.position = 'bottom',
+    aspect.ratio = aspect.ratio
   )
 }
 
-# Define the function to plot time vs. space as a 2D heatmap
+
 #' @export
 plot.waveform <- function(x, label = '',
                           space_time_range = 25,
-                          resolution = 100, ...) {
+                          resolution = 300,  # Higher resolution for 2D plots
+                          line_plot_resolution = 1000, ...) {  # Increased resolution for line plots
 
   f0 <- x$frequency_spectrum$fundamental_frequency
   k0 <- 1 / x$wavelength_spectrum$fundamental_wavelength
@@ -191,7 +188,6 @@ plot.waveform <- function(x, label = '',
   time_fundamental_cycle_length <- x$frequency_spectrum$fundamental_cycle_length
   space_fundamental_cycle_length <- x$wavelength_spectrum$fundamental_cycle_length
 
-  # Determine tonality based on majorness
   tonality <- if (time_fundamental_cycle_length > space_fundamental_cycle_length) {
     'minor'
   } else if (time_fundamental_cycle_length == space_fundamental_cycle_length) {
@@ -200,54 +196,109 @@ plot.waveform <- function(x, label = '',
     'major'
   }
 
-  # Select the color set based on tonality
   color_set <- saturation_colors_homey[[tonality]]
 
-  # Generate a higher-resolution grid of time and space values
-  time_values <- seq(0, space_time_range, length.out = resolution)
-  space_values <- seq(0, space_time_range, length.out = resolution)
+  # Calculate time and space ranges
+  max_time <- space_time_range / time_fundamental_cycle_length * (1 / f0)
+  max_space <- space_time_range / space_fundamental_cycle_length * (1 / k0)
 
-  # Create a data frame for the grid
-  grid <- base::expand.grid(time = time_values, space = space_values)
+  # Define grid for 2D plots and values for line plots
+  time_values <- seq(0, space_time_range, length.out = line_plot_resolution)  # Higher resolution for line plots
+  space_values <- seq(0, space_time_range, length.out = line_plot_resolution)
+  grid <- base::expand.grid(time = seq(0, space_time_range, length.out = resolution),
+                            space = seq(0, space_time_range, length.out = resolution))
 
-  # Define scaling factors to adjust the axis labels
-  scale_time <- space_time_range / time_fundamental_cycle_length * (1 / f0)
-  scale_space <- space_time_range / space_fundamental_cycle_length * (1 / k0)
+  # Define the theme with cream and brown backgrounds
+  custom_theme <- ggplot2::theme(
+    plot.background = ggplot2::element_rect(fill = colors_homey$neutral, color = colors_homey$foreground),
+    panel.background = ggplot2::element_rect(fill = colors_homey$background),
+    panel.grid.major = ggplot2::element_line(color = colors_homey$foreground, linewidth = 0.2),
+    panel.grid.minor = ggplot2::element_line(color = colors_homey$foreground, linewidth = 0.05, linetype = "dashed"),
+    axis.text = ggplot2::element_text(color = colors_homey$foreground),
+    axis.title = ggplot2::element_text(color = colors_homey$foreground),
+    plot.title = ggplot2::element_text(color = colors_homey$foreground, face = "bold"),
+    legend.background = ggplot2::element_rect(fill = colors_homey$light_neutral),
+    legend.key = ggplot2::element_rect(fill = colors_homey$background, color = NA)
+  )
 
-  # Calculate composite amplitude at each (space, time) coordinate as a scalar
+  # 2D Composite Amplitude
   grid$composite_amplitude <- mapply(
     function(space, time) x$composite_amplitude(space, time),
     grid$space, grid$time
   )
-
-  composite_plot <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = composite_amplitude)) +
+  composite_2d <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = composite_amplitude)) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
-    ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * scale_time)) +
-    ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * scale_space)) +
-    ggplot2::labs(
-      title = bquote(.(label) ~ ": Composite " ~ f[0] == .(sprintf("%.2f", f0)) ~ "," ~ k[0] == .(sprintf("%.2f", k0)))
-    ) +
+    ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
+    ggplot2::labs(title = paste(label, "Composite 2D")) +
     ggplot2::coord_fixed(ratio = 1) +
-    theme_homey()
+    custom_theme
 
-  # Calculate fundamental amplitude at each (space, time) coordinate as a scalar
+  # Time-only Composite with computed axis limits
+  time_only_composite <- data.frame(
+    time = time_values,
+    amplitude = sapply(time_values, function(t) x$composite_amplitude(0, t))
+  )
+  composite_time <- ggplot2::ggplot(time_only_composite, ggplot2::aes(x = time, y = amplitude)) +
+    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::scale_x_continuous(name = "Time (s)", limits = c(0, space_time_range), labels = function(x) sprintf("%.3f", x * max_time / space_time_range)) +
+    ggplot2::labs(title = paste(label, "Composite Time Slice")) +
+    custom_theme
+
+  # Space-only Composite with computed axis limits
+  space_only_composite <- data.frame(
+    space = space_values,
+    amplitude = sapply(space_values, function(s) x$composite_amplitude(s, 0))
+  )
+  composite_space <- ggplot2::ggplot(space_only_composite, ggplot2::aes(x = space, y = amplitude)) +
+    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::scale_x_continuous(name = "Space (m)", limits = c(0, space_time_range), labels = function(y) sprintf("%.3f", y * max_space / space_time_range)) +
+    ggplot2::labs(title = paste(label, "Composite Space Slice")) +
+    custom_theme
+
+  # 2D Fundamental Amplitude
   grid$fundamental_amplitude <- mapply(
     function(space, time) x$fundamental_amplitude(space, time),
     grid$space, grid$time
   )
-
-  fundamental_plot <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = fundamental_amplitude)) +
+  fundamental_2d <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = fundamental_amplitude)) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
-    ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * scale_time)) +
-    ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * scale_space)) +
-    ggplot2::labs(
-      title = bquote(.(label) ~ ": Fundamental " ~ f[0] == .(sprintf("%.2f", f0)) ~ "," ~ k[0] == .(sprintf("%.2f", k0)))
-    ) +
+    ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
+    ggplot2::labs(title = paste(label, "Fundamental 2D")) +
     ggplot2::coord_fixed(ratio = 1) +
-    theme_homey()
+    custom_theme
 
-  # Arrange the fundamental and composite plots side by side
-  gridExtra::grid.arrange(composite_plot, fundamental_plot, ncol = 2)
+  # Time-only Fundamental with computed axis limits
+  time_only_fundamental <- data.frame(
+    time = time_values,
+    amplitude = sapply(time_values, function(t) x$fundamental_amplitude(0, t))
+  )
+  fundamental_time <- ggplot2::ggplot(time_only_fundamental, ggplot2::aes(x = time, y = amplitude)) +
+    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::scale_x_continuous(name = "Time (s)", limits = c(0, space_time_range), labels = function(x) sprintf("%.3f", x * max_time / space_time_range)) +
+    ggplot2::labs(title = paste(label, "Fundamental Time Slice")) +
+    custom_theme
+
+  # Space-only Fundamental with computed axis limits
+  space_only_fundamental <- data.frame(
+    space = space_values,
+    amplitude = sapply(space_values, function(s) x$fundamental_amplitude(s, 0))
+  )
+  fundamental_space <- ggplot2::ggplot(space_only_fundamental, ggplot2::aes(x = space, y = amplitude)) +
+    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::scale_x_continuous(name = "Space (m)", limits = c(0, space_time_range), labels = function(y) sprintf("%.3f", y * max_space / space_time_range)) +
+    ggplot2::labs(title = paste(label, "Fundamental Space Slice")) +
+    custom_theme
+
+  # Arrange in grid with label at the top
+  gridExtra::grid.arrange(
+    composite_time, fundamental_time,
+    composite_2d, fundamental_2d,
+    composite_space, fundamental_space,
+    ncol = 2,
+    top = grid::textGrob(label, gp = grid::gpar(fontsize = 16, fontface = "bold"))
+  )
 }
