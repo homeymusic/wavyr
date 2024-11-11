@@ -1,11 +1,3 @@
-#' Create a general waveform
-#'
-#' @param frequency_spectrum An object of class "frequency_spectrum" containing frequencies and amplitudes.
-#' @param wavelength_spectrum Optional: An object of class "wavelength_spectrum" for custom wavelength components.
-#' @param phase Optional: A numeric value representing the phase of the waveform.
-#'
-#' @return An object of class "waveform" containing the frequency spectrum, wavelength spectrum, phase, and indexed_spectra.
-#' @export
 waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
   # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
@@ -25,17 +17,12 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
       wavelength_cycle_length = wavelength_spectrum$cycle_length
     ),
     function(wavelength, wavelength_amplitude, wavelength_cycle_length) {
-
-      # Calculate the equivalent frequency
       equivalent_frequency <- SPEED_OF_SOUND / wavelength
-
-      # Find any matching frequency within tolerance
       matched_indices <- which(abs(frequency_spectrum$frequency - equivalent_frequency) < 1e-6)
 
-      # Construct the tibble for matched or unmatched cases
       tibble::tibble(
         frequency = if (length(matched_indices) > 0) frequency_spectrum$frequency[matched_indices][1] else NA,
-        frequency_amplitude = if (length(matched_indices) > 0) {sum(frequency_spectrum$amplitude[matched_indices])} else NA,
+        frequency_amplitude = if (length(matched_indices) > 0) sum(frequency_spectrum$amplitude[matched_indices]) else NA,
         frequency_cycle_length = if (length(matched_indices) > 0) frequency_spectrum$cycle_length[matched_indices][1] else NA,
         wavelength = wavelength,
         wavelength_amplitude = wavelength_amplitude,
@@ -44,13 +31,16 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     }
   ) %>% dplyr::arrange(dplyr::desc(wavelength))
 
+  # Calculate the maximum amplitude for both fundamental and composite
+  A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
+
   composite_amplitude <- function(x, t) {
     # Check that x and t are scalar values
     if (length(x) != 1 || length(t) != 1) {
       stop("x and t must be scalar values")
     }
 
-    # Calculate the composite amplitude as a sum of contributions
+    # Calculate the composite amplitude as the sum of contributions
     sum(
       purrr::pmap_dbl(indexed_spectra, function(frequency,
                                                 frequency_amplitude,
@@ -58,22 +48,18 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
                                                 wavelength,
                                                 wavelength_amplitude,
                                                 wavelength_cycle_length) {
-
-        # Calculate amplitude component
         An <- ifelse(is.na(frequency_amplitude), 0, frequency_amplitude) +
           ifelse(is.na(wavelength_amplitude), 0, wavelength_amplitude)
 
-        # Calculate relative frequencies
         relative_fn <- ifelse(is.na(frequency_cycle_length), 0, 1 / frequency_cycle_length)
         relative_kn <- ifelse(is.na(wavelength_cycle_length), 0, 1 / wavelength_cycle_length)
 
-        # Return the amplitude contribution for this component as a traveling wave
-        An * cos(2 * pi * (relative_fn * t - relative_kn * x) + phase)
+        # Scale by the maximum amplitude A0 to keep it consistent
+        (An / A0) * cos(2 * pi * (relative_fn * t - relative_kn * x) + phase)
       })
-    )
+    ) * A0  # Rescale the sum to match the A0 range
   }
 
-  # Define the fundamental amplitude function
   fundamental_amplitude <- function(x, t) {
     # Check that x and t are scalar values
     if (length(x) != 1 || length(t) != 1) {
@@ -84,13 +70,12 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
     relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
 
-    # Calculate maximum amplitude
-    A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
+    # Calculate the total amplitude as the sum of all amplitude contributions
+    A0 <- sum(frequency_spectrum$amplitude) + sum(wavelength_spectrum$amplitude)
 
     # Compute and return the amplitude at (x, t)
     A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
-
   # Return the structured object
   structure(
     list(
@@ -104,7 +89,6 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
     class = "waveform"
   )
 }
-
 #' @export
 plot.waveform <- function(x, label = '',
                           space_time_range = 25,
