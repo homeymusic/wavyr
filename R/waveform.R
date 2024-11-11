@@ -1,14 +1,30 @@
-waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
+waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
   # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
     stop("frequency_spectrum must be of class 'frequency_spectrum'")
   }
+
+  # Automatically generate wavelength_spectrum if not provided
+  if (is.null(wavelength_spectrum)) {
+    wavelength_spectrum <- wavelength_spectrum(
+      wavelength = SPEED_OF_SOUND / frequency_spectrum$frequency,
+      amplitude = frequency_spectrum$amplitude
+    )
+  }
+
   if (!inherits(wavelength_spectrum, "wavelength_spectrum")) {
     stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
   }
+
   if (!is.null(phase) && (!is.numeric(phase) || length(phase) != 1)) {
     stop("phase must be a single numeric value")
   }
+
+  relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
+  relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
+
+  coherence  <- relative_f0 + relative_k0
+  modulation <- relative_f0 - relative_k0
 
   indexed_spectra <- purrr::pmap_dfr(
     list(
@@ -66,16 +82,13 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
       stop("x and t must be scalar values")
     }
 
-    # Calculate relative frequency and wavenumber
-    relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
-    relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
-
     # Calculate the total amplitude as the sum of all amplitude contributions
     A0 <- sum(frequency_spectrum$amplitude) + sum(wavelength_spectrum$amplitude)
 
     # Compute and return the amplitude at (x, t)
     A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
+
   # Return the structured object
   structure(
     list(
@@ -84,7 +97,11 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
       phase = phase,
       indexed_spectra = indexed_spectra,
       fundamental_amplitude = fundamental_amplitude,
-      composite_amplitude = composite_amplitude
+      composite_amplitude = composite_amplitude,
+      relative_f0 = relative_f0,
+      relative_k0 = relative_k0,
+      coherence = coherence,
+      modulation = modulation
     ),
     class = "waveform"
   )
@@ -97,6 +114,8 @@ plot.waveform <- function(x, label = '',
                           line_plot_resolution = 1000, ...) {  # Increased resolution for line plots
 
   f0 <- x$frequency_spectrum$fundamental_frequency
+  T0 <- 1 / x$frequency_spectrum$fundamental_frequency
+  l0 <- x$wavelength_spectrum$fundamental_wavelength
   k0 <- 1 / x$wavelength_spectrum$fundamental_wavelength
 
   time_fundamental_cycle_length <- x$frequency_spectrum$fundamental_cycle_length
@@ -144,7 +163,7 @@ plot.waveform <- function(x, label = '',
     amplitude = sapply(time_values, function(t) x$composite_amplitude(0, t))
   )
   composite_time <- ggplot2::ggplot(time_only_composite, ggplot2::aes(x = time, y = amplitude)) +
-    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::geom_line(color = colors_homey$major) +
     ggplot2::scale_x_continuous(name = "Time (s)", limits = c(0, space_time_range), labels = function(x) sprintf("%.3f", x * max_time / space_time_range)) +
     ggplot2::labs(
       title = bquote(.(label) ~ "Composite Time Slice")
@@ -158,7 +177,7 @@ plot.waveform <- function(x, label = '',
     amplitude = sapply(space_values, function(s) x$composite_amplitude(s, 0))
   )
   composite_space <- ggplot2::ggplot(space_only_composite, ggplot2::aes(x = space, y = amplitude)) +
-    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::geom_line(color = colors_homey$minor) +
     ggplot2::scale_x_continuous(name = "Space (m)", limits = c(0, space_time_range), labels = function(y) sprintf("%.3f", y * max_space / space_time_range)) +
     ggplot2::labs(
       title = bquote(.(label) ~ "Composite Space Slice")
@@ -178,7 +197,7 @@ plot.waveform <- function(x, label = '',
     ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
     ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Fundamental f0:" ~ .(formatC(f0, format = "f", digits = 1)) ~ "Hz k0:" ~ .(formatC(k0, format = "f", digits = 1)) ~ m^-1)
+      title = bquote(.(label) ~ "Fundamental" ~ f[0]: ~ .(formatC(f0, format = "f", digits = 2)) ~ "Hz" ~ k[0]: ~ .(formatC(k0, format = "f", digits = 2)) ~ m^-1)
     ) +
     ggplot2::coord_fixed(ratio = 1) +
     theme_homey()
@@ -189,10 +208,10 @@ plot.waveform <- function(x, label = '',
     amplitude = sapply(time_values, function(t) x$fundamental_amplitude(0, t))
   )
   fundamental_time <- ggplot2::ggplot(time_only_fundamental, ggplot2::aes(x = time, y = amplitude)) +
-    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::geom_line(color = colors_homey$major) +
     ggplot2::scale_x_continuous(name = "Time (s)", limits = c(0, space_time_range), labels = function(x) sprintf("%.3f", x * max_time / space_time_range)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Fundamental Time Slice f0:" ~ .(formatC(f0, format = "f", digits = 1)) ~ "Hz")
+      title = bquote(.(label) ~ "Fundamental Time Slice" ~ T[0]: ~ .(formatC(T0, format = "f", digits = 4)) ~ "s" ~ f[0]: ~ .(formatC(f0, format = "f", digits = 2)) ~ "Hz")
     ) +
     ggplot2::scale_y_continuous(name = "") +
     theme_homey()
@@ -203,10 +222,10 @@ plot.waveform <- function(x, label = '',
     amplitude = sapply(space_values, function(s) x$fundamental_amplitude(s, 0))
   )
   fundamental_space <- ggplot2::ggplot(space_only_fundamental, ggplot2::aes(x = space, y = amplitude)) +
-    ggplot2::geom_line(color = color_set$hi) +
+    ggplot2::geom_line(color = colors_homey$minor) +
     ggplot2::scale_x_continuous(name = "Space (m)", limits = c(0, space_time_range), labels = function(y) sprintf("%.3f", y * max_space / space_time_range)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Fundamental Space Slice k0:" ~ .(formatC(k0, format = "f", digits = 1)) ~ m^-1)
+      title = bquote(.(label) ~ "Fundamental Space Slice" ~ lambda[0]: ~ .(formatC(l0, format = "f", digits = 2)) ~ "m " ~ k[0]: ~ .(formatC(k0, format = "f", digits = 4)) ~ m^-1)
     ) +
     ggplot2::scale_y_continuous(name = "") +
     theme_homey()

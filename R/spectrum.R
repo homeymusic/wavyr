@@ -115,9 +115,11 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
   if (inherits(x, "frequency_spectrum")) {
     x_label <- "Frequency (Hz)"
     components <- x$component  # Frequency components
+    segment_color = colors_homey$major
   } else if (inherits(x, "wavelength_spectrum")) {
     x_label <- "Wavelength (m)"
     components <- x$component  # Wavelength components
+    segment_color = colors_homey$minor
   } else {
     stop("Unsupported spectrum type")
   }
@@ -132,7 +134,7 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
 
   # Plot using ggplot2
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
-    ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = colors_homey$neutral, lwd = 1.5) +  # Use 'neutral' color for spikes
+    ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = segment_color, lwd = 1.5) +  # Use 'neutral' color for spikes
     ggplot2::scale_x_continuous(name = x_label) +
     ggplot2::scale_y_continuous(name = "") +
     ggplot2::labs(title = title) +  # Set the dynamic title

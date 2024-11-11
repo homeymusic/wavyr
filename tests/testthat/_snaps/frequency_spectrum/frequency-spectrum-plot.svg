@@ -45,9 +45,9 @@
 <polyline points='373.71,550.04 373.71,18.84 ' style='stroke-width: 0.43; stroke: #291B14; stroke-linecap: butt;' />
 <polyline points='528.62,550.04 528.62,18.84 ' style='stroke-width: 0.43; stroke: #291B14; stroke-linecap: butt;' />
 <polyline points='683.54,550.04 683.54,18.84 ' style='stroke-width: 0.43; stroke: #291B14; stroke-linecap: butt;' />
-<line x1='63.88' y1='42.99' x2='63.88' y2='525.89' style='stroke-width: 3.20; stroke: #F3DDAB; stroke-linecap: butt;' />
-<line x1='373.71' y1='139.57' x2='373.71' y2='525.89' style='stroke-width: 3.20; stroke: #F3DDAB; stroke-linecap: butt;' />
-<line x1='683.54' y1='284.44' x2='683.54' y2='525.89' style='stroke-width: 3.20; stroke: #F3DDAB; stroke-linecap: butt;' />
+<line x1='63.88' y1='42.99' x2='63.88' y2='525.89' style='stroke-width: 3.20; stroke: #FFB000; stroke-linecap: butt;' />
+<line x1='373.71' y1='139.57' x2='373.71' y2='525.89' style='stroke-width: 3.20; stroke: #FFB000; stroke-linecap: butt;' />
+<line x1='683.54' y1='284.44' x2='683.54' y2='525.89' style='stroke-width: 3.20; stroke: #FFB000; stroke-linecap: butt;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='27.96' y='528.17' text-anchor='end' style='font-size: 6.60px; fill: #291B14; font-family: sans;' textLength='12.85px' lengthAdjust='spacingAndGlyphs'>0.00</text>

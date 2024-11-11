@@ -1,4 +1,4 @@
-# tests/testthat/test_waveform.R
+source(testthat::test_path("test_utils.R"))
 
 test_that("we can create a new waveform with a frequency spectrum, wavelength spectrum, and phase", {
   # Create a frequency spectrum
@@ -29,6 +29,36 @@ test_that("we can create a new waveform with a frequency spectrum, wavelength sp
   expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
   expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
   expect_equal(waveform_obj$wavelength_spectrum$component, c(1, 0.5, 0.33))
+  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
+})
+
+test_that("we can create a new waveform with just a frequency spectrum and it generates the wavelength spectrum automatically", {
+  # Create a frequency spectrum
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Define a phase for the waveform
+  phase <- pi / 4  # An arbitrary phase
+
+  # Create the waveform object without passing a wavelength_spectrum
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    phase = phase
+  )
+
+  # Expectations to check waveform creation
+  expect_s3_class(waveform_obj, "waveform")
+  expect_equal(waveform_obj$phase, phase)
+
+  # Verify that frequency spectrum was set correctly
+  expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
+  expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
+
+  # Verify that wavelength spectrum was generated correctly
+  expected_wavelengths <- SPEED_OF_SOUND / c(100, 200, 300)
+  expect_equal(waveform_obj$wavelength_spectrum$component, expected_wavelengths)
   expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
 })
 
@@ -266,7 +296,6 @@ test_that('frequency_spectrum is correct for M3', {
 
 })
 
-
 test_that("waveform plot generates correctly with time and space grid", {
   # Create a frequency_spectrum object
   f <- c(100, 200, 300)
@@ -293,3 +322,17 @@ test_that("waveform plot generates correctly with time and space grid", {
   vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))
 })
 
+test_that("cohenerce and modulation metrics make sense", {
+  P1 = waveform_for(framed_intervals$Perfect1, num_harmonics = 2)
+  M3 = waveform_for(framed_intervals$Major3,   num_harmonics = 2)
+  m6 = waveform_for(framed_intervals$minor6,   num_harmonics = 2)
+
+  expect_true(P1$coherence >  M3$coherence)
+  expect_true(P1$coherence >  m6$coherence)
+  expect_true(m6$coherence == M3$coherence)
+
+  expect_true(M3$modulation >  0)
+  expect_true(P1$modulation == 0)
+  expect_true(m6$modulation <  0)
+
+})

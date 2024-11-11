@@ -11,3 +11,4 @@ library(vdiffr)
 library(wavyr)
 
 test_check("wavyr")
+
