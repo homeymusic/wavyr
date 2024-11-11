@@ -31,7 +31,7 @@ test_that("waveform plot for each interval matches snapshot", {
     )
 
     l_spectrum <- wavelength_spectrum(
-      wavelength = 343 / f$x,
+      wavelength = SPEED_OF_SOUND / f$x,
       amplitude  = f$y
     )
 

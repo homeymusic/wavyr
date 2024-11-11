@@ -266,3 +266,30 @@ test_that("fundamental_amplitude throws an error for non-scalar x or t values", 
   expect_error(waveform_obj$fundamental_amplitude(1, c(0.01, 0.02)), "x and t must be scalar values")
   expect_error(waveform_obj$fundamental_amplitude(c(1, 2), c(0.01, 0.02)), "x and t must be scalar values")
 })
+test_that('frequency_spectrum is correct for M3', {
+
+  interval_midi = c(60,64,72)
+
+  f = hrep::sparse_fr_spectrum(interval_midi, num_harmonics=2)
+
+  # Create frequency_spectrum and wavelength_spectrum
+  f_spectrum <- frequency_spectrum(
+    frequency = f$x,
+    amplitude = f$y
+  )
+
+  l_spectrum <- wavelength_spectrum(
+    wavelength = SPEED_OF_SOUND / f$x,
+    amplitude  = f$y
+  )
+
+  # Create a dummy waveform object with frequency_spectrum and wavelength_spectrum
+  waveform <- waveform(
+    frequency_spectrum = f_spectrum,
+    wavelength_spectrum = l_spectrum
+  )
+
+  expect_equal(waveform$indexed_spectra$frequency, f$x, tolerance=0.1)
+  expect_equal(waveform$indexed_spectra$frequency_cycle_length, c(1,3,1,2,1), tolerance=0.1)
+
+})

@@ -64,11 +64,11 @@ waveform <- function(frequency_spectrum, wavelength_spectrum, phase = 0) {
           ifelse(is.na(wavelength_amplitude), 0, wavelength_amplitude)
 
         # Calculate relative frequencies
-        relative_f0 <- ifelse(is.na(frequency_cycle_length), 0, 1 / frequency_cycle_length)
-        relative_k0 <- ifelse(is.na(wavelength_cycle_length), 0, 1 / wavelength_cycle_length)
+        relative_fn <- ifelse(is.na(frequency_cycle_length), 0, 1 / frequency_cycle_length)
+        relative_kn <- ifelse(is.na(wavelength_cycle_length), 0, 1 / wavelength_cycle_length)
 
         # Return the amplitude contribution for this component as a traveling wave
-        An * cos(2 * pi * (relative_f0 * t - relative_k0 * x) + phase)
+        An * cos(2 * pi * (relative_fn * t - relative_kn * x) + phase)
       })
     )
   }

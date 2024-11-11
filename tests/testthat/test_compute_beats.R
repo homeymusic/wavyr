@@ -68,7 +68,7 @@ test_that("compute_beats_cpp returns an empty beat spectrum for very small frequ
 
   # Calculate beat spectrum using compute_beats_cpp with very close frequencies
   beat_spectrum <- compute_beats_cpp(
-    wavelength = 343 / frequency_spectrum_obj$frequency,
+    wavelength = SPEED_OF_SOUND / frequency_spectrum_obj$frequency,
     amplitude = frequency_spectrum_obj$amplitude
   )
 
