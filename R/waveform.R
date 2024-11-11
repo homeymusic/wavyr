@@ -128,7 +128,7 @@ plot.waveform <- function(x, label = '',
   )
   composite_2d <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = composite_amplitude)) +
     ggplot2::geom_tile() +
-    ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
+    ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi, name = "Amplitude") +
     ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
     ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
     ggplot2::labs(
@@ -171,7 +171,7 @@ plot.waveform <- function(x, label = '',
 
   fundamental_2d <- ggplot2::ggplot(grid, ggplot2::aes(x = time, y = space, fill = fundamental_amplitude)) +
     ggplot2::geom_tile() +
-    ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi) +
+    ggplot2::scale_fill_gradient(low = color_set$lo, high = color_set$hi, name = "Amplitude") +
     ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
     ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
     ggplot2::labs(
