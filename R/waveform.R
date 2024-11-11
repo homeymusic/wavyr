@@ -233,8 +233,18 @@ plot.waveform <- function(x, label = '',
   frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum, title = paste(label, "~ Frequency Spectrum")))
   wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$wavelength_spectrum, title = paste(label, "~ Wavelength Spectrum")))
 
+  # Create the top title combining label, coherence, and modulation
+  top_title <- grid::textGrob(
+    label = paste(
+      label,
+      "~",
+      sprintf("Coherence: %.2f", x$coherence),
+      sprintf("Modulation: %.2f", x$modulation)
+    ),
+    gp = grid::gpar(fontsize = 16, fontface = "bold", col = colors_homey$foreground)
+  )
+
   # Arrange the plots in the grid layout
-  min_height_unit <- 50
   gridExtra::grid.arrange(
     frequency_spectrum_grob,
     composite_time, fundamental_time,
@@ -243,6 +253,7 @@ plot.waveform <- function(x, label = '',
     wavelength_spectrum_grob,
     ncol = 2,
     layout_matrix = rbind(c(1, 1), c(2, 3), c(4, 5), c(6, 7), c(8,8)),
-    heights = min_height_unit*c(1,1,2,1,1)  # Make the frequency plot span both columns with extra height
+    heights = c(1,1,2,1,1),  # Make the frequency plot span both columns with extra height
+    top = top_title
   )
 }
