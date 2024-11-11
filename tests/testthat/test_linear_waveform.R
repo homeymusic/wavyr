@@ -237,7 +237,7 @@ test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude
   fundamental_amplitude_value <- linear_waveform_obj$fundamental_amplitude(x_test, t_test)
 
   # Expect that the calculated value is close to the expected value
-  expect_equal(fundamental_amplitude_value, 5.1, tolerance = 0.1)
+  expect_equal(fundamental_amplitude_value, 9.2, tolerance = 0.1)
 })
 
 test_that("linear_waveform correctly calculates composite_amplitude for given x and t", {

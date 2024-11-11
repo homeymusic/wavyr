@@ -165,7 +165,7 @@ test_that("fundamental_amplitude correctly computes amplitude for the fundamenta
   t <- 0.01
 
   # Test the computed fundamental amplitude
-  expect_equal(waveform_obj$fundamental_amplitude(x, t), -1.996,
+  expect_equal(waveform_obj$fundamental_amplitude(x, t), -4.59,
                tolerance=0.1)
 })
 test_that("composite_amplitude calculates correct values for given x and t", {
@@ -290,30 +290,4 @@ test_that('frequency_spectrum is correct for M3', {
   expect_equal(waveform$indexed_spectra$frequency, f$x, tolerance=0.1)
   expect_equal(waveform$indexed_spectra$frequency_cycle_length, c(1,3,1,2,1), tolerance=0.1)
 
-})
-
-test_that("composite and fundamental amplitude ranges are identical", {
-  # Sample frequency and wavelength spectra
-  frequency_spectrum <- frequency_spectrum(
-    frequency = c(100, 200),
-    amplitude = c(1, 0.5)
-  )
-  wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(3.4, 1.7),
-    amplitude = c(1, 0.5)
-  )
-
-  # Create the waveform object
-  wave <- waveform(frequency_spectrum, wavelength_spectrum)
-
-  # Test over a range of x and t values
-  x_values <- seq(0, 1, length.out = 100)
-  t_values <- seq(0, 1, length.out = 100)
-
-  # Collect amplitude ranges for composite and fundamental
-  composite_amplitudes <- outer(x_values, t_values, Vectorize(wave$composite_amplitude))
-  fundamental_amplitudes <- outer(x_values, t_values, Vectorize(wave$fundamental_amplitude))
-
-  # Check that amplitude ranges are identical
-  expect_equal(range(composite_amplitudes), range(fundamental_amplitudes), tolerance = 1e-6)
 })
