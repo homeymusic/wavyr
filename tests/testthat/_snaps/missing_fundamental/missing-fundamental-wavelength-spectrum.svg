@@ -53,7 +53,7 @@
 <line x1='225.15' y1='117.81' x2='225.15' y2='521.37' style='stroke-width: 3.20; stroke: #F3DDAB; stroke-linecap: butt;' />
 <line x1='339.30' y1='46.53' x2='339.30' y2='521.37' style='stroke-width: 3.20; stroke: #F3DDAB; stroke-linecap: butt;' />
 <line x1='681.75' y1='55.53' x2='681.75' y2='521.37' style='stroke-width: 3.20; stroke: #F3DDAB; stroke-linecap: butt;' />
-<rect x='680.20' y='46.53' width='3.11' height='474.84' style='stroke-width: 1.07; stroke: #FF0000; stroke-dasharray: 5.69,5.69; stroke-linecap: butt; stroke-linejoin: miter;' />
+<rect x='680.20' y='46.53' width='3.11' height='474.84' style='stroke-width: 1.07; stroke: #FF5500; stroke-dasharray: 5.69,5.69; stroke-linecap: butt; stroke-linejoin: miter;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='22.97' y='524.40' text-anchor='end' style='font-size: 8.80px; fill: #291B14; font-family: sans;' textLength='4.89px' lengthAdjust='spacingAndGlyphs'>0</text>

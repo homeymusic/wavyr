@@ -212,6 +212,7 @@ plot.waveform <- function(x, label = '',
     composite_2d, fundamental_2d,
     composite_space, fundamental_space,
     ncol = 2,
+    heights = c(1, 1.5, 1),  # Set the middle row to 1.5 times the height of the other rows
     top = grid::textGrob(label, gp = grid::gpar(fontsize = 16, fontface = "bold"))
   )
 }

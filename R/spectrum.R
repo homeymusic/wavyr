@@ -155,7 +155,7 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
       data = rectangle_data,
       mapping = ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
       inherit.aes = FALSE,  # Do not inherit the spectrum_data aesthetics
-      color = "red", linetype = "dashed", fill = NA
+      color = colors_homey$fundamental, linetype = "dashed", fill = NA
     )
   }
 
