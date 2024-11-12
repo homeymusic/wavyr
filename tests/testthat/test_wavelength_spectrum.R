@@ -198,3 +198,65 @@ test_that("fundamental wavelength of tritone is longer than P1", {
   expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
 })
 
+test_that("wavelength_spectrum plot works with overlay spectrum", {
+  # Create a main wavelength_spectrum object
+  main_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(3.43, 1.715, 1.1433),  # Example wavelengths in meters
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create an overlay wavelength_spectrum object
+  overlay_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(3.0, 1.5, 1.0),  # Example overlay wavelengths
+    amplitude = c(0.6, 0.4, 0.3)
+  )
+
+  # Capture the plot with vdiffr to check visual output
+  vdiffr::expect_doppelganger("wavelength spectrum with overlay", function() {
+    .plot.spectrum(
+      main_wavelength_spectrum,
+      x_label = "Wavelength (m)",
+      segment_color = "red",
+      overlay_spectrum = overlay_wavelength_spectrum,
+      overlay_spectrum_color = "blue"
+    )
+  })
+})
+
+test_that("wavelength_spectrum plot raises error without overlay color", {
+  # Create a main wavelength_spectrum object
+  main_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(3.43, 1.715, 1.1433),  # Example wavelengths in meters
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create an overlay wavelength_spectrum object
+  overlay_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(3.0, 1.5, 1.0),  # Example overlay wavelengths
+    amplitude = c(0.6, 0.4, 0.3)
+  )
+
+  # Expect an error when overlay_spectrum is provided without overlay_spectrum_color
+  expect_error(
+    .plot.spectrum(
+      main_wavelength_spectrum,
+      x_label = "Wavelength (m)",
+      segment_color = "red",
+      overlay_spectrum = overlay_wavelength_spectrum
+    ),
+    "overlay_spectrum_color must be specified if overlay_spectrum is provided"
+  )
+})
+
+test_that("wavelength_spectrum plot works without overlay spectrum", {
+  # Create a wavelength_spectrum object without an overlay
+  wavelength_spectrum_obj <- wavelength_spectrum(
+    wavelength = c(3.43, 1.715, 1.1433),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Capture the plot with vdiffr to check visual output
+  vdiffr::expect_doppelganger("wavelength spectrum plot without overlay", function() {
+    plot(wavelength_spectrum_obj)
+  })
+})

@@ -26,7 +26,7 @@ colors_homey <- list(
   'major_dark'        = '#BF8400',
   'light_neutral'     = '#FFF6E2',
   'fundamental'       = '#FF5500',
-  'green'             = '#74DE7E',
+  'beat'             = '#74DE7E',
   'gray'              = '#C0C0C0'
 )
 

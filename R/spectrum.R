@@ -143,30 +143,51 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
 #' Core plotting function for spectrum objects
 #'
 #' Creates a spike plot based on subclass-specific labels and colors.
+#' Allows for an optional overlay spectrum with a separate color.
 #'
 #' @param x An object of class "spectrum".
 #' @param x_label A string label for the x-axis, provided by the subclass.
 #' @param segment_color A color for the spectrum segments, provided by the subclass.
 #' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
 #' @param title An optional character string for the plot title.
+#' @param overlay_spectrum An optional overlay spectrum object of class "spectrum".
+#' @param overlay_spectrum_color A color for the overlay spectrum segments. Required if overlay_spectrum is provided.
 #'
-.plot.spectrum <- function(x, x_label, segment_color, rectangles, title) {
+.plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), title = NULL, overlay_spectrum = NULL, overlay_spectrum_color = NULL) {
+
+  # Check if overlay_spectrum is provided without overlay_spectrum_color
+  if (!is.null(overlay_spectrum) && is.null(overlay_spectrum_color)) {
+    stop("overlay_spectrum_color must be specified if overlay_spectrum is provided.")
+  }
 
   # Set a default title if none is provided
   if (is.null(title)) {
     title <- paste(x_label, "Spectrum")
   }
 
-  # Create a data frame for ggplot
+  # Create a data frame for the main spectrum plot
   spectrum_data <- data.frame(component = x$component, amplitude = x$amplitude)
 
-  # Plot using ggplot2
+  # Plot using ggplot2 for the main spectrum
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
     ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = segment_color, lwd = 1.5) +
     ggplot2::scale_x_continuous(name = x_label) +
     ggplot2::scale_y_continuous(name = "") +
     ggplot2::labs(title = title) +
     theme_homey()
+
+  # Add overlay spectrum if provided
+  if (!is.null(overlay_spectrum)) {
+    # Create a data frame for the overlay spectrum
+    overlay_data <- data.frame(component = overlay_spectrum$component, amplitude = overlay_spectrum$amplitude)
+
+    # Add overlay spectrum with a different color and linetype
+    p <- p + ggplot2::geom_segment(
+      data = overlay_data,
+      ggplot2::aes(x = component, y = amplitude, xend = component, yend = 0),
+      color = overlay_spectrum_color, linetype = "dashed", lwd = 1.2
+    )
+  }
 
   # Add optional rectangles if specified
   if (length(rectangles) > 0) {
