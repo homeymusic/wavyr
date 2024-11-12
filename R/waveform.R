@@ -125,6 +125,35 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
 }
 
 #' @export
+`+.waveform` <- function(waveform1, waveform2) {
+  # Combine frequency spectra, summing amplitudes for identical components
+  combined_frequency_spectrum <- combine_spectra(
+    waveform1$frequency_spectrum,
+    waveform2$frequency_spectrum,
+    tolerance = FLOATING_POINT_TOLERANCE
+  )
+
+  # Combine wavelength spectra, summing amplitudes for identical components
+  combined_wavelength_spectrum <- combine_spectra(
+    waveform1$wavelength_spectrum,
+    waveform2$wavelength_spectrum,
+    tolerance = FLOATING_POINT_TOLERANCE
+  )
+
+  # Determine combined phase (average, or any other rule you choose)
+  combined_phase <- (waveform1$phase + waveform2$phase) / 2
+
+  # Create the new combined waveform object
+  combined_waveform <- waveform(
+    frequency_spectrum = combined_frequency_spectrum,
+    wavelength_spectrum = combined_wavelength_spectrum,
+    phase = combined_phase
+  )
+
+  return(combined_waveform)
+}
+
+#' @export
 plot.waveform <- function(x, label = '',
                           space_time_range = 25,
                           resolution = 300,

@@ -390,3 +390,223 @@ test_that("waveform computes fundamental wavelength spectrum correctly", {
   )
 })
 
+# Test for adding two waveforms with different components
+test_that("Adding two waveforms with different components combines components and amplitudes", {
+  # Define frequency spectra with distinct components
+  frequency_spectrum_1 <- frequency_spectrum(
+    frequency = c(100, 150, 300),
+    amplitude = c(1.0, 0.8, 0.6)
+  )
+  frequency_spectrum_2 <- frequency_spectrum(
+    frequency = c(300, 375, 900),
+    amplitude = c(0.6, 0.4, 0.2)
+  )
+
+  # Create two waveforms
+  waveform_1 <- waveform(frequency_spectrum = frequency_spectrum_1)
+  label = "before combined w1"
+  vdiffr::expect_doppelganger(label, function() plot(waveform_1, label = label))
+
+  waveform_2 <- waveform(frequency_spectrum = frequency_spectrum_2)
+  label = "before combined w2"
+  vdiffr::expect_doppelganger(label, function() plot(waveform_2, label = label))
+
+  # Add the waveforms
+  combined_waveform <- waveform_1 + waveform_2
+  label = "combined w1 plus w2"
+  vdiffr::expect_doppelganger(label, function() plot(combined_waveform, label = label))
+
+  # Expectations for combined frequency spectrum
+  expect_equal(
+    sort(combined_waveform$frequency_spectrum$frequency),
+    sort(c(100, 150, 300, 375, 900))
+  )
+  expect_equal(
+    combined_waveform$frequency_spectrum$amplitude,
+    c(1.0, 0.8, 1.2, 0.4, 0.2)
+  )
+})
+
+# Test for adding two waveforms with identical components (should sum amplitudes)
+test_that("Adding two waveforms with identical components sums their amplitudes", {
+  # Define frequency spectra with identical components
+  frequency_spectrum_1 <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+  frequency_spectrum_2 <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(0.5, 0.3)
+  )
+
+  # Create the two waveforms
+  waveform_1 <- waveform(frequency_spectrum = frequency_spectrum_1)
+  waveform_2 <- waveform(frequency_spectrum = frequency_spectrum_2)
+
+  # Add the waveforms
+  combined_waveform <- waveform_1 + waveform_2
+
+  # Expectations for combined frequency spectrum
+  expect_equal(
+    combined_waveform$frequency_spectrum$frequency,
+    c(100, 200)
+  )
+
+  # The amplitudes for identical frequencies should be summed
+  expected_amplitudes <- c(1.0 + 0.5, 0.8 + 0.3)
+  expect_equal(
+    combined_waveform$frequency_spectrum$amplitude,
+    expected_amplitudes
+  )
+})
+
+# Test for adding waveforms with some overlapping and some distinct components
+test_that("Adding two waveforms with some overlapping components correctly sums and combines", {
+  # Define frequency spectra with some overlapping and some distinct components
+  frequency_spectrum_1 <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.6)
+  )
+  frequency_spectrum_2 <- frequency_spectrum(
+    frequency = c(200, 300, 400),
+    amplitude = c(0.5, 0.3, 0.4)
+  )
+
+  # Create the two waveforms
+  waveform_1 <- waveform(frequency_spectrum = frequency_spectrum_1)
+  waveform_2 <- waveform(frequency_spectrum = frequency_spectrum_2)
+
+  # Add the waveforms
+  combined_waveform <- waveform_1 + waveform_2
+
+  # Expectations for combined frequency spectrum
+  expect_equal(
+    sort(combined_waveform$frequency_spectrum$frequency),
+    sort(c(100, 200, 300, 400))
+  )
+
+  # Amplitudes for overlapping frequencies should be summed
+  expected_amplitudes <- c(1.0, 0.8 + 0.5, 0.6 + 0.3, 0.4)
+  expect_equal(
+    combined_waveform$frequency_spectrum$amplitude,
+    expected_amplitudes
+  )
+})
+
+# Test for adding multiple waveforms together
+test_that("Adding multiple waveforms combines components and amplitudes correctly", {
+  # Define frequency spectra for three waveforms
+  frequency_spectrum_1 <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+  frequency_spectrum_2 <- frequency_spectrum(
+    frequency = c(300, 400),
+    amplitude = c(0.6, 0.4)
+  )
+  frequency_spectrum_3 <- frequency_spectrum(
+    frequency = c(200, 500),
+    amplitude = c(0.3, 0.7)
+  )
+
+  # Create three waveforms
+  waveform_1 <- waveform(frequency_spectrum = frequency_spectrum_1)
+  waveform_2 <- waveform(frequency_spectrum = frequency_spectrum_2)
+  waveform_3 <- waveform(frequency_spectrum = frequency_spectrum_3)
+
+  # Add the waveforms
+  combined_waveform <- waveform_1 + waveform_2 + waveform_3
+
+  # Expectations for combined frequency spectrum
+  expected_frequencies <- sort(c(100, 200, 300, 400, 500))
+  expected_amplitudes <- c(1.0, 1.1, 0.6, 0.4, 0.7)  # Amplitudes for each frequency after summing
+
+  expect_equal(sort(combined_waveform$frequency_spectrum$frequency), expected_frequencies)
+  expect_equal(combined_waveform$frequency_spectrum$amplitude, expected_amplitudes)
+})
+
+# Test for summing a vector of waveforms
+test_that("Summing a vector of waveforms combines components and amplitudes correctly, including wavelength values", {
+  # Define frequency spectra for multiple waveforms
+  frequency_spectrum_1 <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+  frequency_spectrum_2 <- frequency_spectrum(
+    frequency = c(300, 200),
+    amplitude = c(0.6, 0.4)
+  )
+  frequency_spectrum_3 <- frequency_spectrum(
+    frequency = c(500, 100),
+    amplitude = c(0.5, 0.3)
+  )
+
+  # Create a vector of waveforms
+  waveforms <- list(
+    waveform(frequency_spectrum = frequency_spectrum_1),
+    waveform(frequency_spectrum = frequency_spectrum_2),
+    waveform(frequency_spectrum = frequency_spectrum_3)
+  )
+
+  # Sum the waveforms using Reduce
+  combined_waveform <- Reduce(`+`, waveforms)
+
+  # Expectations for combined frequency spectrum
+  expected_frequencies <- sort(c(100, 200, 300, 500))
+  expected_amplitudes <- sort(c(1.3, 1.2, 0.6, 0.5))  # Expected amplitudes after summing
+
+  # Calculate the expected wavelengths based on SPEED_OF_SOUND
+  expected_wavelengths <- sort(SPEED_OF_SOUND / expected_frequencies)
+
+  # Check that the combined waveform has the correct frequencies and amplitudes
+  expect_equal(sort(combined_waveform$frequency_spectrum$frequency), expected_frequencies)
+  expect_equal(sort(combined_waveform$frequency_spectrum$amplitude), expected_amplitudes)
+
+  # Check that the combined waveform has the correct wavelengths and corresponding amplitudes
+  expect_equal(sort(combined_waveform$wavelength_spectrum$wavelength), expected_wavelengths)
+  expect_equal(combined_waveform$wavelength_spectrum$amplitude, expected_amplitudes)
+})
+
+# Test for summing a vector of waveforms, including a linear_waveform, combines components and amplitudes correctly
+test_that("Summing a vector of waveforms, including a linear_waveform, combines components and amplitudes correctly, including wavelength values", {
+  # Define frequency spectra for multiple waveforms
+  frequency_spectrum_1 <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+  frequency_spectrum_2 <- frequency_spectrum(
+    frequency = c(300, 200),
+    amplitude = c(0.6, 0.4)
+  )
+  frequency_spectrum_3 <- frequency_spectrum(
+    frequency = c(500, 100),
+    amplitude = c(0.5, 0.3)
+  )
+
+  # Create two waveforms and one linear_waveform
+  waveforms <- list(
+    waveform(frequency_spectrum = frequency_spectrum_1),
+    waveform(frequency_spectrum = frequency_spectrum_2),
+    linear_waveform(frequency_spectrum = frequency_spectrum_3)
+  )
+
+  # Sum the waveforms using Reduce
+  combined_waveform <- Reduce(`+`, waveforms)
+
+  # Expectations for combined frequency spectrum
+  expected_frequencies <- sort(c(100, 200, 300, 500))
+  expected_amplitudes <- sort(c(1.3, 1.2, 0.6, 0.5))  # Expected amplitudes after summing
+
+  # Calculate the expected wavelengths based on SPEED_OF_SOUND
+  expected_wavelengths <- c(0.6984565, 0.8730706, 1.1640941 ,1.7461412 ,3.4922823)
+  expected_wavelength_amplitudes <- c(0.5, 0.8, 0.6, 1.2 ,1.3)
+
+  # Check that the combined waveform has the correct frequencies and amplitudes
+  expect_equal(sort(combined_waveform$frequency_spectrum$frequency), expected_frequencies)
+  expect_equal(sort(combined_waveform$frequency_spectrum$amplitude), expected_amplitudes)
+
+  # Check that the combined waveform has the correct wavelengths and corresponding amplitudes
+  expect_equal(sort(combined_waveform$wavelength_spectrum$wavelength), expected_wavelengths,
+               tolerance = FLOATING_POINT_TOLERANCE)
+  expect_equal(combined_waveform$wavelength_spectrum$amplitude, expected_wavelength_amplitudes)
+})
