@@ -54,8 +54,8 @@ plot.wavelength_spectrum <- function(x, rectangles = numeric(0), title = NULL, b
   x_label <- "Wavelength (m)"
   segment_color <- colors_homey$minor
 
-  # Call .plot.spectrum, passing the beat spectrum and color as overlay parameters
-  .plot.spectrum(
+  # Call plot.spectrum, passing the beat spectrum and color as overlay parameters
+  plot.spectrum(
     x = x,
     x_label = x_label,
     segment_color = segment_color,

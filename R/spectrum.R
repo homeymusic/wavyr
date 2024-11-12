@@ -126,20 +126,6 @@ combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
   }
 }
 
-#' Generic plot function for spectrum objects
-#'
-#' Dispatches to the appropriate subclass method for plotting frequency or wavelength spectrum.
-#'
-#' @param x An object of class "spectrum" containing components and amplitudes.
-#' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
-#' @param title An optional character string for the plot title.
-#' @param ... Additional parameters for plotting.
-#'
-#' @export
-plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
-  UseMethod("plot.spectrum")
-}
-
 #' Core plotting function for spectrum objects
 #'
 #' Creates a spike plot based on subclass-specific labels and colors.
@@ -153,7 +139,7 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
 #' @param overlay_spectrum An optional overlay spectrum object of class "spectrum".
 #' @param overlay_spectrum_color A color for the overlay spectrum segments. Required if overlay_spectrum is provided.
 #'
-.plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), title = NULL, overlay_spectrum = NULL, overlay_spectrum_color = NULL) {
+plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), title = NULL, overlay_spectrum = NULL, overlay_spectrum_color = NULL) {
 
   # Check if overlay_spectrum is provided without overlay_spectrum_color
   if (!is.null(overlay_spectrum) && is.null(overlay_spectrum_color)) {

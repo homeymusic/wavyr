@@ -51,5 +51,5 @@ frequency_spectrum <- function(frequency, amplitude = NULL) {
 plot.frequency_spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
   x_label <- "Frequency (Hz)"
   segment_color <- colors_homey$major
-  .plot.spectrum(x, x_label, segment_color, rectangles, title)
+  plot.spectrum(x, x_label, segment_color, rectangles, title)
 }

@@ -125,7 +125,7 @@ test_that("spectrum plot works without overlay spectrum", {
 
   # Capture the plot with vdiffr to check visual output
   vdiffr::expect_doppelganger("spectrum plot without overlay", function() {
-    .plot.spectrum(spectrum_obj, x_label = "Component", segment_color = "red")
+    plot.spectrum(spectrum_obj, x_label = "Component", segment_color = "red")
   })
 })
 
@@ -144,7 +144,7 @@ test_that("spectrum plot works with overlay spectrum", {
 
   # Capture the plot with vdiffr to check visual output
   vdiffr::expect_doppelganger("spectrum with overlay", function() {
-    .plot.spectrum(
+    plot.spectrum(
       main_spectrum,
       x_label = "Component",
       segment_color = "red",
@@ -169,7 +169,7 @@ test_that("spectrum plot raises error without overlay color", {
 
   # Expect an error when overlay_spectrum is provided without overlay_spectrum_color
   expect_error(
-    .plot.spectrum(
+    plot.spectrum(
       main_spectrum,
       x_label = "Component",
       segment_color = "red",
