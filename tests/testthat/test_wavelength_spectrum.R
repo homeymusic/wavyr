@@ -197,3 +197,72 @@ test_that("fundamental wavelength of tritone is longer than P1", {
 
   expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
 })
+test_that("wavelength_spectrum plot works with beat spectrum", {
+  # Create the main wavelength spectrum
+  main_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(1, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create a beat spectrum
+  beat_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(1.2, 0.6, 0.4),
+    amplitude = c(0.7, 0.5, 0.3)
+  )
+
+  # Capture the plot with vdiffr to verify visual output with beat spectrum overlay
+  vdiffr::expect_doppelganger("wavelength spectrum with beat overlay", function() {
+    plot.wavelength_spectrum(
+      main_wavelength_spectrum,
+      beat_spectrum = beat_wavelength_spectrum,
+      beat_spectrum_color = colors_homey$beat
+    )
+  })
+})
+
+test_that("wavelength_spectrum plot raises error if beat spectrum provided without color", {
+  # Create the main wavelength spectrum
+  main_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(1, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create a beat spectrum
+  beat_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(1.2, 0.6, 0.4),
+    amplitude = c(0.7, 0.5, 0.3)
+  )
+
+  # Expect error if beat spectrum is provided without a specified color
+  expect_error(
+    plot.wavelength_spectrum(
+      main_wavelength_spectrum,
+      beat_spectrum = beat_wavelength_spectrum,
+      beat_spectrum_color = NULL
+    ),
+    "overlay_spectrum_color must be specified if overlay_spectrum is provided"
+  )
+})
+
+test_that("wavelength_spectrum plot shows primary spectrum under overlapping beat spectrum segment", {
+  # Create the main wavelength spectrum with an overlapping wavelength component
+  main_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(1.0, 0.5, 0.33),  # Main wavelengths
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create a beat spectrum with one overlapping wavelength
+  beat_wavelength_spectrum <- wavelength_spectrum(
+    wavelength = c(1.0, 0.6, 0.4),  # 1.0 overlaps with main spectrum
+    amplitude = c(0.7, 0.5, 0.3)
+  )
+
+  # Capture the plot with vdiffr to visually confirm that the main spectrum remains visible under the beat spectrum overlay
+  vdiffr::expect_doppelganger("wavelength spectrum with overlapping beat overlay", function() {
+    plot.wavelength_spectrum(
+      main_wavelength_spectrum,
+      beat_spectrum = beat_wavelength_spectrum,
+      beat_spectrum_color = colors_homey$beat
+    )
+  })
+})

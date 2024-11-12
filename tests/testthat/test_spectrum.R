@@ -178,3 +178,4 @@ test_that("spectrum plot raises error without overlay color", {
     "overlay_spectrum_color must be specified if overlay_spectrum is provided"
   )
 })
+

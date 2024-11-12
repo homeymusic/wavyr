@@ -4,7 +4,14 @@
 \alias{plot.wavelength_spectrum}
 \title{Plot a wavelength spectrum with spikes using ggplot2 and theme_homey}
 \usage{
-\method{plot}{wavelength_spectrum}(x, rectangles = numeric(0), title = NULL, ...)
+\method{plot}{wavelength_spectrum}(
+  x,
+  rectangles = numeric(0),
+  title = NULL,
+  beat_spectrum = NULL,
+  beat_spectrum_color = colors_homey$beat,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class "wavelength_spectrum".}
@@ -12,6 +19,10 @@
 \item{rectangles}{Optional: A numeric vector specifying positions for additional rectangles.}
 
 \item{title}{An optional character string for the plot title.}
+
+\item{beat_spectrum}{An optional beat spectrum object of class "spectrum".}
+
+\item{beat_spectrum_color}{A color for the beat spectrum segments. Defaults to colors_homey$beat.}
 }
 \description{
 Provides setup for wavelength-specific details before calling the core plot function.
