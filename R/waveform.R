@@ -302,14 +302,16 @@ plot.waveform <- function(x, label = '',
 
   # Arrange the plots in the grid layout
   gridExtra::grid.arrange(
-    composite_time, fundamental_time,
-    frequency_spectrum_grob,fundamental_frequency_spectrum_grob,
-    composite_2d, fundamental_2d,
-    wavelength_spectrum_grob,fundamental_wavelength_spectrum_grob,
-    composite_space, fundamental_space,
+    composite_space,composite_time,
+    wavelength_spectrum_grob,frequency_spectrum_grob,
+    composite_2d,
+    fundamental_space,fundamental_time,
+    fundamental_wavelength_spectrum_grob,fundamental_frequency_spectrum_grob,
+    fundamental_2d,
     ncol = 2,
-    layout_matrix = rbind(c(1, 2), c(3, 4), c(5,6), c(7, 8), c(9,10)),
-    heights = c(1,1,2,1,1),  # Make the frequency plot span both columns with extra height
+    layout_matrix = rbind(c(1, 2), c(3, 4), c(5,5), c(6,7), c(8,9), c(10,10)),
+    heights = c(1,1,2,1,1,2),  # Make the frequency plot span both columns with extra height
     top = top_title
   )
+
 }
