@@ -322,17 +322,68 @@ test_that("waveform plot generates correctly with time and space grid", {
   vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))
 })
 
-test_that("cohenerce and modulation metrics make sense", {
-  P1 = waveform_for(framed_intervals$Perfect1, num_harmonics = 2)
+test_that("cohenerce and modulation metrics for some dyads", {
   M3 = waveform_for(framed_intervals$Major3,   num_harmonics = 2)
   m6 = waveform_for(framed_intervals$minor6,   num_harmonics = 2)
 
-  expect_true(P1$coherence >  M3$coherence)
-  expect_true(P1$coherence >  m6$coherence)
-  expect_true(m6$coherence == M3$coherence)
+  expect_true(M3$coherence  ==  m6$coherence)
+  expect_true(M3$modulation == -m6$modulation)
+})
 
-  expect_true(M3$modulation >  0)
-  expect_true(P1$modulation == 0)
-  expect_true(m6$modulation <  0)
+test_that("cohenerce and modulation metrics for ionian and phrygian triads", {
+  ionian   = waveform_for(framed_triads$ionian, num_harmonics = 2)
+  phrygian = waveform_for(framed_triads$phrygian, num_harmonics = 2)
 
+  expect_true(ionian$coherence == phrygian$coherence)
+  expect_true(ionian$modulation == -phrygian$modulation)
+})
+
+test_that("waveform computes fundamental frequency spectrum correctly", {
+  # Create a frequency spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    phase = 0
+  )
+
+  # Check that the fundamental frequency spectrum is generated correctly
+  expect_s3_class(waveform_obj$fundamental_frequency_spectrum, "frequency_spectrum")
+  expect_equal(
+    waveform_obj$fundamental_frequency_spectrum$frequency,
+    frequency_spectrum_obj$fundamental_frequency
+  )
+  expect_equal(
+    waveform_obj$fundamental_frequency_spectrum$amplitude,
+    sum(frequency_spectrum_obj$amplitude) + sum(waveform_obj$wavelength_spectrum$amplitude)
+  )
+})
+
+test_that("waveform computes fundamental wavelength spectrum correctly", {
+  # Create a frequency spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create the waveform object
+  waveform_obj <- waveform(
+    frequency_spectrum = frequency_spectrum_obj,
+    phase = 0
+  )
+
+  # Check that the fundamental wavelength spectrum is generated correctly
+  expect_s3_class(waveform_obj$fundamental_wavelength_spectrum, "wavelength_spectrum")
+  expect_equal(
+    waveform_obj$fundamental_wavelength_spectrum$wavelength,
+    waveform_obj$wavelength_spectrum$fundamental_wavelength
+  )
+  expect_equal(
+    waveform_obj$fundamental_wavelength_spectrum$amplitude,
+    sum(frequency_spectrum_obj$amplitude) + sum(waveform_obj$wavelength_spectrum$amplitude)
+  )
 })

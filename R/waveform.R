@@ -23,8 +23,8 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
   relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
   relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
 
-  coherence  <- relative_f0 + relative_k0
-  modulation <- relative_f0 - relative_k0
+  coherence  <- (relative_f0 + relative_k0) / 2
+  modulation <- (relative_f0 - relative_k0) / 2
 
   indexed_spectra <- purrr::pmap_dfr(
     list(
@@ -48,13 +48,15 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
   ) %>% dplyr::arrange(dplyr::desc(wavelength))
 
   # Calculate the maximum amplitude for both fundamental and composite
-  A0 <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
+  maximum_amplitude <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
 
   composite_amplitude <- function(x, t) {
     # Check that x and t are scalar values
     if (length(x) != 1 || length(t) != 1) {
       stop("x and t must be scalar values")
     }
+
+    A0 <- maximum_amplitude
 
     # Calculate the composite amplitude as the sum of contributions
     sum(
@@ -76,6 +78,8 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
     ) * A0  # Rescale the sum to match the A0 range
   }
 
+  maximum_fundamental_amplitude <- sum(frequency_spectrum$amplitude) + sum(wavelength_spectrum$amplitude)
+
   fundamental_amplitude <- function(x, t) {
     # Check that x and t are scalar values
     if (length(x) != 1 || length(t) != 1) {
@@ -83,17 +87,29 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
     }
 
     # Calculate the total amplitude as the sum of all amplitude contributions
-    A0 <- sum(frequency_spectrum$amplitude) + sum(wavelength_spectrum$amplitude)
+    A0 <- maximum_fundamental_amplitude
 
     # Compute and return the amplitude at (x, t)
     A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
+
+  fundamental_frequency_spectrum  = frequency_spectrum(
+    frequency = frequency_spectrum$fundamental_frequency,
+    amplitude = maximum_fundamental_amplitude
+  )
+
+  fundamental_wavelength_spectrum = wavelength_spectrum(
+    wavelength = wavelength_spectrum$fundamental_wavelength,
+    amplitude = maximum_fundamental_amplitude
+  )
 
   # Return the structured object
   structure(
     list(
       frequency_spectrum = frequency_spectrum,
       wavelength_spectrum = wavelength_spectrum,
+      fundamental_frequency_spectrum = fundamental_frequency_spectrum,
+      fundamental_wavelength_spectrum = fundamental_wavelength_spectrum,
       phase = phase,
       indexed_spectra = indexed_spectra,
       fundamental_amplitude = fundamental_amplitude,
@@ -233,26 +249,29 @@ plot.waveform <- function(x, label = '',
   frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum, title = paste(label, "~ Frequency Spectrum")))
   wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$wavelength_spectrum, title = paste(label, "~ Wavelength Spectrum")))
 
+  fundamental_frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_frequency_spectrum, title = paste(label, "~ Fundamental Frequency Spectrum")))
+  fundamental_wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_wavelength_spectrum, title = paste(label, "~ Fundamental Wavelength Spectrum")))
+
   # Create the top title combining label, coherence, and modulation
   top_title <- grid::textGrob(
     label = paste(
       label,
       "~",
-      sprintf("Coherence: %.2f", x$coherence),
-      sprintf("Modulation: %.2f", x$modulation)
+      sprintf("Coherence: %.2f%%", x$coherence * 100),
+      sprintf("Modulation: %.2f%%", x$modulation * 100)
     ),
     gp = grid::gpar(fontsize = 16, fontface = "bold", col = colors_homey$foreground)
   )
 
   # Arrange the plots in the grid layout
   gridExtra::grid.arrange(
-    frequency_spectrum_grob,
     composite_time, fundamental_time,
+    frequency_spectrum_grob,fundamental_frequency_spectrum_grob,
     composite_2d, fundamental_2d,
+    wavelength_spectrum_grob,fundamental_wavelength_spectrum_grob,
     composite_space, fundamental_space,
-    wavelength_spectrum_grob,
     ncol = 2,
-    layout_matrix = rbind(c(1, 1), c(2, 3), c(4, 5), c(6, 7), c(8,8)),
+    layout_matrix = rbind(c(1, 2), c(3, 4), c(5,6), c(7, 8), c(9,10)),
     heights = c(1,1,2,1,1),  # Make the frequency plot span both columns with extra height
     top = top_title
   )

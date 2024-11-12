@@ -18,6 +18,14 @@ intervals <- list(
 )
 framed_intervals <- purrr::map(intervals, ~c(60, .x, 72))
 
+triads <- list(
+  # consonant intervals
+  ionian   =  60 + c(4,7),
+  phrygian =  72 - c(4,7)
+)
+framed_triads <- purrr::map(triads, ~c(60, .x, 72) %>% sort())
+
+
 waveform_for <- function(x, num_harmonics = 1) {
   sparse = x %>% hrep::sparse_fr_spectrum(num_harmonics=num_harmonics)
   frequency_spectrum(
