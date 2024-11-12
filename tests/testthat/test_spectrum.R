@@ -115,3 +115,66 @@ test_that("spectrum reduces closely spaced components within tolerance to a sing
   expect_equal(spectrum_obj$component, expected_component, tolerance = FLOATING_POINT_TOLERANCE)
   expect_equal(spectrum_obj$amplitude, expected_amplitude)
 })
+
+test_that("spectrum plot works without overlay spectrum", {
+  # Create a spectrum object without an overlay
+  spectrum_obj <- spectrum(
+    component = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Capture the plot with vdiffr to check visual output
+  vdiffr::expect_doppelganger("spectrum plot without overlay", function() {
+    .plot.spectrum(spectrum_obj, x_label = "Component", segment_color = "red")
+  })
+})
+
+test_that("spectrum plot works with overlay spectrum", {
+  # Create a main spectrum object
+  main_spectrum <- spectrum(
+    component = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create an overlay spectrum object
+  overlay_spectrum <- spectrum(
+    component = c(0.8, 0.4, 0.25),
+    amplitude = c(0.6, 0.4, 0.3)
+  )
+
+  # Capture the plot with vdiffr to check visual output
+  vdiffr::expect_doppelganger("spectrum with overlay", function() {
+    .plot.spectrum(
+      main_spectrum,
+      x_label = "Component",
+      segment_color = "red",
+      overlay_spectrum = overlay_spectrum,
+      overlay_spectrum_color = "blue"
+    )
+  })
+})
+
+test_that("spectrum plot raises error without overlay color", {
+  # Create a main spectrum object
+  main_spectrum <- spectrum(
+    component = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create an overlay spectrum object
+  overlay_spectrum <- spectrum(
+    component = c(0.8, 0.4, 0.25),
+    amplitude = c(0.6, 0.4, 0.3)
+  )
+
+  # Expect an error when overlay_spectrum is provided without overlay_spectrum_color
+  expect_error(
+    .plot.spectrum(
+      main_spectrum,
+      x_label = "Component",
+      segment_color = "red",
+      overlay_spectrum = overlay_spectrum
+    ),
+    "overlay_spectrum_color must be specified if overlay_spectrum is provided"
+  )
+})
