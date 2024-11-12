@@ -214,8 +214,8 @@ test_that("wavelength_spectrum plot works with beat spectrum", {
   vdiffr::expect_doppelganger("wavelength spectrum with beat overlay", function() {
     plot.wavelength_spectrum(
       main_wavelength_spectrum,
-      beat_spectrum = beat_wavelength_spectrum,
-      beat_spectrum_color = colors_homey$beat
+      beat_wavelength_spectrum = beat_wavelength_spectrum,
+      beat_wavelength_spectrum_color = colors_homey$beat
     )
   })
 })
@@ -237,8 +237,8 @@ test_that("wavelength_spectrum plot raises error if beat spectrum provided witho
   expect_error(
     plot.wavelength_spectrum(
       main_wavelength_spectrum,
-      beat_spectrum = beat_wavelength_spectrum,
-      beat_spectrum_color = NULL
+      beat_wavelength_spectrum = beat_wavelength_spectrum,
+      beat_wavelength_spectrum_color = NULL
     ),
     "overlay_spectrum_color must be specified if overlay_spectrum is provided"
   )
@@ -261,8 +261,8 @@ test_that("wavelength_spectrum plot shows primary spectrum under overlapping bea
   vdiffr::expect_doppelganger("wavelength spectrum with overlapping beat overlay", function() {
     plot.wavelength_spectrum(
       main_wavelength_spectrum,
-      beat_spectrum = beat_wavelength_spectrum,
-      beat_spectrum_color = colors_homey$beat
+      beat_wavelength_spectrum = beat_wavelength_spectrum,
+      beat_wavelength_spectrum_color = colors_homey$beat
     )
   })
 })

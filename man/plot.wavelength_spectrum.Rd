@@ -8,8 +8,8 @@
   x,
   rectangles = numeric(0),
   title = NULL,
-  beat_spectrum = NULL,
-  beat_spectrum_color = colors_homey$beat,
+  beat_wavelength_spectrum = NULL,
+  beat_wavelength_spectrum_color = colors_homey$beat,
   ...
 )
 }
@@ -20,9 +20,9 @@
 
 \item{title}{An optional character string for the plot title.}
 
-\item{beat_spectrum}{An optional beat spectrum object of class "spectrum".}
+\item{beat_wavelength_spectrum}{An optional beat spectrum object of class "spectrum".}
 
-\item{beat_spectrum_color}{A color for the beat spectrum segments. Defaults to colors_homey$beat.}
+\item{beat_wavelength_spectrum_color}{A color for the beat spectrum segments. Defaults to colors_homey$beat.}
 }
 \description{
 Provides setup for wavelength-specific details before calling the core plot function.

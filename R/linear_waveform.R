@@ -45,26 +45,26 @@ linear_waveform <- function(
   }
 
   # Calculate beat spectrum based on base wavelength spectrum
-  beat_spectrum <- compute_beats_cpp(
+  beat_wavelength_spectrum <- compute_beats_cpp(
     wavelength = base_wavelength_spectrum$component,
     amplitude = base_wavelength_spectrum$amplitude
   ) %>% wavelength_spectrum()
 
-  if (is.null(beat_spectrum)) {
+  if (is.null(beat_wavelength_spectrum)) {
     stop("Failed to create beat spectrum.")
   }
 
   # Combine the base wavelength spectrum and beat spectrum
   combined_wavelength_spectrum <- combine_spectra(
     base_wavelength_spectrum,
-    beat_spectrum,
+    beat_wavelength_spectrum,
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
   waveform_obj <- waveform(frequency_spectrum, combined_wavelength_spectrum, phase)
 
   waveform_obj$base_wavelength_spectrum = base_wavelength_spectrum
-  waveform_obj$beat_spectrum = beat_spectrum
+  waveform_obj$beat_wavelength_spectrum = beat_wavelength_spectrum
 
   # Assign the class to include "linear_waveform"
   class(waveform_obj) <- c("linear_waveform", "waveform", "list")

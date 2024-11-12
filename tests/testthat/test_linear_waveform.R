@@ -38,7 +38,7 @@ test_that("LinearWaveform calculates correct wavelengths for given frequencies",
   )
 })
 
-test_that("LinearWaveform includes beat_spectrum as a separate attribute", {
+test_that("LinearWaveform includes beat_wavelength_spectrum as a separate attribute", {
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
@@ -49,10 +49,10 @@ test_that("LinearWaveform includes beat_spectrum as a separate attribute", {
     frequency_spectrum = frequency_spectrum_obj
   )
 
-  # Verify that beat_spectrum contains the expected beat wavelengths and amplitudes
-  expect_equal(linear_waveform_obj$beat_spectrum$component, c(1.746141, 3.492282),
+  # Verify that beat_wavelength_spectrum contains the expected beat wavelengths and amplitudes
+  expect_equal(linear_waveform_obj$beat_wavelength_spectrum$component, c(1.746141, 3.492282),
                tolerance=FLOATING_POINT_TOLERANCE)
-  expect_equal(linear_waveform_obj$beat_spectrum$amplitude, c(1.5,3.1),
+  expect_equal(linear_waveform_obj$beat_wavelength_spectrum$amplitude, c(1.5,3.1),
                tolerance=FLOATING_POINT_TOLERANCE)
 })
 

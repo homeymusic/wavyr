@@ -46,11 +46,11 @@ wavelength_spectrum <- function(wavelength, amplitude = NULL) {
 #' @param x An object of class "wavelength_spectrum".
 #' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
 #' @param title An optional character string for the plot title.
-#' @param beat_spectrum An optional beat spectrum object of class "spectrum".
-#' @param beat_spectrum_color A color for the beat spectrum segments. Defaults to colors_homey$beat.
+#' @param beat_wavelength_spectrum An optional beat spectrum object of class "spectrum".
+#' @param beat_wavelength_spectrum_color A color for the beat spectrum segments. Defaults to colors_homey$beat.
 #'
 #' @export
-plot.wavelength_spectrum <- function(x, rectangles = numeric(0), title = NULL, beat_spectrum = NULL, beat_spectrum_color = colors_homey$beat, ...) {
+plot.wavelength_spectrum <- function(x, rectangles = numeric(0), title = NULL, beat_wavelength_spectrum = NULL, beat_wavelength_spectrum_color = colors_homey$beat, ...) {
   x_label <- "Wavelength (m)"
   segment_color <- colors_homey$minor
 
@@ -61,8 +61,8 @@ plot.wavelength_spectrum <- function(x, rectangles = numeric(0), title = NULL, b
     segment_color = segment_color,
     rectangles = rectangles,
     title = title,
-    overlay_spectrum = beat_spectrum,
-    overlay_spectrum_color = beat_spectrum_color,
+    overlay_spectrum = beat_wavelength_spectrum,
+    overlay_spectrum_color = beat_wavelength_spectrum_color,
     ...
   )
 }

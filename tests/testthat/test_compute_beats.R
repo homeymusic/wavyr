@@ -67,11 +67,11 @@ test_that("compute_beats_cpp returns an empty beat spectrum for very small frequ
   min_frequency_difference <- 1e-6
 
   # Calculate beat spectrum using compute_beats_cpp with very close frequencies
-  beat_spectrum <- compute_beats_cpp(
+  beat_wavelength_spectrum <- compute_beats_cpp(
     wavelength = SPEED_OF_SOUND / frequency_spectrum_obj$frequency,
     amplitude = frequency_spectrum_obj$amplitude
   )
 
-  # Test that beat_spectrum is empty
-  expect_true(nrow(beat_spectrum) == 0)
+  # Test that beat_wavelength_spectrum is empty
+  expect_true(nrow(beat_wavelength_spectrum) == 0)
 })
