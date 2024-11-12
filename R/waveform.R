@@ -1,3 +1,4 @@
+#' @export
 waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
   # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
@@ -257,10 +258,12 @@ plot.waveform <- function(x, label = '',
     label = paste(
       label,
       "~",
+      sprintf("Space Cyclicity: %.2f%%", x$relative_k0 * 100),
+      sprintf("Time Cyclicity: %.2f%%", x$relative_f0 * 100),
       sprintf("Coherence: %.2f%%", x$coherence * 100),
       sprintf("Modulation: %.2f%%", x$modulation * 100)
     ),
-    gp = grid::gpar(fontsize = 16, fontface = "bold", col = colors_homey$foreground)
+    gp = grid::gpar(fontsize = 13, fontface = "bold", col = colors_homey$foreground)
   )
 
   # Arrange the plots in the grid layout

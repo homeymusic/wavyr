@@ -58,7 +58,7 @@ linear_waveform <- function(
   combined_wavelength_spectrum <- combine_spectra(
     base_wavelength_spectrum,
     beat_spectrum,
-    tolerance = 1e-6
+    tolerance = FLOATING_POINT_TOLERANCE
   )
 
   waveform_obj <- waveform(frequency_spectrum, combined_wavelength_spectrum, phase)

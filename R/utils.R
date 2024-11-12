@@ -1,3 +1,4 @@
+#' @export
 midi_to_freq <- function(midi) {
   440 * 2^((midi - 69) / 12)
 }
@@ -6,7 +7,11 @@ midi_to_freq <- function(midi) {
 # will give us a wavelength of 1 m.
 # The frequency of F4 (65) is closest to 343 Hz.
 # 343 m/s is commonly used as the speed of sound.
-SPEED_OF_SOUND = midi_to_freq(65)
+#' @export
+SPEED_OF_SOUND <- midi_to_freq(65)
+
+#' @export
+FLOATING_POINT_TOLERANCE <- 1e-6
 
 # Define colors and helper functions
 colors_homey <- list(

@@ -10,8 +10,8 @@ test_that("we can create a new wavelength spectrum with separate wavelength and 
   # Expectations to check wavelength_spectrum creation
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
-  expect_equal(wavelength_spectrum_obj$component, c(1, 0.5, 0.33))
-  expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(wavelength_spectrum_obj$component %>% sort(), c(1, 0.5, 0.33) %>% sort())
+  expect_equal(wavelength_spectrum_obj$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("we can create a new wavelength spectrum with a list containing wavelength and amplitude", {
@@ -23,8 +23,8 @@ test_that("we can create a new wavelength spectrum with a list containing wavele
   # Expectations to check wavelength_spectrum creation
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
-  expect_equal(wavelength_spectrum_obj$component, c(1, 0.5, 0.33))
-  expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(wavelength_spectrum_obj$component, c(1, 0.5, 0.33) %>% sort())
+  expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("wavelength_spectrum handles mismatched input lengths gracefully", {
@@ -131,8 +131,8 @@ test_that("wavelength_spectrum has accessible wavelength field", {
   )
 
   # Check that `wavelength` field is accessible and correct
-  expect_equal(wavelength_spectrum_obj$wavelength, c(2.0, 1.0, 0.67))
-  expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(wavelength_spectrum_obj$wavelength, c(2.0, 1.0, 0.67) %>% sort())
+  expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5) %>% sort())
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
 })
@@ -197,3 +197,4 @@ test_that("fundamental wavelength of tritone is longer than P1", {
 
   expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
 })
+

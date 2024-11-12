@@ -140,8 +140,8 @@ test_that("frequency_spectrum has accessible frequency field", {
   )
 
   # Check that `frequency` field is accessible and correct
-  expect_equal(frequency_spectrum_obj$frequency, c(1000, 500, 333))
-  expect_equal(frequency_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(sort(frequency_spectrum_obj$frequency), sort(c(1000, 500, 333)))
+  expect_equal(sort(frequency_spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
   expect_s3_class(frequency_spectrum_obj, "frequency_spectrum")
   expect_s3_class(frequency_spectrum_obj, "spectrum")
 })

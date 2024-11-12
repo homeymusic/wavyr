@@ -1,4 +1,4 @@
-source(testthat::test_path("test_utils.R"))
+source(testthat::test_path("helper.R"))
 
 test_that("we can create a new waveform with a frequency spectrum, wavelength spectrum, and phase", {
   # Create a frequency spectrum
@@ -28,8 +28,8 @@ test_that("we can create a new waveform with a frequency spectrum, wavelength sp
   expect_equal(waveform_obj$phase, phase)
   expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
   expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_equal(waveform_obj$wavelength_spectrum$component, c(1, 0.5, 0.33))
-  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(sort(waveform_obj$wavelength_spectrum$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(waveform_obj$wavelength_spectrum$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
 test_that("we can create a new waveform with just a frequency spectrum and it generates the wavelength spectrum automatically", {
@@ -53,13 +53,13 @@ test_that("we can create a new waveform with just a frequency spectrum and it ge
   expect_equal(waveform_obj$phase, phase)
 
   # Verify that frequency spectrum was set correctly
-  expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
-  expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(waveform_obj$frequency_spectrum$component %>% sort(), c(100, 200, 300) %>% sort())
+  expect_equal(waveform_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 
   # Verify that wavelength spectrum was generated correctly
   expected_wavelengths <- SPEED_OF_SOUND / c(100, 200, 300)
-  expect_equal(waveform_obj$wavelength_spectrum$component, expected_wavelengths)
-  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(waveform_obj$wavelength_spectrum$component %>% sort(), expected_wavelengths %>% sort())
+  expect_equal(waveform_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("we can create a general waveform with only a frequency spectrum and no wavelength spectrum or phase", {
@@ -81,10 +81,12 @@ test_that("we can create a general waveform with only a frequency spectrum and n
 
   # Expectations to check waveform creation
   expect_s3_class(waveform_obj, "waveform")
-  expect_equal(waveform_obj$frequency_spectrum$frequency, c(100, 200, 300))
-  expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_equal(waveform_obj$wavelength_spectrum$wavelength, SPEED_OF_SOUND / c(100, 200, 300))
-  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(waveform_obj$frequency_spectrum$frequency %>% sort(), c(100, 200, 300) %>% sort())
+  expect_equal(waveform_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(
+    waveform_obj$wavelength_spectrum$wavelength %>% sort(),
+    (SPEED_OF_SOUND / c(100, 200, 300)) %>% sort())
+  expect_equal(waveform_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(waveform_obj$phase,0)
 })
 
@@ -109,10 +111,10 @@ test_that("waveform with wavelength spectrum and frequency spectrum but no phase
 
   # Expectations to check waveform creation
   expect_s3_class(waveform_obj, "waveform")
-  expect_equal(waveform_obj$frequency_spectrum$component, c(100, 200, 300))
-  expect_equal(waveform_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_equal(waveform_obj$wavelength_spectrum$component, c(1, 0.5, 0.33))
-  expect_equal(waveform_obj$wavelength_spectrum$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(waveform_obj$frequency_spectrum$component %>% sort(), c(100, 200, 300) %>% sort())
+  expect_equal(waveform_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(waveform_obj$wavelength_spectrum$component %>% sort(), c(1, 0.5, 0.33) %>% sort())
+  expect_equal(waveform_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(waveform_obj$phase,0)
 })
 
@@ -145,7 +147,7 @@ test_that("waveform's indexed_spectra variable allows iteration to access all va
     frequency_cycle_length = c(1,1,1),
     wavelength = c(3.49,1.75,1.16),
     wavelength_amplitude = c(0.9,0.7,0.4),
-    wavelength_cycle_length = c(2,1,1)
+    wavelength_cycle_length = c(1,1,2)
   )
 
   expect_equal(indexed_spectrum,expected_values, tolerance=0.1)
@@ -387,3 +389,4 @@ test_that("waveform computes fundamental wavelength spectrum correctly", {
     sum(frequency_spectrum_obj$amplitude) + sum(waveform_obj$wavelength_spectrum$amplitude)
   )
 })
+

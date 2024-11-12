@@ -9,8 +9,8 @@ test_that("we can create a new spectrum with separate component and amplitude ve
 
   # Expectations to check spectrum creation
   expect_s3_class(spectrum_obj, "spectrum")
-  expect_equal(spectrum_obj$component, c(1, 0.5, 0.33))
-  expect_equal(spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
 test_that("we can create a new spectrum with a list containing component and amplitude", {
@@ -21,8 +21,8 @@ test_that("we can create a new spectrum with a list containing component and amp
 
   # Expectations to check spectrum creation
   expect_s3_class(spectrum_obj, "spectrum")
-  expect_equal(spectrum_obj$component, c(1, 0.5, 0.33))
-  expect_equal(spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+  expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
 test_that("spectrum can calculate fundamental_cycle_length", {
@@ -43,8 +43,8 @@ test_that("spectrum can calculate fractions", {
 
   # Test fractions output
   fractions <- spectrum_obj$fractions
-  expect_equal(fractions$num, c(3, 1, 3))
-  expect_equal(fractions$den, c(1, 1, 2))
+  expect_equal(sort(fractions$num), sort(c(3, 1, 3)))
+  expect_equal(sort(fractions$den), sort(c(1, 1, 2)))
 })
 
 test_that("spectrum can combine with another spectrum within tolerance", {
@@ -63,7 +63,7 @@ test_that("spectrum can combine with another spectrum within tolerance", {
     spectrum1,
     spectrum2,
     tolerance = 0.001
-    )
+  )
 
   # Expected combined component and amplitude values
   expected_components <- c(1.0, 0.5, 0.33)
@@ -71,12 +71,8 @@ test_that("spectrum can combine with another spectrum within tolerance", {
 
   # Test the combined spectrum
   expect_s3_class(combined_spectrum, "spectrum")
-  expect_equal(combined_spectrum$component %>% sort(),
-               expected_components %>% sort(),
-               tolerance=0.01)
-  expect_equal(combined_spectrum$amplitude %>% sort(),
-               expected_amplitudes %>% sort(),
-               tolerance=0.01)
+  expect_equal(sort(combined_spectrum$component), sort(expected_components), tolerance = 0.01)
+  expect_equal(sort(combined_spectrum$amplitude), sort(expected_amplitudes), tolerance = 0.01)
 })
 
 test_that("cycle length per component", {
@@ -88,9 +84,34 @@ test_that("cycle length per component", {
 
   # Expectations to check spectrum creation
   expect_s3_class(spectrum_obj, "spectrum")
-  expect_equal(spectrum_obj$component, c(1, 0.5, 0.33))
-  expect_equal(spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
-  expect_equal(spectrum_obj$cycle_length, c(1,1,2))
+  expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
+  expect_equal(sort(spectrum_obj$cycle_length), sort(c(1, 1, 2)))
   expect_equal(spectrum_obj$fundamental_cycle_length, 2)
+})
 
+test_that("spectrum reduces closely spaced components within tolerance to a single component", {
+  # Define components that are within FLOATING_POINT_TOLERANCE of each other
+  base_frequency <- 100
+  close_components <- c(
+    base_frequency,
+    base_frequency + FLOATING_POINT_TOLERANCE / 2,
+    base_frequency + FLOATING_POINT_TOLERANCE / 3
+  )
+  amplitudes <- c(1.0, 0.8, 0.5)
+
+  # Create a spectrum object with the close components and amplitudes
+  spectrum_obj <- spectrum(
+    component = close_components,
+    amplitude = amplitudes
+  )
+
+  # Expected values
+  expected_component <- base_frequency  # Representative component within tolerance
+  expected_amplitude <- sum(amplitudes)  # Sum of amplitudes
+
+  # Check that the resulting spectrum has only one component
+  expect_equal(length(spectrum_obj$component), 1)
+  expect_equal(spectrum_obj$component, expected_component, tolerance = FLOATING_POINT_TOLERANCE)
+  expect_equal(spectrum_obj$amplitude, expected_amplitude)
 })

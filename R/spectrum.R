@@ -35,7 +35,7 @@ spectrum.list <- function(x, ...) {
   .spectrum(component = x[[1]], amplitude = x[[2]])
 }
 
-#' Internal spectrum constructor with validation
+#' Internal spectrum constructor with validation and component combination
 #' @keywords internal
 .spectrum <- function(component, amplitude) {
   # Validation checks
@@ -49,13 +49,23 @@ spectrum.list <- function(x, ...) {
     stop("All component values must be positive.")
   }
 
+  # Combine close components within the specified tolerance directly using combine_spectra_cpp
+  combined_result <- combine_spectra_cpp(
+    component, amplitude,
+    tolerance = FLOATING_POINT_TOLERANCE
+  )
+
+  # Extract the reduced components and amplitudes
+  component <- combined_result$component
+  amplitude <- combined_result$amplitude
+
+  # Calculate additional properties
   fractions <- approximate_rational_fractions_cpp(
     component / min(component),
     1 / (4 * pi),
     0.11
   )
 
-  # Define additional methods
   fundamental_cycle_length <- lcm_integers(fractions$den)
 
   # Return the spectrum object
@@ -78,16 +88,33 @@ print.spectrum <- function(x, ...) {
   cat("Amplitudes:", x$amplitude, "\n")
 }
 
-combine_spectra <- function(spectrum, other_spectrum, tolerance) {
+#' Combine two spectrum objects within a specified tolerance
+#'
+#' Combines two spectrum objects or reduces components within a single spectrum.
+#'
+#' @param spectrum The spectrum object to combine
+#' @param other_spectrum An additional spectrum object to combine (optional)
+#' @param tolerance The tolerance within which components are considered equal
+#' @return A new spectrum object with combined components and amplitudes
+#' @export
+combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
+  # Concatenate components and amplitudes if other_spectrum is provided
+  if (!is.null(other_spectrum)) {
+    combined_components <- c(spectrum$component, other_spectrum$component)
+    combined_amplitudes <- c(spectrum$amplitude, other_spectrum$amplitude)
+  } else {
+    combined_components <- spectrum$component
+    combined_amplitudes <- spectrum$amplitude
+  }
+
+  # Call combine_spectra_cpp with concatenated vectors
   result <- combine_spectra_cpp(
-    spectrum$component, spectrum$amplitude,
-    other_spectrum$component, other_spectrum$amplitude,
-    tolerance
+    combined_components, combined_amplitudes,
+    tolerance = tolerance
   )
 
-  # Determine the class of the calling object to return the correct subclass
-  spectrum_class <- class(spectrum)[1]  # This gets the first class which should be the specific spectrum class
-
+  # Return the combined result as the appropriate spectrum class
+  spectrum_class <- class(spectrum)[1]
   if (spectrum_class == "wavelength_spectrum") {
     return(wavelength_spectrum(result$component, result$amplitude))
   } else if (spectrum_class == "frequency_spectrum") {
