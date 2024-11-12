@@ -81,8 +81,11 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
 
   t = 'Missing Fundamental ~ Wavelength Spectrum'
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$wavelength_spectrum, rectangles = c(fundamental_wavelength),
-         title=t)
+    plot(linear_waveform_obj$base_wavelength_spectrum,
+         rectangles = c(fundamental_wavelength),
+         title = t,
+         beat_wavelength_spectrum = linear_waveform_obj$beat_wavelength_spectrum,
+         beat_wavelength_spectrum_color = colors_homey$beat)
   })
 
 })
@@ -134,9 +137,11 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
 
   t = paste(sub_t, '~ Wavelength Spectrum')
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$wavelength_spectrum, rectangles = SPEED_OF_SOUND / missing_freqs,
-         title=t)
+    plot(linear_waveform_obj$base_wavelength_spectrum,
+         rectangles = SPEED_OF_SOUND / missing_freqs,
+         title = t,
+         beat_wavelength_spectrum = linear_waveform_obj$beat_wavelength_spectrum,
+         beat_wavelength_spectrum_color = colors_homey$beat)
   })
-
 
 })

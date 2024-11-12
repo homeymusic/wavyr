@@ -154,11 +154,14 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   # Create a data frame for the main spectrum plot
   spectrum_data <- data.frame(component = x$component, amplitude = x$amplitude)
 
+  # Determine the maximum amplitude across both spectra
+  max_amplitude <- max(c(spectrum_data$amplitude, if (!is.null(overlay_spectrum)) overlay_spectrum$amplitude else 0))
+
   # Plot using ggplot2 for the main spectrum
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
     ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = segment_color, lwd = 1.5) +
     ggplot2::scale_x_continuous(name = x_label) +
-    ggplot2::scale_y_continuous(name = "") +
+    ggplot2::scale_y_continuous(name = "", limits = c(0, max_amplitude)) +
     ggplot2::labs(title = title) +
     theme_homey()
 
@@ -171,18 +174,18 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
     p <- p + ggplot2::geom_segment(
       data = overlay_data,
       ggplot2::aes(x = component, y = amplitude, xend = component, yend = 0),
-      color = overlay_spectrum_color, linetype = "dashed", lwd = 1.2
+      color = overlay_spectrum_color, linetype = "dotted", lwd = 1.5
     )
   }
 
   # Add optional rectangles if specified
   if (length(rectangles) > 0) {
-    rect_width <- 0.005 * (max(x$component) - min(x$component))
+    rect_width <- 0.03 * (max(x$component) - min(x$component))
     rectangle_data <- data.frame(
       xmin = rectangles - rect_width / 2,
       xmax = rectangles + rect_width / 2,
       ymin = 0,
-      ymax = max(spectrum_data$amplitude)
+      ymax = max_amplitude  # Use the maximum amplitude across both spectra
     )
 
     p <- p + ggplot2::geom_rect(

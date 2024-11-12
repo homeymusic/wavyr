@@ -71,3 +71,45 @@ linear_waveform <- function(
 
   return(waveform_obj)
 }
+
+#' Plot method for linear_waveform
+#'
+#' Overrides the plot function for linear_waveform to include beat_wavelength_spectrum as an overlay.
+#' Calls the superclass plot method, while passing the beat_wavelength_spectrum to be displayed on top of the base wavelength spectrum.
+#'
+#' @param x A linear_waveform object.
+#' @param label A label for the plot.
+#' @param space_time_range The range of space and time for plotting.
+#' @param resolution Resolution of the 2D plot.
+#' @param line_plot_resolution Resolution of the line plots.
+#' @param beat_wavelength_spectrum_color Color for the beat wavelength spectrum overlay.
+#' @param ... Additional parameters passed to the superclass plot method.
+#'
+#' @export
+plot.linear_waveform <- function(x, label = '',
+                                 space_time_range = 25,
+                                 resolution = 300,
+                                 line_plot_resolution = 1000,
+                                 beat_wavelength_spectrum_color = colors_homey$beat, ...) {
+
+  # Customize the wavelength spectrum plot to include beat_wavelength_spectrum overlay
+  wavelength_spectrum_grob <- grid::grid.grabExpr(
+    plot(
+      x$base_wavelength_spectrum,
+      title = paste(label, "~ Wavelength Spectrum"),
+      beat_wavelength_spectrum = x$beat_wavelength_spectrum,
+      beat_wavelength_spectrum_color = beat_wavelength_spectrum_color
+    )
+  )
+
+  # Call the superclass plot method with customized wavelength spectrum grob
+  plot.waveform(
+    x = x,
+    label = label,
+    space_time_range = space_time_range,
+    resolution = resolution,
+    line_plot_resolution = line_plot_resolution,
+    wavelength_spectrum_grob = wavelength_spectrum_grob,
+    ...
+  )
+}

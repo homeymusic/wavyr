@@ -2,19 +2,34 @@
 % Please edit documentation in R/spectrum.R
 \name{plot.spectrum}
 \alias{plot.spectrum}
-\title{Generic plot function for spectrum objects}
+\title{Core plotting function for spectrum objects}
 \usage{
-plot.spectrum(x, rectangles = numeric(0), title = NULL, ...)
+\method{plot}{spectrum}(
+  x,
+  x_label,
+  segment_color,
+  rectangles = numeric(0),
+  title = NULL,
+  overlay_spectrum = NULL,
+  overlay_spectrum_color = NULL
+)
 }
 \arguments{
-\item{x}{An object of class "spectrum" containing components and amplitudes.}
+\item{x}{An object of class "spectrum".}
+
+\item{x_label}{A string label for the x-axis, provided by the subclass.}
+
+\item{segment_color}{A color for the spectrum segments, provided by the subclass.}
 
 \item{rectangles}{Optional: A numeric vector specifying positions for additional rectangles.}
 
 \item{title}{An optional character string for the plot title.}
 
-\item{...}{Additional parameters for plotting.}
+\item{overlay_spectrum}{An optional overlay spectrum object of class "spectrum".}
+
+\item{overlay_spectrum_color}{A color for the overlay spectrum segments. Required if overlay_spectrum is provided.}
 }
 \description{
-Dispatches to the appropriate subclass method for plotting frequency or wavelength spectrum.
+Creates a spike plot based on subclass-specific labels and colors.
+Allows for an optional overlay spectrum with a separate color.
 }

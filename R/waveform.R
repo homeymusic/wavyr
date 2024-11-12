@@ -127,8 +127,9 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
 #' @export
 plot.waveform <- function(x, label = '',
                           space_time_range = 25,
-                          resolution = 300,  # Higher resolution for 2D plots
-                          line_plot_resolution = 1000, ...) {  # Increased resolution for line plots
+                          resolution = 300,
+                          line_plot_resolution = 1000,
+                          wavelength_spectrum_grob = NULL, ...) {
 
   f0 <- x$frequency_spectrum$fundamental_frequency
   T0 <- 1 / x$frequency_spectrum$fundamental_frequency
@@ -248,7 +249,11 @@ plot.waveform <- function(x, label = '',
     theme_homey()
 
   frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum, title = paste(label, "~ Frequency Spectrum")))
-  wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$wavelength_spectrum, title = paste(label, "~ Wavelength Spectrum")))
+  if (is.null(wavelength_spectrum_grob)) {
+    wavelength_spectrum_grob <- grid::grid.grabExpr(
+      plot(x$wavelength_spectrum, title = paste(label, "~ Wavelength Spectrum"))
+    )
+  }
 
   fundamental_frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_frequency_spectrum, title = paste(label, "~ Fundamental Frequency Spectrum")))
   fundamental_wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_wavelength_spectrum, title = paste(label, "~ Fundamental Wavelength Spectrum")))

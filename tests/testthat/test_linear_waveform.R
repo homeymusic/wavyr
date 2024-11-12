@@ -257,3 +257,74 @@ test_that("linear_waveform correctly calculates composite_amplitude for given x 
   expect_equal(a, -7.2, tolerance = 0.1)
 })
 
+test_that("plot.linear_waveform renders without errors for basic linear_waveform", {
+  # Create a frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Create a LinearWaveform object
+  linear_waveform_obj <- linear_waveform(
+    frequency_spectrum = frequency_spectrum_obj
+  )
+
+  # Capture the plot with vdiffr
+  vdiffr::expect_doppelganger("basic linear_waveform plot", function() {
+    plot(linear_waveform_obj, label = "Test LinearWaveform")
+  })
+})
+
+test_that("plot.linear_waveform renders beat_wavelength_spectrum overlay correctly", {
+  # Create a frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(150, 300, 450),
+    amplitude = c(1.0, 0.5, 0.3)
+  )
+
+  # Create a LinearWaveform object
+  linear_waveform_obj <- linear_waveform(
+    frequency_spectrum = frequency_spectrum_obj
+  )
+
+  # Capture the plot with beat_wavelength_spectrum overlay
+  vdiffr::expect_doppelganger("linear_waveform with beat spectrum overlay", function() {
+    plot(linear_waveform_obj, label = "Test LinearWaveform with Beat")
+  })
+})
+
+test_that("plot.linear_waveform maintains original appearance without beat spectrum overlay", {
+  # Create a frequency_spectrum object
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 200),
+    amplitude = c(1.0, 0.8)
+  )
+
+  # Create a LinearWaveform object
+  linear_waveform_obj <- linear_waveform(
+    frequency_spectrum = frequency_spectrum_obj
+  )
+
+  # Capture the plot without beat spectrum overlay
+  vdiffr::expect_doppelganger("linear_waveform plot without beat overlay", function() {
+    plot(linear_waveform_obj, label = "LinearWaveform No Beat Overlay")
+  })
+})
+
+test_that("plot.linear_waveform displays base and beat wavelength spectra as distinct overlays", {
+  # Create a frequency_spectrum object with close frequencies
+  frequency_spectrum_obj <- frequency_spectrum(
+    frequency = c(100, 107, 200),
+    amplitude = c(1.0, 0.5, 0.3)
+  )
+
+  # Create the LinearWaveform object with overlapping base and beat spectra
+  linear_waveform_obj <- linear_waveform(
+    frequency_spectrum = frequency_spectrum_obj
+  )
+
+  # Capture the plot with both base and beat spectra overlayed distinctly
+  vdiffr::expect_doppelganger("linear_waveform with distinct base and beat overlays", function() {
+    plot(linear_waveform_obj, label = "Test with Base and Beat Overlays")
+  })
+})

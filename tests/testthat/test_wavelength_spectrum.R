@@ -197,6 +197,7 @@ test_that("fundamental wavelength of tritone is longer than P1", {
 
   expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
 })
+
 test_that("wavelength_spectrum plot works with beat spectrum", {
   # Create the main wavelength spectrum
   main_wavelength_spectrum <- wavelength_spectrum(
