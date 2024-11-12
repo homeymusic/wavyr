@@ -34,9 +34,13 @@ test_that("veryifry what happen with 11 harmonics", {
   })
 
   t = paste(sub_t, '~ Wavelength Spectrum')
-  vdiffr::expect_doppelganger("all harmonics wavelength spectrum", function() {
-    plot(linear_waveform_obj$wavelength_spectrum)
+  vdiffr::expect_doppelganger(t, function() {
+    plot(linear_waveform_obj$base_wavelength_spectrum,
+         title = t,
+         beat_wavelength_spectrum = linear_waveform_obj$beat_wavelength_spectrum,
+         beat_wavelength_spectrum_color = colors_homey$beat)
   })
+
 
 })
 

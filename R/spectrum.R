@@ -168,14 +168,22 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   # Add overlay spectrum if provided
   if (!is.null(overlay_spectrum)) {
     # Create a data frame for the overlay spectrum
-    overlay_data <- data.frame(component = overlay_spectrum$component, amplitude = overlay_spectrum$amplitude)
+    overlay_data <- data.frame(component = overlay_spectrum$component,
+                               amplitude = overlay_spectrum$amplitude)
 
     # Add overlay spectrum with a different color and linetype
-    p <- p + ggplot2::geom_segment(
-      data = overlay_data,
-      ggplot2::aes(x = component, y = amplitude, xend = component, yend = 0),
-      color = overlay_spectrum_color, linetype = "dotted", lwd = 1.5
-    )
+    p <- p +
+      ggplot2::geom_segment(
+        data = overlay_data,
+        ggplot2::aes(x=component, xend=component,
+                     y=0, yend=amplitude),
+        color=overlay_spectrum_color
+      ) +
+      ggplot2::geom_point(
+        data = overlay_data,
+        color=overlay_spectrum_color,
+        size=2
+      )
   }
 
   # Add optional rectangles if specified
