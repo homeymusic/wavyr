@@ -153,6 +153,18 @@ test_that("frequency_spectrum plot works as expected", {
     amplitude = c(1.0, 0.8, 0.5)
   )
 
+  # Check that the object has the expected class hierarchy
+  expect_s3_class(frequency_spectrum_obj, "frequency_spectrum")
+  expect_s3_class(frequency_spectrum_obj, "spectrum")
+
+  # Check that `frequency` and `amplitude` fields are accessible and correct
+  expect_equal(frequency_spectrum_obj$component, c(100, 200, 300))
+  expect_equal(frequency_spectrum_obj$amplitude, c(1.0, 0.8, 0.5))
+
+  # Confirm that component and amplitude are numeric vectors
+  expect_type(frequency_spectrum_obj$component, "double")
+  expect_type(frequency_spectrum_obj$amplitude, "double")
+
   # Capture the plot with vdiffr
   vdiffr::expect_doppelganger("frequency spectrum plot", function() {
     plot(frequency_spectrum_obj)

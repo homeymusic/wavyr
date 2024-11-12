@@ -38,3 +38,19 @@ wavelength_spectrum <- function(wavelength, amplitude = NULL) {
 
   return(spectrum_obj)
 }
+
+#' Plot a wavelength spectrum with spikes using ggplot2 and theme_homey
+#'
+#' Provides setup for wavelength-specific details before calling the core plot function.
+#'
+#' @param x An object of class "wavelength_spectrum".
+#' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
+#' @param title An optional character string for the plot title.
+#'
+#' @export
+plot.wavelength_spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
+  x_label <- "Wavelength (m)"
+  segment_color <- colors_homey$minor
+  .plot.spectrum(x, x_label, segment_color, rectangles, title)
+}
+

@@ -38,3 +38,18 @@ frequency_spectrum <- function(frequency, amplitude = NULL) {
 
   return(spectrum_obj)
 }
+
+#' Plot a frequency spectrum with spikes using ggplot2 and theme_homey
+#'
+#' Provides setup for frequency-specific details before calling the core plot function.
+#'
+#' @param x An object of class "frequency_spectrum".
+#' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
+#' @param title An optional character string for the plot title.
+#'
+#' @export
+plot.frequency_spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
+  x_label <- "Frequency (Hz)"
+  segment_color <- colors_homey$major
+  .plot.spectrum(x, x_label, segment_color, rectangles, title)
+}

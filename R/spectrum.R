@@ -126,9 +126,9 @@ combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
   }
 }
 
-#' Plot a spectrum with spikes using ggplot2 and theme_homey
+#' Generic plot function for spectrum objects
 #'
-#' Creates a spike plot for a spectrum (frequency or wavelength).
+#' Dispatches to the appropriate subclass method for plotting frequency or wavelength spectrum.
 #'
 #' @param x An object of class "spectrum" containing components and amplitudes.
 #' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
@@ -137,19 +137,20 @@ combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
 #'
 #' @export
 plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
+  UseMethod("plot.spectrum")
+}
 
-  # Determine the appropriate labels based on the class
-  if (inherits(x, "frequency_spectrum")) {
-    x_label <- "Frequency (Hz)"
-    components <- x$component  # Frequency components
-    segment_color = colors_homey$major
-  } else if (inherits(x, "wavelength_spectrum")) {
-    x_label <- "Wavelength (m)"
-    components <- x$component  # Wavelength components
-    segment_color = colors_homey$minor
-  } else {
-    stop("Unsupported spectrum type")
-  }
+#' Core plotting function for spectrum objects
+#'
+#' Creates a spike plot based on subclass-specific labels and colors.
+#'
+#' @param x An object of class "spectrum".
+#' @param x_label A string label for the x-axis, provided by the subclass.
+#' @param segment_color A color for the spectrum segments, provided by the subclass.
+#' @param rectangles Optional: A numeric vector specifying positions for additional rectangles.
+#' @param title An optional character string for the plot title.
+#'
+.plot.spectrum <- function(x, x_label, segment_color, rectangles, title) {
 
   # Set a default title if none is provided
   if (is.null(title)) {
@@ -157,33 +158,30 @@ plot.spectrum <- function(x, rectangles = numeric(0), title = NULL, ...) {
   }
 
   # Create a data frame for ggplot
-  spectrum_data <- data.frame(component = components, amplitude = x$amplitude)
+  spectrum_data <- data.frame(component = x$component, amplitude = x$amplitude)
 
   # Plot using ggplot2
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
-    ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = segment_color, lwd = 1.5) +  # Use 'neutral' color for spikes
+    ggplot2::geom_segment(ggplot2::aes(xend = component, yend = 0), color = segment_color, lwd = 1.5) +
     ggplot2::scale_x_continuous(name = x_label) +
     ggplot2::scale_y_continuous(name = "") +
-    ggplot2::labs(title = title) +  # Set the dynamic title
+    ggplot2::labs(title = title) +
     theme_homey()
 
   # Add optional rectangles if specified
   if (length(rectangles) > 0) {
-    # Calculate a slight width for rectangles based on the range of components
-    rect_width <- 0.005 * (max(components) - min(components))
-
-    # Create a data frame for rectangles
+    rect_width <- 0.005 * (max(x$component) - min(x$component))
     rectangle_data <- data.frame(
       xmin = rectangles - rect_width / 2,
       xmax = rectangles + rect_width / 2,
-      ymin = 0,  # Start from zero
-      ymax = max(spectrum_data$amplitude)  # Up to the maximum amplitude
+      ymin = 0,
+      ymax = max(spectrum_data$amplitude)
     )
 
     p <- p + ggplot2::geom_rect(
       data = rectangle_data,
       mapping = ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-      inherit.aes = FALSE,  # Do not inherit the spectrum_data aesthetics
+      inherit.aes = FALSE,
       color = colors_homey$fundamental, linetype = "dashed", fill = NA
     )
   }

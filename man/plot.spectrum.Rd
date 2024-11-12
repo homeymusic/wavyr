@@ -2,9 +2,9 @@
 % Please edit documentation in R/spectrum.R
 \name{plot.spectrum}
 \alias{plot.spectrum}
-\title{Plot a spectrum with spikes using ggplot2 and theme_homey}
+\title{Generic plot function for spectrum objects}
 \usage{
-\method{plot}{spectrum}(x, rectangles = numeric(0), title = NULL, ...)
+plot.spectrum(x, rectangles = numeric(0), title = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class "spectrum" containing components and amplitudes.}
@@ -16,5 +16,5 @@
 \item{...}{Additional parameters for plotting.}
 }
 \description{
-Creates a spike plot for a spectrum (frequency or wavelength).
+Dispatches to the appropriate subclass method for plotting frequency or wavelength spectrum.
 }

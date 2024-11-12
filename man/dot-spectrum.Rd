@@ -2,11 +2,11 @@
 % Please edit documentation in R/spectrum.R
 \name{.spectrum}
 \alias{.spectrum}
-\title{Internal spectrum constructor with validation}
+\title{Internal spectrum constructor with validation and component combination}
 \usage{
 .spectrum(component, amplitude)
 }
 \description{
-Internal spectrum constructor with validation
+Internal spectrum constructor with validation and component combination
 }
 \keyword{internal}
