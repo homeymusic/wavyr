@@ -199,7 +199,11 @@ plot.waveform <- function(x, label = '',
     ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
     ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Composite")
+      title = bquote(.(label) ~ "Composite"),
+      subtitle = bquote(
+        "Wavelengths:" ~ .(length(x$wavelength_spectrum$wavelength)) ~
+          "~ Frequencies:" ~ .(length(x$frequency_spectrum$frequency))
+      )
     ) +
     ggplot2::coord_fixed(ratio = 1) +
     theme_homey()
@@ -244,7 +248,8 @@ plot.waveform <- function(x, label = '',
     ggplot2::scale_x_continuous(name = "Time (s)", labels = function(x) sprintf("%.3f", x * max_time / space_time_range), expand = c(0, 0)) +
     ggplot2::scale_y_continuous(name = "Space (m)", labels = function(y) sprintf("%.3f", y * max_space / space_time_range), expand = c(0, 0)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Fundamental" ~ f[0]: ~ .(formatC(f0, format = "f", digits = 2)) ~ "Hz" ~ k[0]: ~ .(formatC(k0, format = "f", digits = 2)) ~ m^-1)
+      title = bquote(.(label) ~ "Fundamental"),
+      subtitle = bquote(f[0]: ~ .(formatC(f0, format = "f", digits = 2)) ~ "Hz" ~ k[0]: ~ .(formatC(k0, format = "f", digits = 2)) ~ m^-1)
     ) +
     ggplot2::coord_fixed(ratio = 1) +
     theme_homey()
@@ -258,7 +263,8 @@ plot.waveform <- function(x, label = '',
     ggplot2::geom_line(color = colors_homey$major) +
     ggplot2::scale_x_continuous(name = "Time (s)", limits = c(0, space_time_range), labels = function(x) sprintf("%.3f", x * max_time / space_time_range)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Fundamental Time Slice" ~ T[0]: ~ .(formatC(T0, format = "f", digits = 4)) ~ "s" ~ f[0]: ~ .(formatC(f0, format = "f", digits = 2)) ~ "Hz")
+      title = bquote(.(label) ~ "Fundamental Time Slice"),
+      subtitle = bquote(T[0]: ~ .(formatC(T0, format = "f", digits = 4)) ~ "s" ~ f[0]: ~ .(formatC(f0, format = "f", digits = 2)) ~ "Hz")
     ) +
     ggplot2::scale_y_continuous(name = "") +
     theme_homey()
@@ -272,46 +278,101 @@ plot.waveform <- function(x, label = '',
     ggplot2::geom_line(color = colors_homey$minor) +
     ggplot2::scale_x_continuous(name = "Space (m)", limits = c(0, space_time_range), labels = function(y) sprintf("%.3f", y * max_space / space_time_range)) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Fundamental Space Slice" ~ lambda[0]: ~ .(formatC(l0, format = "f", digits = 2)) ~ "m " ~ k[0]: ~ .(formatC(k0, format = "f", digits = 4)) ~ m^-1)
+      title = bquote(.(label) ~ "Fundamental Space Slice"),
+      subtitle = bquote(lambda[0]: ~ .(formatC(l0, format = "f", digits = 2)) ~ "m " ~ k[0]: ~ .(formatC(k0, format = "f", digits = 4)) ~ m^-1)
     ) +
     ggplot2::scale_y_continuous(name = "") +
     theme_homey()
 
-  frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum, title = paste(label, "~ Frequency Spectrum")))
+  frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum,
+                                                      rectangles = c(x$frequency_spectrum$frequency %>% min()),
+                                                      title = paste(label, "~ Frequency Spectrum")))
   if (is.null(wavelength_spectrum_grob)) {
     wavelength_spectrum_grob <- grid::grid.grabExpr(
-      plot(x$wavelength_spectrum, title = paste(label, "~ Wavelength Spectrum"))
+      plot(x$wavelength_spectrum,
+           rectangles = c(SPEED_OF_SOUND / (x$frequency_spectrum$frequency %>% min())),
+           title = paste(label, "~ Wavelength Spectrum"))
     )
   }
 
   fundamental_frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_frequency_spectrum, title = paste(label, "~ Fundamental Frequency Spectrum")))
   fundamental_wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_wavelength_spectrum, title = paste(label, "~ Fundamental Wavelength Spectrum")))
 
-  # Create the top title combining label, coherence, and modulation
-  top_title <- grid::textGrob(
-    label = paste(
-      label,
-      "~",
-      sprintf("Space Cyclicity: %.2f%%", x$relative_k0 * 100),
-      sprintf("Time Cyclicity: %.2f%%", x$relative_f0 * 100),
-      sprintf("Coherence: %.2f%%", x$coherence * 100),
-      sprintf("Modulation: %.2f%%", x$modulation * 100)
+  # Define the main title and subtitle as two separate labels
+  main_title <- paste(label)
+  subtitle <- paste(
+    sprintf("Space Cyclicity: %.2f%%", x$relative_k0 * 100),
+    sprintf("Time Cyclicity: %.2f%%", x$relative_f0 * 100),
+    sprintf("Coherence: %.2f%%", x$coherence * 100),
+    sprintf("Modulation: %.2f%%", x$modulation * 100),
+    sep = "  "
+  )
+
+  # Create the title layout with reduced spacing
+  top_title <- cowplot::ggdraw() +
+    cowplot::draw_label(
+      main_title,
+      fontface = 'bold',
+      size = 14,
+      hjust = 0.5,
+      color = colors_homey$foreground,
+      y = 0.7  # Position main title higher
+    ) +
+    cowplot::draw_label(
+      subtitle,
+      fontface = 'plain',
+      size = 10,  # Smaller size for subtitle
+      hjust = 0.5,
+      color = colors_homey$foreground,
+      y = 0.4  # Position subtitle closer to the title
+    )
+
+  # Main layout with additional nested grids to align plots vertically
+  final_plot <- cowplot::plot_grid(
+    top_title,  # Title on top
+
+    # Main grid with nested layouts
+    cowplot::plot_grid(
+      # Row 1 and 2: Rectangular plots with composite_2d spanning two rows in the third column
+      cowplot::plot_grid(
+        # Nested column 1: composite_space stacked above wavelength_spectrum_grob
+        cowplot::plot_grid(composite_space, wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+
+        # Nested column 2: composite_time stacked above frequency_spectrum_grob
+        cowplot::plot_grid(composite_time, frequency_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+
+        # Column 3: composite_2d spanning two rows
+        composite_2d,
+
+        ncol = 3,
+        rel_widths = c(1, 1, 1)
+      ),
+
+      # Row 3 and 4: Rectangular plots with fundamental_2d spanning two rows in the third column
+      cowplot::plot_grid(
+        # Nested column 1: fundamental_space stacked above fundamental_wavelength_spectrum_grob
+        cowplot::plot_grid(fundamental_space, fundamental_wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+
+        # Nested column 2: fundamental_time stacked above fundamental_frequency_spectrum_grob
+        cowplot::plot_grid(fundamental_time, fundamental_frequency_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+
+        # Column 3: fundamental_2d spanning two rows
+        fundamental_2d,
+
+        ncol = 3,
+        rel_widths = c(1, 1, 1)
+      ),
+
+      # Set main layout with consistent row heights
+      ncol = 1,
+      rel_heights = c(2, 2)
     ),
-    gp = grid::gpar(fontsize = 13, fontface = "bold", col = colors_homey$foreground)
+
+    # Adjust relative heights for title and main content to reduce padding
+    ncol = 1,
+    rel_heights = c(0.08, 1)  # Reduce title height relative to main grid to limit white space
   )
 
-  # Arrange the plots in the grid layout
-  gridExtra::grid.arrange(
-    composite_space,composite_time,
-    wavelength_spectrum_grob,frequency_spectrum_grob,
-    composite_2d,
-    fundamental_space,fundamental_time,
-    fundamental_wavelength_spectrum_grob,fundamental_frequency_spectrum_grob,
-    fundamental_2d,
-    ncol = 2,
-    layout_matrix = rbind(c(1, 2), c(3, 4), c(5,5), c(6,7), c(8,9), c(10,10)),
-    heights = c(1,1,2,1,1,2),  # Make the frequency plot span both columns with extra height
-    top = top_title
-  )
-
+  # Print or return the final plot for display
+  print(final_plot)
 }

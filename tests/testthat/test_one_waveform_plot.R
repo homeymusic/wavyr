@@ -46,3 +46,4 @@ test_that("detailed: waveform plot generates correctly with time and space grid"
 
   vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))
 })
+""

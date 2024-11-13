@@ -15,11 +15,11 @@ Suggests:
     vdiffr
 Config/testthat/edition: 3
 Imports:
+    cowplot,
     dplyr,
     tidyr,
     purrr,
     lattice,
-    gridExtra,
     magrittr,
     Rcpp,
     tibble

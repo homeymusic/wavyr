@@ -154,6 +154,8 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   # Create a data frame for the main spectrum plot
   spectrum_data <- data.frame(component = x$component, amplitude = x$amplitude)
 
+  max_component = max(x$component)
+  min_component = min(x$component)
 
   get_matching_amplitude <- function(component_value) {
     match <- subset(spectrum_data, abs(component - component_value) <= FLOATING_POINT_TOLERANCE)
@@ -165,6 +167,8 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   }
 
   if (!is.null(overlay_spectrum)) {
+    max_component = max(overlay_spectrum$component)
+    min_component = min(overlay_spectrum$component)
     # Apply the function to each component in overlay_spectrum
     overlay_data <- tibble::tibble(
       component = overlay_spectrum$component,
@@ -176,8 +180,8 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
 
   # Determine the maximum amplitude across both spectra
   max_amplitude <- c(spectrum_data$amplitude, if (!is.null(overlay_spectrum)) overlay_data$total_amplitude else 0) %>%
-    ceiling() %>%
-    max()
+    max() %>%
+    {ceiling(. / FLOATING_POINT_TOLERANCE) * FLOATING_POINT_TOLERANCE}
 
   # Plot using ggplot2 for the main spectrum
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
@@ -207,7 +211,7 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
 
   # Add optional rectangles if specified
   if (length(rectangles) > 0) {
-    rect_width <- 0.06 * (max(x$component) - min(x$component))
+    rect_width <- 0.03 * (max_component - min_component)
     rectangle_data <- data.frame(
       xmin = rectangles - rect_width / 2,
       xmax = rectangles + rect_width / 2,

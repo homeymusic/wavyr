@@ -66,6 +66,7 @@ theme_homey <- function(aspect.ratio = NULL, font = "Helvetica", panel_backgroun
   ggplot2::theme_minimal() +
     ggplot2::theme(
       plot.title = ggplot2::element_text(color = colors_homey$foreground, face = "bold", size = ggplot2::rel(0.8)),
+      plot.subtitle = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.75)),
       axis.title = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.7)),
       axis.text = ggplot2::element_text(color = colors_homey$foreground, size = ggplot2::rel(0.6)),
       axis.ticks = ggplot2::element_blank(),
