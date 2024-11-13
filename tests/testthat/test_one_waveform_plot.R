@@ -22,7 +22,7 @@ test_that("detailed: waveform plot generates correctly with time and space grid"
   expect_true(!is.null(wavelength_spectrum_obj$fundamental_cycle_length))
 
   # Create the waveform object
-  waveform_obj <- waveform(
+  waveform_obj <- linear_waveform(
     frequency_spectrum = frequency_spectrum_obj,
     wavelength_spectrum = wavelength_spectrum_obj,
     phase = 0
@@ -41,6 +41,7 @@ test_that("detailed: waveform plot generates correctly with time and space grid"
   # Check if fundamental_amplitude function runs without errors and returns a numeric value
   expect_type(waveform_obj$fundamental_amplitude(0, 0), "double")
 
+  expect_true(inherits(waveform_obj, "linear_waveform"))
   expect_true(inherits(waveform_obj, "waveform"))
 
   vdiffr::expect_doppelganger(label, function() plot(waveform_obj, label = label))

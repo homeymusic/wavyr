@@ -94,8 +94,8 @@ plot.linear_waveform <- function(x, label = '',
 
   # Customize the wavelength spectrum plot to include beat_wavelength_spectrum overlay
   wavelength_spectrum_grob <- grid::grid.grabExpr(
-    plot(
-      x$base_wavelength_spectrum,
+    x$base_wavelength_spectrum %>% plot(
+      rectangles = c(SPEED_OF_SOUND / (x$frequency_spectrum$frequency %>% min())),
       title = paste(label, "~ Wavelength Spectrum"),
       beat_wavelength_spectrum = x$beat_wavelength_spectrum,
       beat_wavelength_spectrum_color = beat_wavelength_spectrum_color

@@ -154,8 +154,30 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   # Create a data frame for the main spectrum plot
   spectrum_data <- data.frame(component = x$component, amplitude = x$amplitude)
 
+
+  get_matching_amplitude <- function(component_value) {
+    match <- subset(spectrum_data, abs(component - component_value) <= FLOATING_POINT_TOLERANCE)
+    if (nrow(match) > 0) {
+      return(match$amplitude[1])  # Return the first matching amplitude
+    } else {
+      return(0)  # Return NA if no match is found
+    }
+  }
+
+  if (!is.null(overlay_spectrum)) {
+    # Apply the function to each component in overlay_spectrum
+    overlay_data <- tibble::tibble(
+      component = overlay_spectrum$component,
+      amplitude = overlay_spectrum$amplitude,
+      spectrum_amplitude = sapply(overlay_spectrum$component, get_matching_amplitude),
+      total_amplitude = .data$amplitude + .data$spectrum_amplitude
+    )
+  }
+
   # Determine the maximum amplitude across both spectra
-  max_amplitude <- max(c(spectrum_data$amplitude, if (!is.null(overlay_spectrum)) overlay_spectrum$amplitude else 0))
+  max_amplitude <- c(spectrum_data$amplitude, if (!is.null(overlay_spectrum)) overlay_data$total_amplitude else 0) %>%
+    ceiling() %>%
+    max()
 
   # Plot using ggplot2 for the main spectrum
   p <- ggplot2::ggplot(spectrum_data, ggplot2::aes(x = component, y = amplitude)) +
@@ -167,20 +189,17 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
 
   # Add overlay spectrum if provided
   if (!is.null(overlay_spectrum)) {
-    # Create a data frame for the overlay spectrum
-    overlay_data <- data.frame(component = overlay_spectrum$component,
-                               amplitude = overlay_spectrum$amplitude)
-
     # Add overlay spectrum with a different color and linetype
     p <- p +
       ggplot2::geom_segment(
         data = overlay_data,
         ggplot2::aes(x=component, xend=component,
-                     y=0, yend=amplitude),
+                     y=spectrum_amplitude, yend=total_amplitude),
         color=overlay_spectrum_color
       ) +
       ggplot2::geom_point(
         data = overlay_data,
+        ggplot2::aes(x=component, y=total_amplitude),
         color=overlay_spectrum_color,
         size=2
       )
@@ -188,7 +207,7 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
 
   # Add optional rectangles if specified
   if (length(rectangles) > 0) {
-    rect_width <- 0.03 * (max(x$component) - min(x$component))
+    rect_width <- 0.06 * (max(x$component) - min(x$component))
     rectangle_data <- data.frame(
       xmin = rectangles - rect_width / 2,
       xmax = rectangles + rect_width / 2,
@@ -200,7 +219,7 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
       data = rectangle_data,
       mapping = ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
       inherit.aes = FALSE,
-      color = colors_homey$fundamental, linetype = "dashed", fill = NA
+      color = colors_homey$fundamental, linetype = "solid", fill = NA
     )
   }
 
