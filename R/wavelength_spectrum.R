@@ -23,15 +23,19 @@ wavelength_spectrum <- function(wavelength, amplitude = NULL) {
     stopifnot(
       length(wavelength$wavelength) == length(wavelength$amplitude)
     )
-    spectrum_obj <- spectrum(component = wavelength$wavelength, amplitude = wavelength$amplitude)
+    spectrum_obj <- spectrum(component = wavelength$wavelength,
+                             amplitude = wavelength$amplitude,
+                             inverted  = T)
   } else {
     # Direct numeric vectors
-    spectrum_obj <- spectrum(component = wavelength, amplitude = amplitude)
+    spectrum_obj <- spectrum(component = wavelength,
+                             amplitude = amplitude,
+                             inverted  = T)
   }
 
   # Add wavelength-specific fields
   spectrum_obj$wavelength <- spectrum_obj$component
-  spectrum_obj$fundamental_wavelength <- spectrum_obj$fundamental_cycle_length / max(spectrum_obj$wavelength)  # Fixed line
+  spectrum_obj$fundamental_wavelength <- spectrum_obj$fundamental_component
 
   # Set class to wavelength_spectrum
   class(spectrum_obj) <- c("wavelength_spectrum", class(spectrum_obj))

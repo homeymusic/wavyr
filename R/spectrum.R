@@ -5,14 +5,16 @@
 #'
 #' @param component Either a numeric vector for component values or a list with named `component` and `amplitude` vectors.
 #' @param amplitude A numeric vector of amplitudes, if `component` is a numeric vector.
+#' @param inverted Logical; if `TRUE`, calculates `fundamental_component` as \code{fundamental_cycle_length / max(component)}.
+#' Otherwise, calculates it as \code{min(component) / fundamental_cycle_length}.
 #'
 #' @return An object of class \code{spectrum}.
 #' @export
-spectrum <- function(component, amplitude = NULL) {
+spectrum <- function(component, amplitude = NULL, inverted = FALSE) {
   if (is.list(component) && is.null(amplitude)) {
     UseMethod("spectrum", component)
   } else if (is.numeric(component) && is.numeric(amplitude)) {
-    spectrum.default(component = component, amplitude = amplitude)
+    spectrum.default(component = component, amplitude = amplitude, inverted = inverted)
   } else {
     stop("Invalid input: please provide either numeric `component` and `amplitude` vectors or a list with both.")
   }
@@ -20,24 +22,24 @@ spectrum <- function(component, amplitude = NULL) {
 
 #' @rdname spectrum
 #' @export
-spectrum.default <- function(component, amplitude) {
-  .spectrum(component = component, amplitude = amplitude)
+spectrum.default <- function(component, amplitude, inverted = FALSE) {
+  .spectrum(component = component, amplitude = amplitude, inverted = inverted)
 }
 
 #' @export
-spectrum.list <- function(x, ...) {
+spectrum.list <- function(x, inverted = FALSE, ...) {
   stopifnot(
     length(x) == 2L,
     is.numeric(x[[1]]),
     is.numeric(x[[2]]),
     length(x[[1]]) == length(x[[2]])
   )
-  .spectrum(component = x[[1]], amplitude = x[[2]])
+  .spectrum(component = x[[1]], amplitude = x[[2]], inverted = inverted)
 }
 
 #' Internal spectrum constructor with validation and component combination
 #' @keywords internal
-.spectrum <- function(component, amplitude) {
+.spectrum <- function(component, amplitude, inverted) {
   # Validation checks
   if (!is.numeric(component) || !is.numeric(amplitude)) {
     stop("Both component and amplitude must be numeric.")
@@ -68,6 +70,13 @@ spectrum.list <- function(x, ...) {
 
   fundamental_cycle_length <- lcm_integers(fractions$den)
 
+  # Calculate the fundamental component based on the inversion setting
+  fundamental_component <- if (inverted) {
+    fundamental_cycle_length / max(component)
+  } else {
+    min(component) / fundamental_cycle_length
+  }
+
   # Return the spectrum object
   structure(
     list(
@@ -75,7 +84,9 @@ spectrum.list <- function(x, ...) {
       amplitude = amplitude,
       cycle_length = fractions$den,
       fundamental_cycle_length = fundamental_cycle_length,
-      fractions = fractions
+      fundamental_component = fundamental_component,
+      fractions = fractions,
+      inverted = inverted
     ),
     class = "spectrum"
   )
@@ -86,6 +97,8 @@ print.spectrum <- function(x, ...) {
   cat("Spectrum Object\n")
   cat("Components:", x$component, "\n")
   cat("Amplitudes:", x$amplitude, "\n")
+  cat("Fundamental Component:", x$fundamental_component, "\n")
+  cat("Inverted:", x$inverted, "\n")
 }
 
 #' Combine two spectrum objects within a specified tolerance

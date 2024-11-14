@@ -179,3 +179,32 @@ test_that("spectrum plot raises error without overlay color", {
   )
 })
 
+test_that("fundamental_component is calculated correctly without inversion", {
+  # Create a spectrum object without inversion
+  spectrum_obj <- spectrum(
+    component = c(2, 4, 8),
+    amplitude = c(1.0, 0.8, 0.5),
+    inverted = FALSE
+  )
+
+  # Expected fundamental component: min(component) / fundamental_cycle_length
+  expected_fundamental_component <- min(spectrum_obj$component) / spectrum_obj$fundamental_cycle_length
+
+  # Test fundamental_component calculation
+  expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
+})
+
+test_that("fundamental_component is calculated correctly with inversion", {
+  # Create a spectrum object with inversion
+  spectrum_obj <- spectrum(
+    component = c(2, 4, 8),
+    amplitude = c(1.0, 0.8, 0.5),
+    inverted = TRUE
+  )
+
+  # Expected fundamental component: fundamental_cycle_length / max(component)
+  expected_fundamental_component <- spectrum_obj$fundamental_cycle_length / max(spectrum_obj$component)
+
+  # Test fundamental_component calculation
+  expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
+})
