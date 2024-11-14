@@ -208,3 +208,64 @@ test_that("fundamental_component is calculated correctly with inversion", {
   # Test fundamental_component calculation
   expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
 })
+
+test_that("fundamental_cycle_length is calculated correctly for non-inverted spectrum", {
+  # Create a non-inverted spectrum (e.g., frequency spectrum)
+  spectrum_obj <- spectrum(
+    component = c(100, 200, 300),
+    amplitude = c(1.0, 0.8, 0.5),
+    inverted = FALSE
+  )
+
+  # Expected cycle length for non-inverted spectrum: 1 / fundamental_component
+  expected_cycle_length <- 1 / spectrum_obj$fundamental_component
+
+  # Test if fundamental_cycle_length matches the expected value
+  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+})
+
+test_that("fundamental_cycle_length is calculated correctly for inverted spectrum", {
+  # Create an inverted spectrum (e.g., wavelength spectrum)
+  spectrum_obj <- spectrum(
+    component = c(1.0, 0.5, 0.25),
+    amplitude = c(1.0, 0.8, 0.5),
+    inverted = TRUE
+  )
+
+  # Expected cycle length for inverted spectrum is fundamental_component itself
+  expected_cycle_length <- spectrum_obj$fundamental_component
+
+  # Test if fundamental_cycle_length matches the expected value
+  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+})
+
+test_that("fundamental_cycle_length handles small components correctly", {
+  # Test with small component values for non-inverted spectrum
+  spectrum_obj <- spectrum(
+    component = c(0.1, 0.2, 0.3),
+    amplitude = c(1.0, 0.8, 0.5),
+    inverted = FALSE
+  )
+
+  # Expected cycle length for non-inverted spectrum
+  expected_cycle_length <- 1 / spectrum_obj$fundamental_component
+
+  # Check calculation
+  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+})
+
+test_that("fundamental_cycle_length handles large components correctly", {
+  # Test with large component values for inverted spectrum
+  spectrum_obj <- spectrum(
+    component = c(1000, 2000, 3000),
+    amplitude = c(1.0, 0.8, 0.5),
+    inverted = TRUE
+  )
+
+  # Expected cycle length for inverted spectrum
+  expected_cycle_length <- spectrum_obj$fundamental_component
+
+  # Check calculation
+  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+})
+

@@ -43,14 +43,33 @@ print.signal <- function(x, ...) {
 
 #' Plot method for signal objects
 #'
-#' Creates a plot of the signal's amplitude over a specified coordinate range.
+#' Creates a plot of the signal's amplitude over a specified coordinate range or a number of cycles.
 #'
 #' @param x A signal object.
 #' @param label An optional label for the plot.
 #' @param coordinate_range A numeric vector of length 2 specifying the start and stop values for the coordinate range.
+#' @param number_of_cycles A numeric value specifying the number of cycles to plot. Defaults to 3 if not provided.
 #' @param resolution Number of points to sample within the range.
 #' @export
-plot.signal <- function(x, label = '', coordinate_range = c(0, 1), resolution = 300) {
+plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles = NULL, resolution = 300) {
+
+  # Validate that both coordinate_range and number_of_cycles are not provided simultaneously
+  if (!is.null(coordinate_range) && !is.null(number_of_cycles)) {
+    stop("Please provide either 'coordinate_range' or 'number_of_cycles', not both.")
+  }
+
+  # Default to 3 cycles if number_of_cycles is NULL
+  if (is.null(number_of_cycles)) {
+    number_of_cycles <- 3
+  }
+
+  # Calculate the coordinate range based on number_of_cycles
+  if (is.null(coordinate_range)) {
+    # If coordinate_range is not provided, calculate it based on the fundamental cycle length
+    fundamental_cycle_length <- x$spectrum$fundamental_cycle_length
+    coordinate_range <- c(0, number_of_cycles * fundamental_cycle_length)
+  }
+
   # Validate coordinate_range
   if (length(coordinate_range) != 2 || !is.numeric(coordinate_range)) {
     stop("coordinate_range must be a numeric vector of length 2.")

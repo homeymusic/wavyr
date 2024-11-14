@@ -114,3 +114,28 @@ test_that("signal plot matches expected output for specified coordinate range", 
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot(signal_obj, label = label, coordinate_range = coordinate_range))
 })
+
+test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- spectrum(
+    component = c(4, 5),      # Frequencies in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- signal(spectrum_obj)
+
+  # Define label
+  label <- "Feynman's Beats (4 Hz and 5 Hz) with 3 Full Cycles"
+
+  # Define the expected coordinate range for 3 full cycles
+  # Here, the fundamental_cycle_length is based on the minimum of the components (4 Hz, 5 Hz).
+  # Let's assume it's 1/4 Hz (i.e., 0.25 seconds) for simplicity. Thus, 3 cycles = 3 * 0.25 = 0.75 seconds.
+  coordinate_range_expected <- c(0, 0.75)
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(signal_obj, label = label))
+
+  # Alternatively, check that the plot range indeed covers 3 full cycles
+  # You could inspect the axis limits or other aspects of the plot here.
+})
