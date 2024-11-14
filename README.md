@@ -1,11 +1,10 @@
 wavyr
 ================
 
-<!-- Insert the logo image at the top -->
+<img src="man/figures/wavyr_logo.png" data-align="right" width="120" />
 
-<img src="man/figures/wavyr_logo.png" align="right" width="120px"/>
-
-`wavyr` is an R package designed for studying waves.
+`wavyr` is an R package designed for studying composite waves in space
+and time.
 
 ## Installation
 
