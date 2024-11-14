@@ -45,15 +45,15 @@ test_that("wavelength_spectrum validates numeric input", {
   )
 })
 
-test_that("wavelength_spectrum calculates fundamental_cycle_length correctly", {
+test_that("wavelength_spectrum calculates relative_cycle_length correctly", {
   wavelength_spectrum_obj <- wavelength_spectrum(
     wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Test fundamental_cycle_length
-  expect_true(is.numeric(wavelength_spectrum_obj$fundamental_cycle_length))
-  expect_gt(wavelength_spectrum_obj$fundamental_cycle_length, 0)
+  # Test relative_cycle_length
+  expect_true(is.numeric(wavelength_spectrum_obj$relative_cycle_length))
+  expect_gt(wavelength_spectrum_obj$relative_cycle_length, 0)
 })
 
 test_that("wavelength_spectrum calculates fractions accurately", {
@@ -68,14 +68,14 @@ test_that("wavelength_spectrum calculates fractions accurately", {
   expect_equal(fractions$den, c(1, 1, 2))
 })
 
-test_that("wavelength_spectrum fundamental_cycle_length for single component returns 1", {
+test_that("wavelength_spectrum relative_cycle_length for single component returns 1", {
   wavelength_spectrum_obj <- wavelength_spectrum(
     wavelength = c(1),
     amplitude = c(1.0)
   )
 
   # Expect the fundamental cycle length for a single component to be 1
-  expect_equal(wavelength_spectrum_obj$fundamental_cycle_length, 1)
+  expect_equal(wavelength_spectrum_obj$relative_cycle_length, 1)
 })
 
 test_that("wavelength_spectrum edge cases: zero or negative wavelengths", {
@@ -162,7 +162,7 @@ test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum
   )
 
   # Calculate expected fundamental wavelength
-  expected_fundamental_wavelength <- wavelength_spectrum_obj$fundamental_cycle_length / max(wavelength_components)
+  expected_fundamental_wavelength <- wavelength_spectrum_obj$relative_cycle_length / max(wavelength_components)
 
   # Test that fundamental_wavelength is correctly assigned
   expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)

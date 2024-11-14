@@ -21,8 +21,8 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
     stop("phase must be a single numeric value")
   }
 
-  relative_f0 <- 1 / frequency_spectrum$fundamental_cycle_length
-  relative_k0 <- 1 / wavelength_spectrum$fundamental_cycle_length
+  relative_f0 <- 1 / frequency_spectrum$relative_cycle_length
+  relative_k0 <- 1 / wavelength_spectrum$relative_cycle_length
 
   coherence  <- (relative_f0 + relative_k0) / 2
   modulation <- (relative_f0 - relative_k0) / 2
@@ -157,7 +157,7 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
 plot.wave <- function(x, label = '',
                           space_time_range = 25,
                           resolution = 300,
-                          line_plot_resolution = 1000,
+                          line_plot_resolution = 300,
                           wavelength_spectrum_grob = NULL, ...) {
 
   f0 <- x$frequency_spectrum$fundamental_frequency
@@ -165,12 +165,12 @@ plot.wave <- function(x, label = '',
   l0 <- x$wavelength_spectrum$fundamental_wavelength
   k0 <- 1 / x$wavelength_spectrum$fundamental_wavelength
 
-  time_fundamental_cycle_length <- x$frequency_spectrum$fundamental_cycle_length
-  space_fundamental_cycle_length <- x$wavelength_spectrum$fundamental_cycle_length
+  time_relative_cycle_length <- x$frequency_spectrum$relative_cycle_length
+  space_relative_cycle_length <- x$wavelength_spectrum$relative_cycle_length
 
-  tonality <- if (time_fundamental_cycle_length > space_fundamental_cycle_length) {
+  tonality <- if (time_relative_cycle_length > space_relative_cycle_length) {
     'minor'
-  } else if (time_fundamental_cycle_length == space_fundamental_cycle_length) {
+  } else if (time_relative_cycle_length == space_relative_cycle_length) {
     'neutral'
   } else {
     'major'
@@ -179,8 +179,8 @@ plot.wave <- function(x, label = '',
   color_set <- saturation_colors_homey[[tonality]]
 
   # Calculate time and space ranges
-  max_time <- space_time_range / time_fundamental_cycle_length * (1 / f0)
-  max_space <- space_time_range / space_fundamental_cycle_length * (1 / k0)
+  max_time <- space_time_range / time_relative_cycle_length * (1 / f0)
+  max_space <- space_time_range / space_relative_cycle_length * (1 / k0)
 
   # Define grid for 2D plots and values for line plots
   time_values <- seq(0, space_time_range, length.out = line_plot_resolution)  # Higher resolution for line plots

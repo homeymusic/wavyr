@@ -50,7 +50,7 @@ print.signal <- function(x, ...) {
 #' @param coordinate_range A numeric vector of length 2 specifying the start and stop values for the coordinate range.
 #' @param resolution Number of points to sample within the range.
 #' @export
-plot.signal <- function(x, label = '', coordinate_range = c(0, 1), resolution = 1000) {
+plot.signal <- function(x, label = '', coordinate_range = c(0, 1), resolution = 300) {
   # Validate coordinate_range
   if (length(coordinate_range) != 2 || !is.numeric(coordinate_range)) {
     stop("coordinate_range must be a numeric vector of length 2.")

@@ -25,14 +25,14 @@ test_that("we can create a new spectrum with a list containing component and amp
   expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
-test_that("spectrum can calculate fundamental_cycle_length", {
+test_that("spectrum can calculate relative_cycle_length", {
   spectrum_obj <- spectrum(
     component = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Test fundamental_cycle_length (result might vary with fractions implementation)
-  expect_true(is.numeric(spectrum_obj$fundamental_cycle_length))
+  # Test relative_cycle_length (result might vary with fractions implementation)
+  expect_true(is.numeric(spectrum_obj$relative_cycle_length))
 })
 
 test_that("spectrum can calculate fractions", {
@@ -87,7 +87,7 @@ test_that("cycle length per component", {
   expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
   expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
   expect_equal(sort(spectrum_obj$cycle_length), sort(c(1, 1, 2)))
-  expect_equal(spectrum_obj$fundamental_cycle_length, 2)
+  expect_equal(spectrum_obj$relative_cycle_length, 2)
 })
 
 test_that("spectrum reduces closely spaced components within tolerance to a single component", {
@@ -187,8 +187,8 @@ test_that("fundamental_component is calculated correctly without inversion", {
     inverted = FALSE
   )
 
-  # Expected fundamental component: min(component) / fundamental_cycle_length
-  expected_fundamental_component <- min(spectrum_obj$component) / spectrum_obj$fundamental_cycle_length
+  # Expected fundamental component: min(component) / relative_cycle_length
+  expected_fundamental_component <- min(spectrum_obj$component) / spectrum_obj$relative_cycle_length
 
   # Test fundamental_component calculation
   expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
@@ -202,8 +202,8 @@ test_that("fundamental_component is calculated correctly with inversion", {
     inverted = TRUE
   )
 
-  # Expected fundamental component: fundamental_cycle_length / max(component)
-  expected_fundamental_component <- spectrum_obj$fundamental_cycle_length / max(spectrum_obj$component)
+  # Expected fundamental component: relative_cycle_length / max(component)
+  expected_fundamental_component <- spectrum_obj$relative_cycle_length / max(spectrum_obj$component)
 
   # Test fundamental_component calculation
   expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)

@@ -4,7 +4,7 @@
 \alias{plot.signal}
 \title{Plot method for signal objects}
 \usage{
-\method{plot}{signal}(x, label = "", coordinate_range = c(0, 1), resolution = 1000)
+\method{plot}{signal}(x, label = "", coordinate_range = c(0, 1), resolution = 300)
 }
 \arguments{
 \item{x}{A signal object.}

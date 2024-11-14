@@ -9,7 +9,7 @@
   label = "",
   space_time_range = 25,
   resolution = 300,
-  line_plot_resolution = 1000,
+  line_plot_resolution = 300,
   beat_wavelength_spectrum_color = colors_homey$beat,
   ...
 )

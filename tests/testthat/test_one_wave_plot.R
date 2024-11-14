@@ -9,7 +9,7 @@ test_that("detailed: wave plot generates correctly with time and space grid", {
 
   # Confirm fundamental properties in frequency_spectrum
   expect_true(!is.null(frequency_spectrum_obj$fundamental_frequency))
-  expect_true(!is.null(frequency_spectrum_obj$fundamental_cycle_length))
+  expect_true(!is.null(frequency_spectrum_obj$relative_cycle_length))
 
   # Create a wavelength_spectrum object with independent wavelengths
   wavelength_spectrum_obj <- wavelength_spectrum(
@@ -19,7 +19,7 @@ test_that("detailed: wave plot generates correctly with time and space grid", {
 
   # Confirm fundamental properties in wavelength_spectrum
   expect_true(!is.null(wavelength_spectrum_obj$fundamental_wavelength))
-  expect_true(!is.null(wavelength_spectrum_obj$fundamental_cycle_length))
+  expect_true(!is.null(wavelength_spectrum_obj$relative_cycle_length))
 
   # Create the wave object
   wave_obj <- superposed_wave(

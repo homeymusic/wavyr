@@ -5,8 +5,8 @@
 #'
 #' @param component Either a numeric vector for component values or a list with named `component` and `amplitude` vectors.
 #' @param amplitude A numeric vector of amplitudes, if `component` is a numeric vector.
-#' @param inverted Logical; if `TRUE`, calculates `fundamental_component` as \code{fundamental_cycle_length / max(component)}.
-#' Otherwise, calculates it as \code{min(component) / fundamental_cycle_length}.
+#' @param inverted Logical; if `TRUE`, treats the spectrum as an inverted domain (e.g., periods or wavelengths).
+#' If `FALSE`, treats the spectrum as a frequency domain (e.g., frequencies or wavenumbers).
 #'
 #' @return An object of class \code{spectrum}.
 #' @export
@@ -68,13 +68,13 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
     0.11
   )
 
-  fundamental_cycle_length <- lcm_integers(fractions$den)
+  relative_cycle_length <- lcm_integers(fractions$den)
 
   # Calculate the fundamental component based on the inversion setting
   fundamental_component <- if (inverted) {
-    fundamental_cycle_length / max(component)
+    relative_cycle_length / max(component)
   } else {
-    min(component) / fundamental_cycle_length
+    min(component) / relative_cycle_length
   }
 
   # Return the spectrum object
@@ -83,7 +83,7 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
       component = component,
       amplitude = amplitude,
       cycle_length = fractions$den,
-      fundamental_cycle_length = fundamental_cycle_length,
+      relative_cycle_length = relative_cycle_length,
       fundamental_component = fundamental_component,
       fractions = fractions,
       inverted = inverted

@@ -46,12 +46,12 @@
 <line x1='60.37' y1='383.86' x2='60.37' y2='525.89' style='stroke-width: 3.20; stroke: #8AC5FF; stroke-linecap: butt;' />
 <line x1='218.45' y1='298.64' x2='218.45' y2='525.89' style='stroke-width: 3.20; stroke: #8AC5FF; stroke-linecap: butt;' />
 <line x1='683.37' y1='241.83' x2='683.37' y2='525.89' style='stroke-width: 3.20; stroke: #8AC5FF; stroke-linecap: butt;' />
-<line x1='125.46' y1='525.89' x2='125.46' y2='440.68' style='stroke-width: 1.07; stroke: #74DE7E; stroke-linecap: butt;' />
-<line x1='311.43' y1='525.89' x2='311.43' y2='383.86' style='stroke-width: 1.07; stroke: #74DE7E; stroke-linecap: butt;' />
-<line x1='683.37' y1='241.83' x2='683.37' y2='42.99' style='stroke-width: 1.07; stroke: #74DE7E; stroke-linecap: butt;' />
-<circle cx='125.46' cy='440.68' r='2.49' style='stroke-width: 0.71; stroke: #74DE7E; fill: #74DE7E;' />
-<circle cx='311.43' cy='383.86' r='2.49' style='stroke-width: 0.71; stroke: #74DE7E; fill: #74DE7E;' />
-<circle cx='683.37' cy='42.99' r='2.49' style='stroke-width: 0.71; stroke: #74DE7E; fill: #74DE7E;' />
+<line x1='125.46' y1='525.89' x2='125.46' y2='440.68' style='stroke-width: 1.07; stroke: #77B255; stroke-linecap: butt;' />
+<line x1='311.43' y1='525.89' x2='311.43' y2='383.86' style='stroke-width: 1.07; stroke: #77B255; stroke-linecap: butt;' />
+<line x1='683.37' y1='241.83' x2='683.37' y2='42.99' style='stroke-width: 1.07; stroke: #77B255; stroke-linecap: butt;' />
+<circle cx='125.46' cy='440.68' r='2.49' style='stroke-width: 0.71; stroke: #77B255; fill: #77B255;' />
+<circle cx='311.43' cy='383.86' r='2.49' style='stroke-width: 0.71; stroke: #77B255; fill: #77B255;' />
+<circle cx='683.37' cy='42.99' r='2.49' style='stroke-width: 0.71; stroke: #77B255; fill: #77B255;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='24.29' y='528.17' text-anchor='end' style='font-size: 6.60px; fill: #291B14; font-family: sans;' textLength='9.18px' lengthAdjust='spacingAndGlyphs'>0.0</text>
