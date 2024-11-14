@@ -1,12 +1,12 @@
 Package: wavyr
 Type: Package
-Title: Working with waveforms
+Title: wavyr
 Version: 0.1.0
 Authors@R: 
     person("Brian", "Mulloy", , "brian@homeymusic.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1803-3172"))
 Maintainer: Brian McAuliff Mulloy <brian@homeymusic.net>
-Description: Allows researchers to explore waveforms.
+Description: Allows researchers to explore composite waves in space and time.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

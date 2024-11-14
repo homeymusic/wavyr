@@ -4,9 +4,9 @@
 \name{wavyr-package}
 \alias{wavyr}
 \alias{wavyr-package}
-\title{wavyr: Working with waveforms}
+\title{wavyr: wavyr}
 \description{
-Allows researchers to explore waveforms.
+Allows researchers to explore composite waves in space and time.
 }
 \author{
 \strong{Maintainer}: Brian Mulloy \email{brian@homeymusic.com} (\href{https://orcid.org/0000-0002-1803-3172}{ORCID})

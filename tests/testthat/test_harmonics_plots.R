@@ -4,7 +4,7 @@ test_that('time harmonics plot',{
   w = frequency_spectrum(
     frequency = s$x,
     amplitude = s$y
-  ) %>% linear_waveform()
+  ) %>% superposed_wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
 })
 
@@ -14,7 +14,7 @@ test_that('time harmonics plot',{
   w = frequency_spectrum(
     frequency = s$x,
     amplitude = s$y
-  ) %>% waveform()
+  ) %>% wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
 })
 
@@ -25,7 +25,7 @@ test_that('space harmonics plot',{
   w = frequency_spectrum(
     frequency = f,
     amplitude = a
-  ) %>% linear_waveform()
+  ) %>% superposed_wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
 })
 
@@ -36,6 +36,6 @@ test_that('space harmonics plot',{
   w = frequency_spectrum(
     frequency = f,
     amplitude = a
-  ) %>% waveform()
+  ) %>% wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
 })

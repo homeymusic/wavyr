@@ -1,12 +1,12 @@
-#' Create a LinearWaveform for a linear medium
+#' Create a Linearwave for a linear medium
 #'
 #' @param frequency_spectrum An object of class "frequency_spectrum" containing frequencies and amplitudes.
 #' @param wavelength_spectrum Optional: An object of class "wavelength_spectrum" for custom wavelength components.
-#' @param phase Optional: A numeric value representing the phase of the waveform.
+#' @param phase Optional: A numeric value representing the phase of the wave.
 #'
-#' @return An object of class "linear_waveform" with combined wavelength and frequency spectra, and beat spectrum.
+#' @return An object of class "superposed_wave" with combined wavelength and frequency spectra, and beat spectrum.
 #' @export
-linear_waveform <- function(
+superposed_wave <- function(
     frequency_spectrum,
     wavelength_spectrum = NULL,
     phase = 0
@@ -61,23 +61,23 @@ linear_waveform <- function(
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
-  waveform_obj <- waveform(frequency_spectrum, combined_wavelength_spectrum, phase)
+  wave_obj <- wave(frequency_spectrum, combined_wavelength_spectrum, phase)
 
-  waveform_obj$base_wavelength_spectrum = base_wavelength_spectrum
-  waveform_obj$beat_wavelength_spectrum = beat_wavelength_spectrum
+  wave_obj$base_wavelength_spectrum = base_wavelength_spectrum
+  wave_obj$beat_wavelength_spectrum = beat_wavelength_spectrum
 
-  # Assign the class to include "linear_waveform"
-  class(waveform_obj) <- c("linear_waveform", "waveform", "list")
+  # Assign the class to include "superposed_wave"
+  class(wave_obj) <- c("superposed_wave", "wave", "list")
 
-  return(waveform_obj)
+  return(wave_obj)
 }
 
-#' Plot method for linear_waveform
+#' Plot method for superposed_wave
 #'
-#' Overrides the plot function for linear_waveform to include beat_wavelength_spectrum as an overlay.
+#' Overrides the plot function for superposed_wave to include beat_wavelength_spectrum as an overlay.
 #' Calls the superclass plot method, while passing the beat_wavelength_spectrum to be displayed on top of the base wavelength spectrum.
 #'
-#' @param x A linear_waveform object.
+#' @param x A superposed_wave object.
 #' @param label A label for the plot.
 #' @param space_time_range The range of space and time for plotting.
 #' @param resolution Resolution of the 2D plot.
@@ -86,7 +86,7 @@ linear_waveform <- function(
 #' @param ... Additional parameters passed to the superclass plot method.
 #'
 #' @export
-plot.linear_waveform <- function(x, label = '',
+plot.superposed_wave <- function(x, label = '',
                                  space_time_range = 25,
                                  resolution = 300,
                                  line_plot_resolution = 1000,
@@ -103,7 +103,7 @@ plot.linear_waveform <- function(x, label = '',
   )
 
   # Call the superclass plot method with customized wavelength spectrum grob
-  plot.waveform(
+  plot.wave(
     x = x,
     label = label,
     space_time_range = space_time_range,

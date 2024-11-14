@@ -1,5 +1,5 @@
 #' @export
-waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
+wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
   # Validate inputs
   if (!inherits(frequency_spectrum, "frequency_spectrum")) {
     stop("frequency_spectrum must be of class 'frequency_spectrum'")
@@ -120,41 +120,41 @@ waveform <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) 
       coherence = coherence,
       modulation = modulation
     ),
-    class = "waveform"
+    class = "wave"
   )
 }
 
 #' @export
-`+.waveform` <- function(waveform1, waveform2) {
+`+.wave` <- function(wave1, wave2) {
   # Combine frequency spectra, summing amplitudes for identical components
   combined_frequency_spectrum <- combine_spectra(
-    waveform1$frequency_spectrum,
-    waveform2$frequency_spectrum,
+    wave1$frequency_spectrum,
+    wave2$frequency_spectrum,
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
   # Combine wavelength spectra, summing amplitudes for identical components
   combined_wavelength_spectrum <- combine_spectra(
-    waveform1$wavelength_spectrum,
-    waveform2$wavelength_spectrum,
+    wave1$wavelength_spectrum,
+    wave2$wavelength_spectrum,
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
   # Determine combined phase (average, or any other rule you choose)
-  combined_phase <- (waveform1$phase + waveform2$phase) / 2
+  combined_phase <- (wave1$phase + wave2$phase) / 2
 
-  # Create the new combined waveform object
-  combined_waveform <- waveform(
+  # Create the new combined wave object
+  combined_wave <- wave(
     frequency_spectrum = combined_frequency_spectrum,
     wavelength_spectrum = combined_wavelength_spectrum,
     phase = combined_phase
   )
 
-  return(combined_waveform)
+  return(combined_wave)
 }
 
 #' @export
-plot.waveform <- function(x, label = '',
+plot.wave <- function(x, label = '',
                           space_time_range = 25,
                           resolution = 300,
                           line_plot_resolution = 1000,

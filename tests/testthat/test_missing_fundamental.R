@@ -10,41 +10,41 @@ test_that("veryifry what happen with 11 harmonics", {
     amplitude = amplitudes
   )
 
-  # Create the linear_waveform object
-  linear_waveform_obj <- linear_waveform(
+  # Create the superposed_wave object
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
-  # Confirm that the fundamental frequency (100 Hz) is not in linear_waveform_obj$frequency_spectrum
-  expect_true(any(linear_waveform_obj$frequency_spectrum$frequency == fundamental_freq))
+  # Confirm that the fundamental frequency (100 Hz) is not in superposed_wave_obj$frequency_spectrum
+  expect_true(any(superposed_wave_obj$frequency_spectrum$frequency == fundamental_freq))
 
   # Calculate the fundamental wavelength
   fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- linear_waveform_obj$wavelength_spectrum
+  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
 
   sub_t = 'All Harmonics'
   t = paste(sub_t, '~ Frequency Spectrum')
 
   vdiffr::expect_doppelganger("all harmonics frequency spectrum", function() {
-    plot(linear_waveform_obj$frequency_spectrum,)
+    plot(superposed_wave_obj$frequency_spectrum,)
   })
 
   t = paste(sub_t, '~ Wavelength Spectrum')
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$base_wavelength_spectrum,
+    plot(superposed_wave_obj$base_wavelength_spectrum,
          title = t,
-         beat_wavelength_spectrum = linear_waveform_obj$beat_wavelength_spectrum,
+         beat_wavelength_spectrum = superposed_wave_obj$beat_wavelength_spectrum,
          beat_wavelength_spectrum_color = colors_homey$beat)
   })
 
 
 })
 
-test_that("linear_waveform recovers missing fundamental in wavelength spectrum with summed amplitude", {
+test_that("superposed_wave recovers missing fundamental in wavelength spectrum with summed amplitude", {
   # Define the fundamental frequency and create harmonics excluding the fundamental
   fundamental_freq <- 100
   harmonics <- seq(2, 11)  # Harmonics from 2nd to 11th
@@ -56,20 +56,20 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
     amplitude = amplitudes
   )
 
-  # Create the linear_waveform object
-  linear_waveform_obj <- linear_waveform(
+  # Create the superposed_wave object
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
-  # Confirm that the fundamental frequency (100 Hz) is not in linear_waveform_obj$frequency_spectrum
-  expect_false(any(linear_waveform_obj$frequency_spectrum$frequency == fundamental_freq))
+  # Confirm that the fundamental frequency (100 Hz) is not in superposed_wave_obj$frequency_spectrum
+  expect_false(any(superposed_wave_obj$frequency_spectrum$frequency == fundamental_freq))
 
   # Calculate the fundamental wavelength
   fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- linear_waveform_obj$wavelength_spectrum
+  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
 
   # Check that the amplitude for this fundamental wavelength is the sum of all frequency amplitudes
@@ -79,22 +79,22 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
 
   t = 'Missing Fundamental ~ Frequency Spectrum'
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$frequency_spectrum, rectangles = c(fundamental_freq),
+    plot(superposed_wave_obj$frequency_spectrum, rectangles = c(fundamental_freq),
          title = t)
   })
 
   t = 'Missing Fundamental ~ Wavelength Spectrum'
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$base_wavelength_spectrum,
+    plot(superposed_wave_obj$base_wavelength_spectrum,
          rectangles = c(fundamental_wavelength),
          title = t,
-         beat_wavelength_spectrum = linear_waveform_obj$beat_wavelength_spectrum,
+         beat_wavelength_spectrum = superposed_wave_obj$beat_wavelength_spectrum,
          beat_wavelength_spectrum_color = colors_homey$beat)
   })
 
 })
 
-test_that("linear_waveform recovers missing fundamental in wavelength spectrum with summed amplitude", {
+test_that("superposed_wave recovers missing fundamental in wavelength spectrum with summed amplitude", {
   # Define the fundamental frequency and create harmonics excluding the fundamental
   fundamental_freq <- 100
   harmonics <- seq(4, 11)[-c(3,6,7)]  # Harmonics from 2nd to 11th
@@ -106,23 +106,23 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
     amplitude = amplitudes
   )
 
-  # Create the linear_waveform object
-  linear_waveform_obj <- linear_waveform(
+  # Create the superposed_wave object
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
-  # Confirm that the fundamental frequency (100 Hz) is not in linear_waveform_obj$frequency_spectrum
-  expect_false(any(linear_waveform_obj$frequency_spectrum$frequency == fundamental_freq))
+  # Confirm that the fundamental frequency (100 Hz) is not in superposed_wave_obj$frequency_spectrum
+  expect_false(any(superposed_wave_obj$frequency_spectrum$frequency == fundamental_freq))
   # confirm that only the expected harmonics are in the freq spectrum:
   expect_equal(harmonics, c(4,5,7,8,11))
-  expect_equal(harmonics, round(linear_waveform_obj$frequency_spectrum$frequency / fundamental_freq))
+  expect_equal(harmonics, round(superposed_wave_obj$frequency_spectrum$frequency / fundamental_freq))
 
   # Calculate the fundamental wavelength
   fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- linear_waveform_obj$wavelength_spectrum
+  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
 
   # Check that the amplitude for this fundamental wavelength is the sum of all frequency amplitudes
@@ -135,16 +135,16 @@ test_that("linear_waveform recovers missing fundamental in wavelength spectrum w
   sub_t = 'Missing 1, 2, 3, 6, 9, 10x Harmonics'
   t = paste(sub_t, '~ Frequency Spectrum')
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$frequency_spectrum, rectangles = missing_freqs,
+    plot(superposed_wave_obj$frequency_spectrum, rectangles = missing_freqs,
          title=t)
   })
 
   t = paste(sub_t, '~ Wavelength Spectrum')
   vdiffr::expect_doppelganger(t, function() {
-    plot(linear_waveform_obj$base_wavelength_spectrum,
+    plot(superposed_wave_obj$base_wavelength_spectrum,
          rectangles = SPEED_OF_SOUND / missing_freqs,
          title = t,
-         beat_wavelength_spectrum = linear_waveform_obj$beat_wavelength_spectrum,
+         beat_wavelength_spectrum = superposed_wave_obj$beat_wavelength_spectrum,
          beat_wavelength_spectrum_color = colors_homey$beat)
   })
 

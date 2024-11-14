@@ -26,11 +26,11 @@ triads <- list(
 framed_triads <- purrr::map(triads, ~c(60, .x, 72) %>% sort())
 
 
-waveform_for <- function(x, num_harmonics = 1) {
+wave_for <- function(x, num_harmonics = 1) {
   sparse = x %>% hrep::sparse_fr_spectrum(num_harmonics=num_harmonics)
   frequency_spectrum(
     frequency = sparse$x,
     amplitude = sparse$y
-  ) %>% waveform()
+  ) %>% wave()
 }
 

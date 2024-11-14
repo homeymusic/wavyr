@@ -139,6 +139,7 @@ combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
 #' @param overlay_spectrum An optional overlay spectrum object of class "spectrum".
 #' @param overlay_spectrum_color A color for the overlay spectrum segments. Required if overlay_spectrum is provided.
 #'
+#' @export
 plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), title = NULL, overlay_spectrum = NULL, overlay_spectrum_color = NULL) {
 
   # Check if overlay_spectrum is provided without overlay_spectrum_color

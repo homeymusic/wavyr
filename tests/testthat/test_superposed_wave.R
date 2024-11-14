@@ -6,15 +6,15 @@ test_that("we can create a LinearWaveform with a frequency spectrum and speed of
   )
 
   # Create a LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Expectations to check LinearWaveform creation
-  expect_s3_class(linear_waveform_obj, "linear_waveform")
-  expect_s3_class(linear_waveform_obj, "waveform")
-  expect_s3_class(linear_waveform_obj$frequency_spectrum, "frequency_spectrum")
-  expect_s3_class(linear_waveform_obj$wavelength_spectrum, "wavelength_spectrum")
+  expect_s3_class(superposed_wave_obj, "superposed_wave")
+  expect_s3_class(superposed_wave_obj, "wave")
+  expect_s3_class(superposed_wave_obj$frequency_spectrum, "frequency_spectrum")
+  expect_s3_class(superposed_wave_obj$wavelength_spectrum, "wavelength_spectrum")
 })
 
 test_that("LinearWaveform calculates correct wavelengths for given frequencies", {
@@ -24,7 +24,7 @@ test_that("LinearWaveform calculates correct wavelengths for given frequencies",
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
@@ -33,7 +33,7 @@ test_that("LinearWaveform calculates correct wavelengths for given frequencies",
 
   # Check if the first three components of the wavelength spectrum match expected values
   expect_equal(
-    linear_waveform_obj$wavelength_spectrum$wavelength %>% sort(),
+    superposed_wave_obj$wavelength_spectrum$wavelength %>% sort(),
     expected_wavelengths %>% sort()
   )
 })
@@ -45,14 +45,14 @@ test_that("LinearWaveform includes beat_wavelength_spectrum as a separate attrib
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Verify that beat_wavelength_spectrum contains the expected beat wavelengths and amplitudes
-  expect_equal(linear_waveform_obj$beat_wavelength_spectrum$component, c(1.746141, 3.492282),
+  expect_equal(superposed_wave_obj$beat_wavelength_spectrum$component, c(1.746141, 3.492282),
                tolerance=FLOATING_POINT_TOLERANCE)
-  expect_equal(linear_waveform_obj$beat_wavelength_spectrum$amplitude, c(1.5,3.1),
+  expect_equal(superposed_wave_obj$beat_wavelength_spectrum$amplitude, c(1.5,3.1),
                tolerance=FLOATING_POINT_TOLERANCE)
 })
 
@@ -63,13 +63,13 @@ test_that("LinearWaveform assigns correct classes and structure", {
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(frequency_spectrum = frequency_spectrum_obj)
+  superposed_wave_obj <- superposed_wave(frequency_spectrum = frequency_spectrum_obj)
 
   # Check for expected classes
-  expect_s3_class(linear_waveform_obj, "linear_waveform")
-  expect_s3_class(linear_waveform_obj, "waveform")
-  expect_s3_class(linear_waveform_obj$frequency_spectrum, "frequency_spectrum")
-  expect_s3_class(linear_waveform_obj$wavelength_spectrum, "wavelength_spectrum")
+  expect_s3_class(superposed_wave_obj, "superposed_wave")
+  expect_s3_class(superposed_wave_obj, "wave")
+  expect_s3_class(superposed_wave_obj$frequency_spectrum, "frequency_spectrum")
+  expect_s3_class(superposed_wave_obj$wavelength_spectrum, "wavelength_spectrum")
 })
 
 test_that("LinearWaveform includes base_wavelength_spectrum as a separate attribute", {
@@ -79,18 +79,18 @@ test_that("LinearWaveform includes base_wavelength_spectrum as a separate attrib
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Verify that base_wavelength_spectrum is included and correctly structured
-  expect_s3_class(linear_waveform_obj$base_wavelength_spectrum, "wavelength_spectrum")
+  expect_s3_class(superposed_wave_obj$base_wavelength_spectrum, "wavelength_spectrum")
   expect_equal(
-    sort(linear_waveform_obj$base_wavelength_spectrum$component),
+    sort(superposed_wave_obj$base_wavelength_spectrum$component),
     sort(SPEED_OF_SOUND / frequency_spectrum_obj$component)
   )
   expect_equal(
-    sort(linear_waveform_obj$base_wavelength_spectrum$amplitude),
+    sort(superposed_wave_obj$base_wavelength_spectrum$amplitude),
     sort(frequency_spectrum_obj$amplitude)
   )
 })
@@ -102,12 +102,12 @@ test_that("LinearWaveform correctly computes combined spectra", {
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Check if the combined wavelength spectrum correctly aggregates with the beat spectrum
-  expect_equal(length(linear_waveform_obj$wavelength_spectrum$wavelength),
+  expect_equal(length(superposed_wave_obj$wavelength_spectrum$wavelength),
                4)
 })
 
@@ -119,12 +119,12 @@ test_that("LinearWaveform validates amplitude correctly", {
 
   # Expect an error due to invalid amplitude values
   expect_error(
-    linear_waveform(frequency_spectrum = frequency_spectrum_obj),
+    superposed_wave(frequency_spectrum = frequency_spectrum_obj),
     "must be positive"
   )
 })
 
-test_that("error is thrown if wavelength_spectrum has fewer components than frequency_spectrum in linear_waveform", {
+test_that("error is thrown if wavelength_spectrum has fewer components than frequency_spectrum in superposed_wave", {
   # Create a frequency spectrum with 3 components
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200, 300),
@@ -137,9 +137,9 @@ test_that("error is thrown if wavelength_spectrum has fewer components than freq
     amplitude = c(0.9, 0.7)
   )
 
-  # Expect an error when trying to create the linear_waveform with mismatched spectra sizes
+  # Expect an error when trying to create the superposed_wave with mismatched spectra sizes
   expect_error(
-    linear_waveform(
+    superposed_wave(
       frequency_spectrum = frequency_spectrum_obj,
       wavelength_spectrum = wavelength_spectrum_obj
     ),
@@ -154,13 +154,13 @@ test_that("indexed_spectra includes beat wavelength with sum amplitude and NA fo
     amplitude = c(1.0, 0.8)
   )
 
-  # Create the linear_waveform object, passing only frequency_spectrum
-  linear_waveform_obj <- linear_waveform(
+  # Create the superposed_wave object, passing only frequency_spectrum
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Access indexed_spectra
-  indexed_spectrum <- linear_waveform_obj$indexed_spectra
+  indexed_spectrum <- superposed_wave_obj$indexed_spectra
 
   # Calculate expected beat wavelength (from the difference frequency, 7 Hz)
   beat_wavelength <- SPEED_OF_SOUND / 7  # Speed of sound / difference frequency
@@ -187,13 +187,13 @@ test_that("indexed_spectra treats frequencies within tolerance as the same and s
     amplitude = c(1.0, 0.8, 0.8)
   )
 
-  # Create the linear_waveform object, passing only frequency_spectrum
-  linear_waveform_obj <- linear_waveform(
+  # Create the superposed_wave object, passing only frequency_spectrum
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Access indexed_spectra
-  indexed_spectrum <- linear_waveform_obj$indexed_spectra
+  indexed_spectrum <- superposed_wave_obj$indexed_spectra
 
   # Calculate expected beat wavelength (from the difference frequency, 7 Hz)
   beat_wavelength <- SPEED_OF_SOUND / 7  # Speed of sound / difference frequency
@@ -220,7 +220,7 @@ test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
@@ -228,14 +228,14 @@ test_that("LinearWaveform fundamental_amplitude calculates the correct amplitude
   x_test <- 2  # Space in meters
   t_test <- 1  # Time in seconds
 
-  # Get the fundamental amplitude from the linear_waveform object
-  fundamental_amplitude_value <- linear_waveform_obj$fundamental_amplitude(x_test, t_test)
+  # Get the fundamental amplitude from the superposed_wave object
+  fundamental_amplitude_value <- superposed_wave_obj$fundamental_amplitude(x_test, t_test)
 
   # Expect that the calculated value is close to the expected value
   expect_equal(fundamental_amplitude_value, 9.2, tolerance = 0.1)
 })
 
-test_that("linear_waveform correctly calculates composite_amplitude for given x and t", {
+test_that("superposed_wave correctly calculates composite_amplitude for given x and t", {
   # Create a frequency spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200, 300),
@@ -243,7 +243,7 @@ test_that("linear_waveform correctly calculates composite_amplitude for given x 
   )
 
   # Create the LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
@@ -251,13 +251,13 @@ test_that("linear_waveform correctly calculates composite_amplitude for given x 
   x <- 1.0  # space in meters
   t <- 0.5  # time in seconds
 
-  # Call the composite_amplitude function on the linear_waveform object
-  a <- linear_waveform_obj$composite_amplitude(x, t)
+  # Call the composite_amplitude function on the superposed_wave object
+  a <- superposed_wave_obj$composite_amplitude(x, t)
 
   expect_equal(a, -7.2, tolerance = 0.1)
 })
 
-test_that("plot.linear_waveform renders without errors for basic linear_waveform", {
+test_that("plot.superposed_wave renders without errors for basic superposed_wave", {
   # Create a frequency_spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200, 300),
@@ -265,17 +265,17 @@ test_that("plot.linear_waveform renders without errors for basic linear_waveform
   )
 
   # Create a LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Capture the plot with vdiffr
-  vdiffr::expect_doppelganger("basic linear_waveform plot", function() {
-    plot(linear_waveform_obj, label = "Test LinearWaveform")
+  vdiffr::expect_doppelganger("basic superposed_wave plot", function() {
+    plot(superposed_wave_obj, label = "Test LinearWaveform")
   })
 })
 
-test_that("plot.linear_waveform renders beat_wavelength_spectrum overlay correctly", {
+test_that("plot.superposed_wave renders beat_wavelength_spectrum overlay correctly", {
   # Create a frequency_spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(150, 300, 450),
@@ -283,17 +283,17 @@ test_that("plot.linear_waveform renders beat_wavelength_spectrum overlay correct
   )
 
   # Create a LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Capture the plot with beat_wavelength_spectrum overlay
-  vdiffr::expect_doppelganger("linear_waveform with beat spectrum overlay", function() {
-    plot(linear_waveform_obj, label = "Test LinearWaveform with Beat")
+  vdiffr::expect_doppelganger("superposed_wave with beat spectrum overlay", function() {
+    plot(superposed_wave_obj, label = "Test LinearWaveform with Beat")
   })
 })
 
-test_that("plot.linear_waveform maintains original appearance without beat spectrum overlay", {
+test_that("plot.superposed_wave maintains original appearance without beat spectrum overlay", {
   # Create a frequency_spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 200),
@@ -301,17 +301,17 @@ test_that("plot.linear_waveform maintains original appearance without beat spect
   )
 
   # Create a LinearWaveform object
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Capture the plot without beat spectrum overlay
-  vdiffr::expect_doppelganger("linear_waveform plot without beat overlay", function() {
-    plot(linear_waveform_obj, label = "LinearWaveform No Beat Overlay")
+  vdiffr::expect_doppelganger("superposed_wave plot without beat overlay", function() {
+    plot(superposed_wave_obj, label = "LinearWaveform No Beat Overlay")
   })
 })
 
-test_that("plot.linear_waveform displays base and beat wavelength spectra as distinct overlays", {
+test_that("plot.superposed_wave displays base and beat wavelength spectra as distinct overlays", {
   # Create a frequency_spectrum object with close frequencies
   frequency_spectrum_obj <- frequency_spectrum(
     frequency = c(100, 107, 200),
@@ -319,12 +319,12 @@ test_that("plot.linear_waveform displays base and beat wavelength spectra as dis
   )
 
   # Create the LinearWaveform object with overlapping base and beat spectra
-  linear_waveform_obj <- linear_waveform(
+  superposed_wave_obj <- superposed_wave(
     frequency_spectrum = frequency_spectrum_obj
   )
 
   # Capture the plot with both base and beat spectra overlayed distinctly
-  vdiffr::expect_doppelganger("linear_waveform with distinct base and beat overlays", function() {
-    plot(linear_waveform_obj, label = "Test with Base and Beat Overlays")
+  vdiffr::expect_doppelganger("superposed_wave with distinct base and beat overlays", function() {
+    plot(superposed_wave_obj, label = "Test with Base and Beat Overlays")
   })
 })
