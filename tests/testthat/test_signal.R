@@ -34,6 +34,22 @@ test_that("signal stores the spectrum components and amplitudes correctly", {
   expect_equal(signal_obj$spectrum$amplitude, a)
 })
 
+test_that("signal has correct metadata", {
+  # Create a spectrum object with known components and amplitudes
+  spectrum_obj <- spectrum(
+    component = 1,
+    amplitude = 1
+  )
+
+  # Create the signal object
+  signal_obj <- signal(spectrum_obj)
+  # Verify that the stored spectrum has correct components and amplitudes
+  expect_equal(signal_obj$plot_color, colors_homey$neutral)
+  expect_equal(signal_obj$physical_label, 'Coordinate')
+  expect_equal(signal_obj$spectral_label, 'Signal')
+  expect_equal(signal_obj$observable_label, 'Amplitude')
+})
+
 test_that("signal constructor fails with non-spectrum input", {
   # Try to pass a non-spectrum input
   non_spectrum_input <- list(component = c(100, 200), amplitude = c(1.0, 0.5))

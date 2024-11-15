@@ -18,11 +18,17 @@ signal <- function(spectrum) {
   }
 
   plot_color = colors_homey$neutral
+  physical_label = 'Coordinate'
+  spectral_label = 'Signal'
+  observable_label = 'Amplitude'
 
   # Create the signal object, including the amplitude function
   structure(
     list(
       plot_color = plot_color,
+      physical_label = physical_label,
+      spectral_label = spectral_label,
+      observable_label = observable_label,
       spectrum = spectrum,
       amplitude = amplitude_fn  # Add the amplitude function to the signal object
     ),
@@ -39,7 +45,8 @@ signal <- function(spectrum) {
 #' @export
 print.signal <- function(x, ...) {
   cat("Signal Object\n")
-  cat("Spectrum:\n")
+  cat("Plot Color:", x$plot_color, "\n")
+  cat("Spectrum Length:", x$spectrum %>% length(), "\n")
 }
 
 #' Plot method for signal objects
@@ -90,13 +97,13 @@ plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles
   # Create the plot using ggplot2
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = coordinate, y = amplitude)) +
     ggplot2::geom_line(color = x$plot_color) +
-    ggplot2::scale_x_continuous(name = "Coordinate") +
+    ggplot2::scale_x_continuous(name = x$physical_label) +
     ggplot2::labs(
-      title = bquote(.(label) ~ "Signal Plot"),
-      x = "Coordinate",
-      y = "Amplitude"
+      title = bquote(.(label) ~ x$spectral_label),
+      x = x$physical_label,
+      y = x$observable_label
     ) +
-    ggplot2::scale_y_continuous(name = "Amplitude") +
+    ggplot2::scale_y_continuous(name = x$observable_label) +
     theme_homey()
 
   print(p)

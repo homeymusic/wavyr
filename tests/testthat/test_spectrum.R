@@ -25,6 +25,10 @@ test_that("we can create a new spectrum with a list containing component and amp
   expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
+test_that("only  a component can create spectrum", {
+  expect_error(spectrum(frequency = c(500, 1000), amplitude = c(0.9, 0.6)))
+})
+
 test_that("spectrum can calculate relative_cycle_length", {
   spectrum_obj <- spectrum(
     component = c(1, 0.5, 0.33),

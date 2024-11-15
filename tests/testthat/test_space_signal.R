@@ -35,12 +35,35 @@ test_that("space_signal stores the wavelength spectrum components and amplitudes
   expect_equal(space_signal_obj$spectrum$amplitude, c(0.5, 0.7, 0.3))
 })
 
+test_that("space signal has correct metadata", {
+  # Create a spectrum object with known components and amplitudes
+  spectrum_obj <- wavelength_spectrum(
+    wavelength = 1,
+    amplitude = 1
+  )
+
+  # Create the signal object
+  signal_obj <- space_signal(spectrum_obj)
+  # Verify that the stored spectrum has correct components and amplitudes
+  expect_equal(signal_obj$plot_color, colors_homey$minor)
+  expect_equal(signal_obj$physical_label, 'Space')
+  expect_equal(signal_obj$spectral_label, 'Wavelength')
+  expect_equal(signal_obj$observable_label, 'Amplitude')
+})
+
 test_that("space_signal constructor fails with non-wavelength_spectrum input", {
   # Try to pass a non-wavelength_spectrum input
   non_wavelength_spectrum_input <- list(frequency = c(500, 1000), amplitude = c(0.9, 0.6))
 
   # Expect an error when creating a space_signal with invalid input
   expect_error(space_signal(non_wavelength_spectrum_input), "Input must be of class 'wavelength_spectrum'")
+
+  # Try to pass a non-wavelength_spectrum input
+  non_wavelength_spectrum_input <- spectrum(component = c(500, 1000), amplitude = c(0.9, 0.6))
+
+  # Expect an error when creating a space_signal with invalid input
+  expect_error(space_signal(non_wavelength_spectrum_input), "Input must be of class 'wavelength_spectrum'")
+
 })
 
 test_that("amplitude function in space_signal works for a single-wavelength wavelength_spectrum", {

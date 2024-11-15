@@ -35,6 +35,22 @@ test_that("time_signal stores the frequency spectrum components and amplitudes c
   expect_equal(time_signal_obj$spectrum$amplitude, c(0.5, 0.7, 0.3))
 })
 
+test_that("time signal has correct metadata", {
+  # Create a spectrum object with known components and amplitudes
+  spectrum_obj <- frequency_spectrum(
+    frequency = 1,
+    amplitude = 1
+  )
+
+  # Create the signal object
+  signal_obj <- time_signal(spectrum_obj)
+  # Verify that the stored spectrum has correct components and amplitudes
+  expect_equal(signal_obj$plot_color, colors_homey$major)
+  expect_equal(signal_obj$physical_label, 'Time')
+  expect_equal(signal_obj$spectral_label, 'Frequency')
+  expect_equal(signal_obj$observable_label, 'Amplitude')
+})
+
 test_that("time_signal constructor fails with non-frequency_spectrum input", {
   # Try to pass a non-frequency_spectrum input
   non_frequency_spectrum_input <- list(frequency = c(4, 8), amplitude = c(0.9, 0.6))
