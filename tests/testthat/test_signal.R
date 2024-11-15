@@ -48,6 +48,10 @@ test_that("signal has correct metadata", {
   expect_equal(signal_obj$physical_label, 'Coordinate')
   expect_equal(signal_obj$spectral_label, 'Signal from Spectrum')
   expect_equal(signal_obj$observable_label, 'Amplitude')
+  expect_equal(signal_obj$physical_units, 'Natural Coordinate Units')
+  expect_equal(signal_obj$observable_units, 'Natural Amplitude Units')
+  expect_equal(signal_obj$spectral_units, 'Cycles per Natural Coordinate Unit')
+
 })
 
 test_that("signal constructor fails with non-spectrum input", {
@@ -149,3 +153,21 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # You could inspect the axis limits or other aspects of the plot here.
 })
 
+test_that("signal plot matches expected output for specified coordinate range", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- spectrum(
+    component = c(4, 5),      # Frequencies in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- signal(spectrum_obj)
+
+  # Define label and coordinate range
+  label <- "Feynman's Beats Details"
+
+  plot_details.signal(signal_obj)
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
+})

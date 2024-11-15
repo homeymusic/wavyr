@@ -252,18 +252,24 @@ test_that("reference_frequency is calculated correctly when NULL in the frequenc
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Expect the calculated reference_frequency to be max(frequency)
-  expect_equal(spectrum_obj$reference_frequency, min(spectrum_obj$frequency))
+  expected_reference_component = min(spectrum_obj$frequency)
+  expect_equal(spectrum_obj$reference_frequency, expected_reference_component)
+  expect_equal(spectrum_obj$fundamental_component,
+               expected_reference_component / spectrum_obj$relative_cycle_length)
+
 })
 
 test_that("reference_frequency can be explicitly set in the frequency_spectrum class", {
-  # Explicitly set reference_frequency
+  expected_reference_component = 0.5
   spectrum_obj <- frequency_spectrum(
     frequency = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    reference_frequency = 0.5
+    reference_frequency = expected_reference_component
   )
 
   # Expect the explicitly set reference_frequency to be used
-  expect_equal(spectrum_obj$reference_frequency, 0.5)
+  expect_equal(spectrum_obj$reference_frequency, expected_reference_component)
+  expect_equal(spectrum_obj$fundamental_component,
+               expected_reference_component / spectrum_obj$relative_cycle_length)
+
 })

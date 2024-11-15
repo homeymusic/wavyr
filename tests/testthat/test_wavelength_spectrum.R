@@ -321,7 +321,6 @@ test_that("wavelength spectrum with beats makes sense", {
   expect_equal(spectrum_obj$wavelength, c(69.84565, 87.30706, beat_wavelength), tolerance = 0.1)
   expect_equal(spectrum_obj$inverted, T)
   expect_equal(spectrum_obj$relative_cycle_length, 4)
-  expect_equal(spectrum_obj$fundamental_component, 349.22, tolerance = 0.1)
   expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
   expect_equal(spectrum_obj$fundamental_cycle_length, 349.22, tolerance = 0.1)
 })
@@ -349,18 +348,24 @@ test_that("reference_wavelength is calculated correctly when NULL in the wavelen
   )
 
   # Expect the calculated reference_wavelength to be min(wavelength)
-  expect_equal(spectrum_obj$reference_wavelength, max(spectrum_obj$wavelength))
+  expected_reference_component = max(spectrum_obj$wavelength)
+  expect_equal(spectrum_obj$reference_wavelength, expected_reference_component)
+  expect_equal(spectrum_obj$fundamental_component,
+               expected_reference_component * spectrum_obj$relative_cycle_length)
 
 })
 
 test_that("reference_wavelength can be explicitly set in the wavelength_spectrum class", {
-  # Explicitly set reference_wavelength
+  expected_reference_component = 0.5
   spectrum_obj <- wavelength_spectrum(
     wavelength = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    reference_wavelength = 0.5
+    reference_wavelength = expected_reference_component
   )
 
   # Expect the explicitly set reference_wavelength to be used
-  expect_equal(spectrum_obj$reference_wavelength, 0.5)
+  expect_equal(spectrum_obj$reference_wavelength, expected_reference_component)
+  expect_equal(spectrum_obj$fundamental_component,
+               expected_reference_component * spectrum_obj$relative_cycle_length)
+
 })

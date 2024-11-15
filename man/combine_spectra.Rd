@@ -4,12 +4,14 @@
 \alias{combine_spectra}
 \title{Combine two spectrum objects within a specified tolerance}
 \usage{
-combine_spectra(spectrum, other_spectrum = NULL, tolerance)
+combine_spectra(spectrum, other_spectrum = NULL, reference = NULL, tolerance)
 }
 \arguments{
 \item{spectrum}{The spectrum object to combine}
 
 \item{other_spectrum}{An additional spectrum object to combine (optional)}
+
+\item{reference}{The reference component for computing the fundamental}
 
 \item{tolerance}{The tolerance within which components are considered equal}
 }

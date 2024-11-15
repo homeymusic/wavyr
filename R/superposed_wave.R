@@ -58,6 +58,7 @@ superposed_wave <- function(
   combined_wavelength_spectrum <- combine_spectra(
     base_wavelength_spectrum,
     beat_wavelength_spectrum,
+    reference = max(base_wavelength_spectrum$wavelength),
     tolerance = FLOATING_POINT_TOLERANCE
   )
 

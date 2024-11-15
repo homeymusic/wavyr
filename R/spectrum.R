@@ -82,9 +82,9 @@ spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) 
 
   # Calculate the fundamental component based on the inversion setting
   fundamental_component <- if (inverted) {
-    relative_cycle_length * max(component)
+    reference_component * relative_cycle_length
   } else {
-    min(component) / relative_cycle_length
+    reference_component / relative_cycle_length
   }
 
   # Calculate the fundamental component based on the inversion setting
@@ -133,9 +133,12 @@ print.spectrum <- function(x, ...) {
 #' @param spectrum The spectrum object to combine
 #' @param other_spectrum An additional spectrum object to combine (optional)
 #' @param tolerance The tolerance within which components are considered equal
+#' @param reference The reference component for computing the fundamental
 #' @return A new spectrum object with combined components and amplitudes
 #' @export
-combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
+combine_spectra <- function(spectrum, other_spectrum = NULL,
+                            reference = NULL,
+                            tolerance) {
   # Concatenate components and amplitudes if other_spectrum is provided
   if (!is.null(other_spectrum)) {
     combined_components <- c(spectrum$component, other_spectrum$component)
@@ -154,11 +157,14 @@ combine_spectra <- function(spectrum, other_spectrum = NULL, tolerance) {
   # Return the combined result as the appropriate spectrum class
   spectrum_class <- class(spectrum)[1]
   if (spectrum_class == "wavelength_spectrum") {
-    return(wavelength_spectrum(result$component, result$amplitude))
+    return(wavelength_spectrum(result$component, result$amplitude,
+                               reference_wavelength = reference))
   } else if (spectrum_class == "frequency_spectrum") {
-    return(frequency_spectrum(result$component, result$amplitude))
+    return(frequency_spectrum(result$component, result$amplitude,
+                              reference_frequency = reference))
   } else if (spectrum_class == "spectrum") {
-    return(spectrum(result$component, result$amplitude))
+    return(spectrum(result$component, result$amplitude,
+                    reference_component = reference))
   } else {
     stop("Unsupported spectrum type.")
   }
