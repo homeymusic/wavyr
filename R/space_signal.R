@@ -17,6 +17,8 @@ space_signal <- function(wavelength_spectrum) {
 
   signal_obj$wavelength_spectrum = signal_obj$spectrum
 
+  signal_obj$plot_color = colors_homey$minor
+
   # Create the space_signal object, inheriting everything from signal
   structure(
     signal_obj,

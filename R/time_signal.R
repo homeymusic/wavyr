@@ -17,6 +17,8 @@ time_signal <- function(frequency_spectrum) {
 
   signal_obj$frequency_spectrum = signal_obj$spectrum
 
+  signal_obj$plot_color = colors_homey$major
+
   # Create the time_signal object, inheriting everything from signal
   structure(
     signal_obj,

@@ -17,9 +17,12 @@ signal <- function(spectrum) {
     sum(spectrum$amplitude * cos(2 * pi * spectrum$signal_component * coordinate))
   }
 
+  plot_color = colors_homey$neutral
+
   # Create the signal object, including the amplitude function
   structure(
     list(
+      plot_color = plot_color,
       spectrum = spectrum,
       amplitude = amplitude_fn  # Add the amplitude function to the signal object
     ),
@@ -86,7 +89,7 @@ plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles
 
   # Create the plot using ggplot2
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = coordinate, y = amplitude)) +
-    ggplot2::geom_line(color = colors_homey$neutral) +
+    ggplot2::geom_line(color = x$plot_color) +
     ggplot2::scale_x_continuous(name = "Coordinate") +
     ggplot2::labs(
       title = bquote(.(label) ~ "Signal Plot"),
