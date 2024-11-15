@@ -29,12 +29,12 @@ signal <- function(spectrum) {
   structure(
     list(
       plot_color = plot_color,
-      physical_label = physical_label,
       spectral_label = spectral_label,
-      observable_label = observable_label,
-      physical_units = physical_units,
-      observable_units = observable_units,
       spectral_units = spectral_units,
+      physical_label = physical_label,
+      physical_units = physical_units,
+      observable_label = observable_label,
+      observable_units = observable_units,
       spectrum = spectrum,
       amplitude = amplitude_fn  # Add the amplitude function to the signal object
     ),
@@ -51,8 +51,14 @@ signal <- function(spectrum) {
 #' @export
 print.signal <- function(x, ...) {
   cat("Signal Object\n")
-  cat("Plot Color:", x$plot_color, "\n")
   cat("Spectrum Length:", x$spectrum %>% length(), "\n")
+  cat("Plot Color:", x$plot_color, "\n")
+  cat("Spectral Label:", x$spectral_label, "\n")
+  cat("Spectral Units:", x$spectral_units, "\n")
+  cat("Physical Label:", x$physical_label, "\n")
+  cat("Physical Units:", x$physical_units, "\n")
+  cat("Observable Label:", x$observable_label, "\n")
+  cat("Observable Units:", x$observable_units, "\n")
 }
 
 #' Plot method for signal objects
@@ -146,25 +152,28 @@ plot_details.signal <- function(x, title = '', number_of_cycles = 3, resolution 
     plot(title = paste(title,
                        'Fundamental',
                        paste0(x$spectral_label, ':'),
-                       x$spectrum$fundamental_component,
+                       sprintf("%.2f", x$spectrum$fundamental_component),
                        paste0('(',x$spectral_units,')')),
                        coordinate_range = c(0, max(coordinate_range)))
 
   # Generate individual plots for each component in the spectrum
+  spectrum_type = get(class(x$spectrum)[1])
   individual_plots <- lapply(seq_along(x$spectrum$component), function(i) {
     # Create a single spectrum for the current component
-    single_spectrum <- spectrum(
-      component = x$spectrum$component[i],
+    single_spectrum <- spectrum_type(
+      x$spectrum$component[i],
       amplitude = x$spectrum$amplitude[i],
-      inverted = x$spectrum$inverted,
-      reference_component = x$reference_component
+      reference = x$reference
     )
+
     # Plot the signal of the single spectrum within the shared coordinate range
+    signal_type = get(class(x)[1])
     single_spectrum %>%
-      signal() %>%
-      plot(title = paste(x$spectrum$component[i],
-                         paste0('(',x$spectral_units,')')),
-           coordinate_range = c(0, max(coordinate_range)))
+      signal_type() %>%
+      plot(title = paste(
+        paste0(x$spectral_label, ':'),
+        sprintf("%.2f", x$spectrum$component[i]), paste0('(',x$spectral_units,')')),
+        coordinate_range = c(0, max(coordinate_range)))
   })
 
   # Combine the composite plot and individual plots using cowplot

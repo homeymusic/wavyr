@@ -340,32 +340,51 @@ test_that("wavelength plot of feynman waves with superposition", {
 
 })
 
-test_that("reference_wavelength is calculated correctly when NULL in the wavelength_spectrum class", {
+test_that("reference is calculated correctly when NULL in the wavelength_spectrum class", {
   # Create a wavelength_spectrum object with inverted = FALSE (default)
   spectrum_obj <- wavelength_spectrum(
     wavelength = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Expect the calculated reference_wavelength to be min(wavelength)
-  expected_reference_component = max(spectrum_obj$wavelength)
-  expect_equal(spectrum_obj$reference_wavelength, expected_reference_component)
+  # Expect the calculated reference to be min(wavelength)
+  expected_reference = max(spectrum_obj$wavelength)
+  expect_equal(spectrum_obj$reference, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
-               expected_reference_component * spectrum_obj$relative_cycle_length)
+               expected_reference * spectrum_obj$relative_cycle_length)
 
 })
 
-test_that("reference_wavelength can be explicitly set in the wavelength_spectrum class", {
-  expected_reference_component = 0.5
+test_that("reference can be explicitly set in the wavelength_spectrum class", {
+  expected_reference = 0.5
   spectrum_obj <- wavelength_spectrum(
     wavelength = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    reference_wavelength = expected_reference_component
+    reference = expected_reference
   )
 
-  # Expect the explicitly set reference_wavelength to be used
-  expect_equal(spectrum_obj$reference_wavelength, expected_reference_component)
+  # Expect the explicitly set reference to be used
+  expect_equal(spectrum_obj$reference, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
-               expected_reference_component * spectrum_obj$relative_cycle_length)
+               expected_reference * spectrum_obj$relative_cycle_length)
 
+})
+
+test_that("detailed signal plot matches expected output for specified coordinate range", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- wavelength_spectrum(
+    wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- space_signal(spectrum_obj)
+
+  # Define label and coordinate range
+  label <- "Feynman's Beats Details"
+
+  plot_details.signal(signal_obj)
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })

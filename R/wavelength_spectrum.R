@@ -5,10 +5,10 @@
 #'
 #' @param wavelength Either a numeric vector of wavelengths or a list with named `wavelength` and `amplitude` vectors.
 #' @param amplitude A numeric vector of amplitudes, if `wavelength` is a numeric vector.
-#' @param reference_wavelength To compute the fundamental wavelength
+#' @param reference To compute the fundamental wavelength
 #' @return An object of class \code{wavelength_spectrum} that inherits from \code{spectrum}.
 #' @export
-wavelength_spectrum <- function(wavelength, amplitude = NULL, reference_wavelength=NULL) {
+wavelength_spectrum <- function(wavelength, amplitude = NULL, reference=NULL) {
   # Check for non-numeric or inconsistent input directly in wavelength_spectrum
   if (is.list(wavelength) && is.null(amplitude)) {
     if (!is.numeric(wavelength$wavelength) || !is.numeric(wavelength$amplitude)) {
@@ -26,20 +26,20 @@ wavelength_spectrum <- function(wavelength, amplitude = NULL, reference_waveleng
     )
     spectrum_obj <- spectrum(component = wavelength$wavelength,
                              amplitude = wavelength$amplitude,
-                             reference_component = reference_wavelength,
+                             reference = reference,
                              inverted  = T)
   } else {
     # Direct numeric vectors
     spectrum_obj <- spectrum(component = wavelength,
                              amplitude = amplitude,
-                             reference_component = reference_wavelength,
+                             reference = reference,
                              inverted  = T)
   }
 
   # Add wavelength-specific fields
   spectrum_obj$wavelength <- spectrum_obj$component
   spectrum_obj$fundamental_wavelength <- spectrum_obj$fundamental_component
-  spectrum_obj$reference_wavelength <- spectrum_obj$reference_component
+  spectrum_obj$reference <- spectrum_obj$reference
 
   # Set class to wavelength_spectrum
   class(spectrum_obj) <- c("wavelength_spectrum", class(spectrum_obj))

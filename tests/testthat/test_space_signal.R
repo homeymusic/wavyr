@@ -217,3 +217,25 @@ test_that("space signal plot of feynman waves with superposition", {
                                                      resolution=1001))
 
 })
+
+test_that("detailed signal plot matches expected output for specified coordinate range", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- wavelength_spectrum(
+    wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- space_signal(spectrum_obj)
+
+  expect_equal(signal_obj$plot_color, colors_homey$minor)
+
+  # Define label and coordinate range
+  label <- "Feynman's Beats Details"
+
+  plot_details.signal(signal_obj)
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
+})
+

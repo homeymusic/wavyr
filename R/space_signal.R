@@ -21,6 +21,9 @@ space_signal <- function(wavelength_spectrum) {
   signal_obj$physical_label = 'Space'
   signal_obj$spectral_label = 'Wavelength'
   signal_obj$observable_label = 'Amplitude'
+  signal_obj$physical_units = 'm'
+  signal_obj$observable_units = ''
+  signal_obj$spectral_units = 'm'
 
   # Create the space_signal object, inheriting everything from signal
   structure(

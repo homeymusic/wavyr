@@ -4,14 +4,14 @@
 \alias{frequency_spectrum}
 \title{Create a Frequency Spectrum}
 \usage{
-frequency_spectrum(frequency, amplitude = NULL, reference_frequency = NULL)
+frequency_spectrum(frequency, amplitude = NULL, reference = NULL)
 }
 \arguments{
 \item{frequency}{Either a numeric vector of frequencies or a list with named \code{frequency} and \code{amplitude} vectors.}
 
 \item{amplitude}{A numeric vector of amplitudes, if \code{frequency} is a numeric vector.}
 
-\item{reference_frequency}{Used to compute the fundamental frequency from the cycle length}
+\item{reference}{Used to compute the fundamental frequency from the cycle length}
 }
 \value{
 An object of class \code{frequency_spectrum} that inherits from \code{spectrum}.

@@ -153,7 +153,7 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # You could inspect the axis limits or other aspects of the plot here.
 })
 
-test_that("signal plot matches expected output for specified coordinate range", {
+test_that("detailed signal plot matches expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
     component = c(4, 5),      # Frequencies in Hz
@@ -162,6 +162,8 @@ test_that("signal plot matches expected output for specified coordinate range", 
 
   # Create the signal object from the spectrum
   signal_obj <- signal(spectrum_obj)
+
+  expect_equal(signal_obj$plot_color, colors_homey$neutral)
 
   # Define label and coordinate range
   label <- "Feynman's Beats Details"

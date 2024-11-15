@@ -288,7 +288,7 @@ test_that("signal stores the spectrum components and amplitudes correctly", {
 
 })
 
-test_that("reference_component is calculated correctly when NULL in the spectrum class", {
+test_that("reference is calculated correctly when NULL in the spectrum class", {
   # Create a spectrum object with inverted = FALSE (default)
   spectrum_obj <- spectrum(
     component = c(1.0, 0.5, 0.33),
@@ -296,11 +296,11 @@ test_that("reference_component is calculated correctly when NULL in the spectrum
     inverted = FALSE
   )
 
-  # Expect the calculated reference_component to be min(component)
-  expected_reference_component = min(spectrum_obj$component)
-  expect_equal(spectrum_obj$reference_component, expected_reference_component)
+  # Expect the calculated reference to be min(component)
+  expected_reference = min(spectrum_obj$component)
+  expect_equal(spectrum_obj$reference, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
-               expected_reference_component / spectrum_obj$relative_cycle_length)
+               expected_reference / spectrum_obj$relative_cycle_length)
 
   # Create a spectrum object with inverted = TRUE
   spectrum_obj_inverted <- spectrum(
@@ -309,40 +309,40 @@ test_that("reference_component is calculated correctly when NULL in the spectrum
     inverted = TRUE
   )
 
-  # Expect the calculated reference_component to be max(component)
-  expected_reference_component = max(spectrum_obj_inverted$component)
-  expect_equal(spectrum_obj_inverted$reference_component, expected_reference_component)
+  # Expect the calculated reference to be max(component)
+  expected_reference = max(spectrum_obj_inverted$component)
+  expect_equal(spectrum_obj_inverted$reference, expected_reference)
   expect_equal(spectrum_obj_inverted$fundamental_component,
-               expected_reference_component * spectrum_obj_inverted$relative_cycle_length)
+               expected_reference * spectrum_obj_inverted$relative_cycle_length)
 })
 
-test_that("reference_component can be explicitly set in the spectrum class", {
-  expected_reference_component = 0.5
-  # Explicitly set reference_component with inverted = FALSE
+test_that("reference can be explicitly set in the spectrum class", {
+  expected_reference = 0.5
+  # Explicitly set reference with inverted = FALSE
   spectrum_obj <- spectrum(
     component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
     inverted = FALSE,
-    reference_component = expected_reference_component
+    reference = expected_reference
   )
 
-  # Expect the explicitly set reference_component to be used
-  expect_equal(spectrum_obj$reference_component, expected_reference_component)
+  # Expect the explicitly set reference to be used
+  expect_equal(spectrum_obj$reference, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
-               expected_reference_component / spectrum_obj$relative_cycle_length)
+               expected_reference / spectrum_obj$relative_cycle_length)
 
-  # Explicitly set reference_component with inverted = TRUE
-  expected_reference_component = 0.33
+  # Explicitly set reference with inverted = TRUE
+  expected_reference = 0.33
   spectrum_obj_inverted <- spectrum(
     component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
     inverted = TRUE,
-    reference_component = expected_reference_component
+    reference = expected_reference
   )
 
-  # Expect the explicitly set reference_component to be used
-  expect_equal(spectrum_obj_inverted$reference_component, expected_reference_component)
+  # Expect the explicitly set reference to be used
+  expect_equal(spectrum_obj_inverted$reference, expected_reference)
   expect_equal(spectrum_obj_inverted$fundamental_component,
-               expected_reference_component * spectrum_obj_inverted$relative_cycle_length)
+               expected_reference * spectrum_obj_inverted$relative_cycle_length)
 
 })
