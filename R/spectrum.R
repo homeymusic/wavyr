@@ -72,7 +72,7 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
 
   # Calculate the fundamental component based on the inversion setting
   fundamental_component <- if (inverted) {
-    relative_cycle_length / max(component)
+    relative_cycle_length * max(component)
   } else {
     min(component) / relative_cycle_length
   }
@@ -84,6 +84,9 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
     1 / fundamental_component
   }
 
+  # Adjust component based on whether the spectrum is inverted
+  signal_component <- if (inverted)  1 / component else component
+
   # Return the spectrum object
   structure(
     list(
@@ -93,6 +96,7 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
       relative_cycle_length = relative_cycle_length,
       fundamental_component = fundamental_component,
       fundamental_cycle_length = fundamental_cycle_length,
+      signal_component = signal_component,
       fractions = fractions,
       inverted = inverted
     ),
@@ -105,7 +109,9 @@ print.spectrum <- function(x, ...) {
   cat("Spectrum Object\n")
   cat("Components:", x$component, "\n")
   cat("Amplitudes:", x$amplitude, "\n")
+  cat("Relative Cycle Length:", x$relative_cycle_length, "\n")
   cat("Fundamental Component:", x$fundamental_component, "\n")
+  cat("Fundamental Cycle Length:", x$relative_cycle_length, "\n")
   cat("Inverted:", x$inverted, "\n")
 }
 

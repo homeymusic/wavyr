@@ -5,14 +5,17 @@
 \alias{spectrum.default}
 \title{Spectrum Constructor}
 \usage{
-spectrum(component, amplitude = NULL)
+spectrum(component, amplitude = NULL, inverted = FALSE)
 
-\method{spectrum}{default}(component, amplitude)
+\method{spectrum}{default}(component, amplitude, inverted = FALSE)
 }
 \arguments{
 \item{component}{Either a numeric vector for component values or a list with named \code{component} and \code{amplitude} vectors.}
 
 \item{amplitude}{A numeric vector of amplitudes, if \code{component} is a numeric vector.}
+
+\item{inverted}{Logical; if \code{TRUE}, treats the spectrum as an inverted domain (e.g., periods or wavelengths).
+If \code{FALSE}, treats the spectrum as a frequency domain (e.g., frequencies or wavenumbers).}
 }
 \value{
 An object of class \code{spectrum}.

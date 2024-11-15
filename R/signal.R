@@ -12,10 +12,9 @@ signal <- function(spectrum) {
     stop("Input must be of class 'spectrum'")
   }
 
-  # Define the amplitude function
   amplitude_fn <- function(coordinate) {
-    # Sum the contributions of each frequency component
-    sum(spectrum$amplitude * cos(2 * pi * spectrum$component * coordinate))
+    # Calculate the sum of cosine components with the adjusted component
+    sum(spectrum$amplitude * cos(2 * pi * spectrum$signal_component * coordinate))
   }
 
   # Create the signal object, including the amplitude function
@@ -38,7 +37,6 @@ signal <- function(spectrum) {
 print.signal <- function(x, ...) {
   cat("Signal Object\n")
   cat("Spectrum:\n")
-  print(x$spectrum)  # Print the spectrum contained within the signal
 }
 
 #' Plot method for signal objects
@@ -66,8 +64,7 @@ plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles
   # Calculate the coordinate range based on number_of_cycles
   if (is.null(coordinate_range)) {
     # If coordinate_range is not provided, calculate it based on the fundamental cycle length
-    fundamental_cycle_length <- x$spectrum$fundamental_cycle_length
-    coordinate_range <- c(0, number_of_cycles * fundamental_cycle_length)
+    coordinate_range <- c(0, number_of_cycles * x$spectrum$fundamental_cycle_length)
   }
 
   # Validate coordinate_range

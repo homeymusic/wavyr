@@ -4,7 +4,7 @@
 \alias{.spectrum}
 \title{Internal spectrum constructor with validation and component combination}
 \usage{
-.spectrum(component, amplitude)
+.spectrum(component, amplitude, inverted)
 }
 \description{
 Internal spectrum constructor with validation and component combination

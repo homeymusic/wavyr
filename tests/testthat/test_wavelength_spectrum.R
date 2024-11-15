@@ -162,7 +162,7 @@ test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum
   )
 
   # Calculate expected fundamental wavelength
-  expected_fundamental_wavelength <- wavelength_spectrum_obj$relative_cycle_length / max(wavelength_components)
+  expected_fundamental_wavelength <- wavelength_spectrum_obj$relative_cycle_length * max(wavelength_components)
 
   # Test that fundamental_wavelength is correctly assigned
   expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)
@@ -178,7 +178,8 @@ test_that("fundamental wavelength of tritone is longer than P1", {
     amplitude = tt_amplitudes
   )
 
-  expect_equal(tt_wavelength_spectrum_obj$fundamental_wavelength, 1 / 0.07,
+  expect_equal(tt_wavelength_spectrum_obj$fundamental_wavelength,
+               tt_wavelength_spectrum_obj$relative_cycle_length * max(tt_wavelength_spectrum_obj$wavelength),
                tolerance = 0.1)
 
   # Define wavelength components and amplitudes
@@ -191,7 +192,8 @@ test_that("fundamental wavelength of tritone is longer than P1", {
     amplitude = P1_amplitudes
   )
 
-  expect_equal(P1_wavelength_spectrum_obj$fundamental_wavelength, 1 / 1.31,
+  expect_equal(P1_wavelength_spectrum_obj$fundamental_wavelength,
+               P1_wavelength_spectrum_obj$relative_cycle_length * max(P1_wavelength_spectrum_obj$wavelength),
                tolerance = 0.1)
 
 
@@ -266,4 +268,29 @@ test_that("wavelength_spectrum plot shows primary spectrum under overlapping bea
       beat_wavelength_spectrum_color = colors_homey$beat
     )
   })
+})
+
+test_that("wavelength spectrum with Feynman's 4 Hz and 5 Hz", {
+
+  # Create a spectrum with Feynman's example components
+  spectrum_obj <- wavelength_spectrum(
+    wavelength = SPEED_OF_SOUND / c(4, 5),
+    amplitude = c(1.0, 1.0)  # Equal amplitudes for simplicity
+  )
+
+  # Check that spectrum_obj is of class "wavelength_spectrum"
+  expect_s3_class(spectrum_obj, "wavelength_spectrum")
+  expect_equal(spectrum_obj$wavelength, c(69.84565, 87.30706), tolerance = 0.1)
+  expect_equal(spectrum_obj$inverted, T)
+  expect_equal(spectrum_obj$relative_cycle_length, 4)
+  expect_equal(spectrum_obj$fundamental_component, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$fundamental_cycle_length, 349.22, tolerance = 0.1)
+
+  beat_wavelength = spectrum_obj$wavelength[1] * spectrum_obj$wavelength[2] /
+    abs(spectrum_obj$wavelength[1] - spectrum_obj$wavelength[2])
+
+  expect_equal(beat_wavelength, spectrum_obj$fundamental_wavelength,
+               tolerance = 0.1)
+
 })

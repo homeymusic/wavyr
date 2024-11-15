@@ -203,7 +203,7 @@ test_that("fundamental_component is calculated correctly with inversion", {
   )
 
   # Expected fundamental component: relative_cycle_length / max(component)
-  expected_fundamental_component <- spectrum_obj$relative_cycle_length / max(spectrum_obj$component)
+  expected_fundamental_component <- spectrum_obj$relative_cycle_length * max(spectrum_obj$component)
 
   # Test fundamental_component calculation
   expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
@@ -269,3 +269,17 @@ test_that("fundamental_cycle_length handles large components correctly", {
   expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
 })
 
+test_that("signal stores the spectrum components and amplitudes correctly", {
+  # Create a spectrum object with known components and amplitudes
+  f = c(100, 125, 150)
+  a = c(1, 0.75, 0.5)
+  spectrum_obj <- spectrum(
+    component = f,
+    amplitude = a
+  )
+  expect_equal(spectrum_obj$inverted, F)
+  expect_equal(spectrum_obj$relative_cycle_length, 4)
+  expect_equal(spectrum_obj$fundamental_component, 25)
+  expect_equal(spectrum_obj$fundamental_cycle_length, 1/spectrum_obj$fundamental_component)
+
+})

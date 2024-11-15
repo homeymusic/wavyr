@@ -230,6 +230,12 @@ test_that("cycle lengths vary correctly for JI major triad in frequency_spectrum
     amplitude = amplitudes
   )
 
+  expect_equal(frequency_spectrum_obj$inverted, F)
+  expect_equal(frequency_spectrum_obj$relative_cycle_length, 4)
+  expect_equal(frequency_spectrum_obj$fundamental_component, 25)
+  expect_equal(frequency_spectrum_obj$fundamental_frequency, 25)
+  expect_equal(frequency_spectrum_obj$fundamental_cycle_length, 1/frequency_spectrum_obj$fundamental_component)
+
   # Define the expected cycle lengths based on the JI ratios (1, 4, and 2)
   expected_cycle_lengths <- c(1, 4, 2)
 
