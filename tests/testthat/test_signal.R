@@ -153,7 +153,7 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # You could inspect the axis limits or other aspects of the plot here.
 })
 
-test_that("detailed signal plot matches expected output for specified coordinate range", {
+test_that("detailed signal plots match expected output", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
     component = c(4, 5),      # Frequencies in Hz

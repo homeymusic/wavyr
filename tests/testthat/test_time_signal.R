@@ -47,8 +47,11 @@ test_that("time signal has correct metadata", {
   # Verify that the stored spectrum has correct components and amplitudes
   expect_equal(signal_obj$plot_color, colors_homey$major)
   expect_equal(signal_obj$physical_label, 'Time')
-  expect_equal(signal_obj$spectral_label, 'Time Signal from Frequency Spectrum')
+  expect_equal(signal_obj$spectral_label, 'Frequency')
   expect_equal(signal_obj$observable_label, 'Amplitude')
+  expect_equal(signal_obj$physical_units, 's')
+  expect_equal(signal_obj$observable_units, '')
+  expect_equal(signal_obj$spectral_units, 'Hz')
 })
 
 test_that("time_signal constructor fails with non-frequency_spectrum input", {
@@ -202,3 +205,23 @@ test_that("time signal plot of feynman waves with superposition", {
                                                      resolution=1001))
 
   })
+
+test_that("detailed time signal plots match expected output for specified coordinate range", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    frequency = c(4, 5),      # Frequencies in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- time_signal(spectrum_obj)
+
+  expect_equal(signal_obj$plot_color, colors_homey$major)
+
+  # Define label and coordinate range
+  label <- "Feynman's Beats Details"
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
+})
+

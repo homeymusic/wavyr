@@ -46,9 +46,14 @@ test_that("space signal has correct metadata", {
   signal_obj <- space_signal(spectrum_obj)
   # Verify that the stored spectrum has correct components and amplitudes
   expect_equal(signal_obj$plot_color, colors_homey$minor)
+
   expect_equal(signal_obj$physical_label, 'Space')
-  expect_equal(signal_obj$spectral_label, 'Space Signal from Wavelength Spectrum')
+  expect_equal(signal_obj$spectral_label, 'Wavelength')
   expect_equal(signal_obj$observable_label, 'Amplitude')
+  expect_equal(signal_obj$physical_units, 'm')
+  expect_equal(signal_obj$observable_units, '')
+  expect_equal(signal_obj$spectral_units, 'm')
+
 })
 
 test_that("space_signal constructor fails with non-wavelength_spectrum input", {
@@ -218,7 +223,7 @@ test_that("space signal plot of feynman waves with superposition", {
 
 })
 
-test_that("detailed signal plot matches expected output for specified coordinate range", {
+test_that("detailed space signal plots match expected output", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
     wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz

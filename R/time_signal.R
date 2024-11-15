@@ -19,8 +19,11 @@ time_signal <- function(frequency_spectrum) {
 
   signal_obj$plot_color = colors_homey$major
   signal_obj$physical_label = 'Time'
-  signal_obj$spectral_label = 'Time Signal from Frequency Spectrum'
+  signal_obj$spectral_label = 'Frequency'
   signal_obj$observable_label = 'Amplitude'
+  signal_obj$physical_units = 's'
+  signal_obj$observable_units = ''
+  signal_obj$spectral_units = 'Hz'
 
   # Create the time_signal object, inheriting everything from signal
   structure(
