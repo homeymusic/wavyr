@@ -47,7 +47,7 @@ test_that("time signal has correct metadata", {
   # Verify that the stored spectrum has correct components and amplitudes
   expect_equal(signal_obj$plot_color, colors_homey$major)
   expect_equal(signal_obj$physical_label, 'Time')
-  expect_equal(signal_obj$spectral_label, 'Frequency')
+  expect_equal(signal_obj$spectral_label, 'Time Signal from Frequency Spectrum')
   expect_equal(signal_obj$observable_label, 'Amplitude')
 })
 
@@ -121,7 +121,7 @@ test_that("signal plot matches expected output for specified coordinate range", 
   coordinate_range <- c(0, 2)  # Range for the plot
 
   # Use vdiffr to capture and test the plot output
-  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj, label = label, coordinate_range = coordinate_range))
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj, coordinate_range = coordinate_range))
 })
 
 test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
@@ -141,5 +141,5 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   coordinate_range_expected <- c(0, 0.75)
 
   # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj, label = label))
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj))
 })

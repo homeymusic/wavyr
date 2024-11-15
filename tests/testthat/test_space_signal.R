@@ -47,7 +47,7 @@ test_that("space signal has correct metadata", {
   # Verify that the stored spectrum has correct components and amplitudes
   expect_equal(signal_obj$plot_color, colors_homey$minor)
   expect_equal(signal_obj$physical_label, 'Space')
-  expect_equal(signal_obj$spectral_label, 'Wavelength')
+  expect_equal(signal_obj$spectral_label, 'Space Signal from Wavelength Spectrum')
   expect_equal(signal_obj$observable_label, 'Amplitude')
 })
 
@@ -124,7 +124,7 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
 test_that("signal plot matches expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = c(SPEED_OF_SOUND / 4, SPEED_OF_SOUND / 5),  # Frequency components in Hz
+    wavelength = SPEED_OF_SOUND / c( 4, 5),  # Frequency components in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -139,13 +139,13 @@ test_that("signal plot matches expected output for specified coordinate range", 
   coordinate_range <- c(0, 2)  # Range for the plot
 
   # Use vdiffr to capture and test the plot output
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj, label = label, coordinate_range = coordinate_range))
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj, coordinate_range = coordinate_range))
 })
 
 test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = c(SPEED_OF_SOUND / 4, SPEED_OF_SOUND / 5),  # Frequency components in Hz
+    wavelength = SPEED_OF_SOUND / c( 4, 5),  # Frequency components in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -164,7 +164,37 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   coordinate_range_expected <- c(0, 0.75)
 
   # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj, label = label))
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj))
+
+  # Alternatively, check that the plot range indeed covers 3 full cycles
+  # You could inspect the axis limits or other aspects of the plot here.
+})
+
+test_that("signal plot of feynman waves with superposition", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    frequency = c( 4, 5),  # Frequency components in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  superposed_wave = superposed_wave(spectrum_obj)
+
+  # Create the signal object from the spectrum
+  space_signal_obj <- superposed_wave$wavelength_spectrum %>% space_signal()
+  # Check that the object is of class "space_signal"
+  expect_s3_class(space_signal_obj, "space_signal")
+
+
+  # Define label
+  label <- "Feynman's Beats (4 Hz and 5 Hz) with Super"
+
+  # Define the expected coordinate range for 3 full cycles
+  # Here, the fundamental_cycle_length is based on the minimum of the components (4 Hz, 5 Hz).
+  # Let's assume it's 1/4 Hz (i.e., 0.25 seconds) for simplicity. Thus, 3 cycles = 3 * 0.25 = 0.75 seconds.
+  coordinate_range_expected <- c(0, 0.75)
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj))
 
   # Alternatively, check that the plot range indeed covers 3 full cycles
   # You could inspect the axis limits or other aspects of the plot here.

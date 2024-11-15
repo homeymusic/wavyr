@@ -19,7 +19,7 @@ signal <- function(spectrum) {
 
   plot_color = colors_homey$neutral
   physical_label = 'Coordinate'
-  spectral_label = 'Signal'
+  spectral_label = 'Signal from Spectrum'
   observable_label = 'Amplitude'
 
   # Create the signal object, including the amplitude function
@@ -99,7 +99,7 @@ plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles
     ggplot2::geom_line(color = x$plot_color) +
     ggplot2::scale_x_continuous(name = x$physical_label) +
     ggplot2::labs(
-      title = bquote(.(label) ~ x$spectral_label),
+      title = bquote(.(label) ~ .(x$spectral_label)),
       x = x$physical_label,
       y = x$observable_label
     ) +

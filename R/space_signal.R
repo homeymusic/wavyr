@@ -19,7 +19,7 @@ space_signal <- function(wavelength_spectrum) {
 
   signal_obj$plot_color = colors_homey$minor
   signal_obj$physical_label = 'Space'
-  signal_obj$spectral_label = 'Wavelength'
+  signal_obj$spectral_label = 'Space Signal from Wavelength Spectrum'
   signal_obj$observable_label = 'Amplitude'
 
   # Create the space_signal object, inheriting everything from signal

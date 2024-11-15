@@ -294,3 +294,20 @@ test_that("wavelength spectrum with Feynman's 4 Hz and 5 Hz", {
                tolerance = 0.1)
 
 })
+test_that("wavelength spectrum with beats makes sense", {
+  l = SPEED_OF_SOUND / c(4,5, abs(4-5))
+  a = c(1,1,1)
+
+  wavelength_spectrum_with_beats = wavelength_spectrum(
+    wavelength = l,
+    amplitude  = a
+  )
+
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    frequency = c( 4, 5),  # Frequency components in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+  superposed_wave = superposed_wave(spectrum_obj)
+  expected_wavelength_spectrum = superposed_wave$wavelength_spectrum
+})

@@ -336,10 +336,12 @@ plot.wave <- function(x, label = '',
       # Row 1 and 2: Rectangular plots with composite_2d spanning two rows in the third column
       cowplot::plot_grid(
         # Nested column 1: composite_space stacked above wavelength_spectrum_grob
-        cowplot::plot_grid(composite_space, wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+        cowplot::plot_grid(x$wavelength_spectrum %>% space_signal() %>% plot(),
+                           wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
 
         # Nested column 2: composite_time stacked above frequency_spectrum_grob
-        cowplot::plot_grid(composite_time, frequency_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+        cowplot::plot_grid(x$frequency_spectrum %>% time_signal() %>% plot(),
+                           frequency_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
 
         # Column 3: composite_2d spanning two rows
         composite_2d,

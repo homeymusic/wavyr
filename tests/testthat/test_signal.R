@@ -46,7 +46,7 @@ test_that("signal has correct metadata", {
   # Verify that the stored spectrum has correct components and amplitudes
   expect_equal(signal_obj$plot_color, colors_homey$neutral)
   expect_equal(signal_obj$physical_label, 'Coordinate')
-  expect_equal(signal_obj$spectral_label, 'Signal')
+  expect_equal(signal_obj$spectral_label, 'Signal from Spectrum')
   expect_equal(signal_obj$observable_label, 'Amplitude')
 })
 
@@ -121,7 +121,7 @@ test_that("signal plot matches expected output for specified coordinate range", 
   coordinate_range <- c(0, 2)  # Range for the plot
 
   # Use vdiffr to capture and test the plot output
-  vdiffr::expect_doppelganger(label, function() plot(signal_obj, label = label, coordinate_range = coordinate_range))
+  vdiffr::expect_doppelganger(label, function() plot(signal_obj, coordinate_range = coordinate_range))
 })
 
 test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
@@ -143,7 +143,7 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   coordinate_range_expected <- c(0, 0.75)
 
   # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(signal_obj, label = label))
+  vdiffr::expect_doppelganger(label, function() plot(signal_obj))
 
   # Alternatively, check that the plot range indeed covers 3 full cycles
   # You could inspect the axis limits or other aspects of the plot here.

@@ -3,22 +3,16 @@ source(testthat::test_path("helper.R"))
 test_that("wave plot for each interval matches snapshot", {
   purrr::walk2(framed_intervals, names(framed_intervals), function(interval_midi, label) {
 
-    f <- hrep::sparse_fr_spectrum(interval_midi, num_harmonics = 2)
-
-    # Create frequency_spectrum and wavelength_spectrum
-    f_spectrum <- frequency_spectrum(
-      frequency = f$x,
-      amplitude = f$y
-    )
+    f <- spectrum_for(interval_midi, num_harmonics = 2)
 
     l_spectrum <- wavelength_spectrum(
-      wavelength = SPEED_OF_SOUND / f$x,
-      amplitude  = f$y
+      wavelength = SPEED_OF_SOUND / f$frequency,
+      amplitude  = f$amplitude
     )
 
     # Create the wave object with frequency_spectrum and wavelength_spectrum
     wave <- wave(
-      frequency_spectrum = f_spectrum,
+      frequency_spectrum = f,
       wavelength_spectrum = l_spectrum
     )
 

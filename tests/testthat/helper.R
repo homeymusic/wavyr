@@ -25,12 +25,23 @@ triads <- list(
 )
 framed_triads <- purrr::map(triads, ~c(60, .x, 72) %>% sort())
 
+spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
 
-wave_for <- function(x, num_harmonics = 1) {
-  sparse = x %>% hrep::sparse_fr_spectrum(num_harmonics=num_harmonics)
-  frequency_spectrum(
-    frequency = sparse$x,
-    amplitude = sparse$y
-  ) %>% wave()
+  purrr::map2(midi_to_freq(x), rep(1, length(x)),
+              function(freq, amp) {
+                n  <- seq_len(num_harmonics)
+                df <- data.frame(
+                  frequency = freq * n,
+                  amplitude = 1 * 10 ^ ( -roll_off_dB * log2(n) / 20)
+                )
+                df
+              }) %>%
+    dplyr::bind_rows() %>%
+    frequency_spectrum()
+}
+
+wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
+    spectrum_for(x, num_harmonics = 1, roll_off_dB = 1) %>%
+    wave()
 }
 

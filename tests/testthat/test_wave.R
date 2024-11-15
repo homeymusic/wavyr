@@ -274,17 +274,11 @@ test_that('frequency_spectrum is correct for M3', {
 
   interval_midi = c(60,64,72)
 
-  f = hrep::sparse_fr_spectrum(interval_midi, num_harmonics=2)
-
-  # Create frequency_spectrum and wavelength_spectrum
-  f_spectrum <- frequency_spectrum(
-    frequency = f$x,
-    amplitude = f$y
-  )
+  f_spectrum = spectrum_for(interval_midi, num_harmonics=2)
 
   l_spectrum <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / f$x,
-    amplitude  = f$y
+    wavelength = SPEED_OF_SOUND / f_spectrum$frequency,
+    amplitude  = f_spectrum$amplitude
   )
 
   # Create a dummy wave object with frequency_spectrum and wavelength_spectrum
@@ -293,7 +287,7 @@ test_that('frequency_spectrum is correct for M3', {
     wavelength_spectrum = l_spectrum
   )
 
-  expect_equal(wave$indexed_spectra$frequency, f$x, tolerance=0.1)
+  expect_equal(wave$indexed_spectra$frequency, f_spectrum$frequency, tolerance=0.1)
   expect_equal(wave$indexed_spectra$frequency_cycle_length, c(1,3,1,2,1), tolerance=0.1)
 
 })
