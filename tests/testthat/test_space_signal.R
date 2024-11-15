@@ -120,7 +120,6 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
   expect_equal(signal_obj$amplitude(coordinate_4), expected_amplitude_4, tolerance = 0.1)
 })
 
-
 test_that("signal plot matches expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
@@ -158,11 +157,6 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # Define label
   label <- "Feynman's Beats (4 Hz and 5 Hz) with 3 Full Cycles"
 
-  # Define the expected coordinate range for 3 full cycles
-  # Here, the fundamental_cycle_length is based on the minimum of the components (4 Hz, 5 Hz).
-  # Let's assume it's 1/4 Hz (i.e., 0.25 seconds) for simplicity. Thus, 3 cycles = 3 * 0.25 = 0.75 seconds.
-  coordinate_range_expected <- c(0, 0.75)
-
   # Capture the plot with vdiffr and check the default behavior
   vdiffr::expect_doppelganger(label, function() plot(space_signal_obj))
 
@@ -170,7 +164,7 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # You could inspect the axis limits or other aspects of the plot here.
 })
 
-test_that("signal plot of feynman waves with superposition", {
+test_that("space signal plot of feynman waves with superposition", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- frequency_spectrum(
     frequency = c( 4, 5),  # Frequency components in Hz
@@ -186,16 +180,40 @@ test_that("signal plot of feynman waves with superposition", {
 
 
   # Define label
-  label <- "Feynman's Beats (4 Hz and 5 Hz) with Super"
-
-  # Define the expected coordinate range for 3 full cycles
-  # Here, the fundamental_cycle_length is based on the minimum of the components (4 Hz, 5 Hz).
-  # Let's assume it's 1/4 Hz (i.e., 0.25 seconds) for simplicity. Thus, 3 cycles = 3 * 0.25 = 0.75 seconds.
-  coordinate_range_expected <- c(0, 0.75)
+  label <- "Feynman's Beats Superposed 1/4 cycle"
 
   # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj))
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 1/4,
+                                                     resolution=1001))
 
-  # Alternatively, check that the plot range indeed covers 3 full cycles
-  # You could inspect the axis limits or other aspects of the plot here.
+  label <- "Feynman's Beats Superposed 1 cycle"
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 1,
+                                                     resolution=1001))
+
+  label <- "Feynman's Beats Superposed 3 cycle"
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 3,
+                                                     resolution=1001))
+
+  label <- "Feynman's Beats Superposed 10 cycle"
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 10,
+                                                     resolution=1001))
+
+  label <- "Feynman's Beats Superposed 100 cycle"
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 100,
+                                                     resolution=1001))
+
 })

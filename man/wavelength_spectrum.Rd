@@ -4,12 +4,14 @@
 \alias{wavelength_spectrum}
 \title{Create a Wavelength Spectrum}
 \usage{
-wavelength_spectrum(wavelength, amplitude = NULL)
+wavelength_spectrum(wavelength, amplitude = NULL, reference_wavelength = NULL)
 }
 \arguments{
 \item{wavelength}{Either a numeric vector of wavelengths or a list with named \code{wavelength} and \code{amplitude} vectors.}
 
 \item{amplitude}{A numeric vector of amplitudes, if \code{wavelength} is a numeric vector.}
+
+\item{reference_wavelength}{To compute the fundamental wavelength}
 }
 \value{
 An object of class \code{wavelength_spectrum} that inherits from \code{spectrum}.

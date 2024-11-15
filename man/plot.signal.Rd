@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{signal}(
   x,
-  label = "",
+  title = "",
   coordinate_range = NULL,
   number_of_cycles = NULL,
   resolution = 300
@@ -15,13 +15,13 @@
 \arguments{
 \item{x}{A signal object.}
 
-\item{label}{An optional label for the plot.}
-
 \item{coordinate_range}{A numeric vector of length 2 specifying the start and stop values for the coordinate range.}
 
 \item{number_of_cycles}{A numeric value specifying the number of cycles to plot. Defaults to 3 if not provided.}
 
 \item{resolution}{Number of points to sample within the range.}
+
+\item{label}{An optional label for the plot.}
 }
 \description{
 Creates a plot of the signal's amplitude over a specified coordinate range or a number of cycles.

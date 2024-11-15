@@ -143,3 +143,62 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # Capture the plot with vdiffr and check the default behavior
   vdiffr::expect_doppelganger(label, function() plot(time_signal_obj))
 })
+test_that("time signal plot of feynman waves with superposition", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    frequency = c( 4, 5),  # Frequency components in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  superposed_wave = superposed_wave(spectrum_obj)
+
+  # Create the signal object from the spectrum
+  time_signal_obj <- superposed_wave$frequency_spectrum %>% time_signal()
+  # Check that the object is of class "space_signal"
+  expect_s3_class(time_signal_obj, "time_signal")
+
+  # Define label
+  label <- "Feynman's Beats Superposed 1/4 Cycle"
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 1/4,
+                                                     resolution=1001))
+
+  # Define label
+  label <- "Feynman's Beats Superposed 1 Cycle"
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 1,
+                                                     resolution=1001))
+
+  # Define label
+  label <- "Feynman's Beats Superposed 3 Cycles"
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 3,
+                                                     resolution=1001))
+
+  # Define label
+  label <- "Feynman's Beats Superposed 10 Cycles"
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 10,
+                                                     resolution=1001))
+  # Define label
+  label <- "Feynman's Beats Superposed 100 Cycles"
+
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(time_signal_obj,
+                                                     title = label,
+                                                     number_of_cycles = 100,
+                                                     resolution=1001))
+
+  })

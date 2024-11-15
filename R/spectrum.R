@@ -7,14 +7,16 @@
 #' @param amplitude A numeric vector of amplitudes, if `component` is a numeric vector.
 #' @param inverted Logical; if `TRUE`, treats the spectrum as an inverted domain (e.g., periods or wavelengths).
 #' If `FALSE`, treats the spectrum as a frequency domain (e.g., frequencies or wavenumbers).
+#' @param reference_component For computing the fundamental component we take the product of the reference_component and the relative cycle length.
 #'
 #' @return An object of class \code{spectrum}.
 #' @export
-spectrum <- function(component, amplitude = NULL, inverted = FALSE) {
+spectrum <- function(component, amplitude = NULL, inverted = FALSE, reference_component = NULL) {
   if (is.list(component) && is.null(amplitude)) {
     UseMethod("spectrum", component)
   } else if (is.numeric(component) && is.numeric(amplitude)) {
-    spectrum.default(component = component, amplitude = amplitude, inverted = inverted)
+    spectrum.default(component = component, amplitude = amplitude,
+                     inverted = inverted, reference_component = reference_component)
   } else {
     stop("Invalid input: please provide either numeric `component` and `amplitude` vectors or a list with both.")
   }
@@ -22,24 +24,27 @@ spectrum <- function(component, amplitude = NULL, inverted = FALSE) {
 
 #' @rdname spectrum
 #' @export
-spectrum.default <- function(component, amplitude, inverted = FALSE) {
-  .spectrum(component = component, amplitude = amplitude, inverted = inverted)
+spectrum.default <- function(component, amplitude, inverted = FALSE, reference_component = NULL) {
+  .spectrum(component = component, amplitude = amplitude,
+            inverted = inverted, reference_component = reference_component)
 }
 
 #' @export
-spectrum.list <- function(x, inverted = FALSE, ...) {
+spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) {
   stopifnot(
     length(x) == 2L,
     is.numeric(x[[1]]),
     is.numeric(x[[2]]),
     length(x[[1]]) == length(x[[2]])
   )
-  .spectrum(component = x[[1]], amplitude = x[[2]], inverted = inverted)
+  .spectrum(component = x[[1]], amplitude = x[[2]],
+            inverted = inverted, reference_component = reference_component)
 }
 
 #' Internal spectrum constructor with validation and component combination
 #' @keywords internal
-.spectrum <- function(component, amplitude, inverted) {
+.spectrum <- function(component, amplitude, inverted, reference_component) {
+
   # Validation checks
   if (!is.numeric(component) || !is.numeric(amplitude)) {
     stop("Both component and amplitude must be numeric.")
@@ -56,6 +61,11 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
     component, amplitude,
     tolerance = FLOATING_POINT_TOLERANCE
   )
+
+  # Calculate reference_component if NULL
+  if (is.null(reference_component)) {
+    reference_component <- if (inverted) max(component) else min(component)
+  }
 
   # Extract the reduced components and amplitudes
   component <- combined_result$component
@@ -91,6 +101,7 @@ spectrum.list <- function(x, inverted = FALSE, ...) {
   structure(
     list(
       component = component,
+      reference_component = reference_component,
       amplitude = amplitude,
       cycle_length = fractions$den,
       relative_cycle_length = relative_cycle_length,

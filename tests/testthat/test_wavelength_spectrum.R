@@ -293,6 +293,7 @@ test_that("wavelength spectrum with Feynman's 4 Hz and 5 Hz", {
   expect_equal(beat_wavelength, spectrum_obj$fundamental_wavelength,
                tolerance = 0.1)
 
+
 })
 test_that("wavelength spectrum with beats makes sense", {
   l = SPEED_OF_SOUND / c(4,5, abs(4-5))
@@ -310,4 +311,56 @@ test_that("wavelength spectrum with beats makes sense", {
   )
   superposed_wave = superposed_wave(spectrum_obj)
   expected_wavelength_spectrum = superposed_wave$wavelength_spectrum
+  expect_equal(wavelength_spectrum_with_beats$wavelength, expected_wavelength_spectrum$wavelength)
+
+  spectrum_obj = superposed_wave$wavelength_spectrum
+
+  beat_wavelength = spectrum_obj$wavelength[1] * spectrum_obj$wavelength[2] /
+    abs(spectrum_obj$wavelength[1] - spectrum_obj$wavelength[2])
+
+  expect_equal(spectrum_obj$wavelength, c(69.84565, 87.30706, beat_wavelength), tolerance = 0.1)
+  expect_equal(spectrum_obj$inverted, T)
+  expect_equal(spectrum_obj$relative_cycle_length, 4)
+  expect_equal(spectrum_obj$fundamental_component, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$fundamental_cycle_length, 349.22, tolerance = 0.1)
+})
+test_that("wavelength plot of feynman waves with superposition", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    frequency = c( 4, 5),  # Frequency components in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  superposed_wave = superposed_wave(spectrum_obj)
+
+  label <- "Feynman's Beats Superposed 3 cycle"
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(superposed_wave$wavelength_spectrum,
+                                                     title = label))
+
+})
+
+test_that("reference_wavelength is calculated correctly when NULL in the wavelength_spectrum class", {
+  # Create a wavelength_spectrum object with inverted = FALSE (default)
+  spectrum_obj <- wavelength_spectrum(
+    wavelength = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Expect the calculated reference_wavelength to be min(wavelength)
+  expect_equal(spectrum_obj$reference_wavelength, max(spectrum_obj$wavelength))
+
+})
+
+test_that("reference_wavelength can be explicitly set in the wavelength_spectrum class", {
+  # Explicitly set reference_wavelength
+  spectrum_obj <- wavelength_spectrum(
+    wavelength = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5),
+    reference_wavelength = 0.5
+  )
+
+  # Expect the explicitly set reference_wavelength to be used
+  expect_equal(spectrum_obj$reference_wavelength, 0.5)
 })

@@ -244,3 +244,26 @@ test_that("cycle lengths vary correctly for JI major triad in frequency_spectrum
   expect_equal(frequency_spectrum_obj$fractions$den %>% sort(), c(1,2,4))
   expect_equal(frequency_spectrum_obj$cycle_length %>% sort(), c(1,2,4))
 })
+
+test_that("reference_frequency is calculated correctly when NULL in the frequency_spectrum class", {
+  # Create a frequency_spectrum object
+  spectrum_obj <- frequency_spectrum(
+    frequency = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Expect the calculated reference_frequency to be max(frequency)
+  expect_equal(spectrum_obj$reference_frequency, min(spectrum_obj$frequency))
+})
+
+test_that("reference_frequency can be explicitly set in the frequency_spectrum class", {
+  # Explicitly set reference_frequency
+  spectrum_obj <- frequency_spectrum(
+    frequency = c(1.0, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5),
+    reference_frequency = 0.5
+  )
+
+  # Expect the explicitly set reference_frequency to be used
+  expect_equal(spectrum_obj$reference_frequency, 0.5)
+})

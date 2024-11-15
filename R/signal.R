@@ -59,7 +59,7 @@ print.signal <- function(x, ...) {
 #' @param number_of_cycles A numeric value specifying the number of cycles to plot. Defaults to 3 if not provided.
 #' @param resolution Number of points to sample within the range.
 #' @export
-plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles = NULL, resolution = 300) {
+plot.signal <- function(x, title = '', coordinate_range = NULL, number_of_cycles = NULL, resolution = 300) {
 
   # Validate that both coordinate_range and number_of_cycles are not provided simultaneously
   if (!is.null(coordinate_range) && !is.null(number_of_cycles)) {
@@ -99,7 +99,7 @@ plot.signal <- function(x, label = '', coordinate_range = NULL, number_of_cycles
     ggplot2::geom_line(color = x$plot_color) +
     ggplot2::scale_x_continuous(name = x$physical_label) +
     ggplot2::labs(
-      title = bquote(.(label) ~ .(x$spectral_label)),
+      title = bquote(.(title) ~ .(x$spectral_label)),
       x = x$physical_label,
       y = x$observable_label
     ) +
