@@ -117,6 +117,10 @@ using namespace Rcpp;
                                           const double uncertainty,
                                           const double deviation) {
 
+   if (deviation <= uncertainty) {
+     stop("Deviation must be greater than uncertainty.");
+   }
+
    x = unique(x);
 
    const int     n = x.size();
@@ -128,6 +132,10 @@ using namespace Rcpp;
 
    const DataFrame approximate_harmonics_df = approximate_harmonics(x, deviation);
    const double pseudo_octave_double = pseudo_octave(approximate_harmonics_df["pseudo_octave"]);
+
+   if (pseudo_octave_double <= 1) {
+     stop("Pseudo octave must be greater than 1. The deviation value is likely too large.");
+   }
 
    for (int i = 0; i < n; ++i) {
      pseudo_x[i]                  = pow(2.0, log(x[i]) / log(pseudo_octave_double));
