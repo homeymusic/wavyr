@@ -25,7 +25,7 @@ triads <- list(
 )
 framed_triads <- purrr::map(triads, ~c(60, .x, 72) %>% sort())
 
-spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
+frequency_spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
 
   purrr::map2(midi_to_freq(x), rep(1, length(x)),
               function(freq, amp) {
@@ -41,7 +41,7 @@ spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
 }
 
 wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
-    spectrum_for(x, num_harmonics = 1, roll_off_dB = 1) %>%
+    frequency_spectrum_for(x, num_harmonics = 1, roll_off_dB = 1) %>%
     wave()
 }
 

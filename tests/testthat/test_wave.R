@@ -274,7 +274,7 @@ test_that('frequency_spectrum is correct for M3', {
 
   interval_midi = c(60,64,72)
 
-  f_spectrum = spectrum_for(interval_midi, num_harmonics=2)
+  f_spectrum = frequency_spectrum_for(interval_midi, num_harmonics=2)
 
   l_spectrum <- wavelength_spectrum(
     wavelength = SPEED_OF_SOUND / f_spectrum$frequency,

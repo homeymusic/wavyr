@@ -225,3 +225,22 @@ test_that("detailed time signal plots match expected output for specified coordi
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })
 
+test_that("5 random frequencies looks intersting", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    frequency = c(60,64,67,79,72) %>% midi_to_freq(),
+    amplitude =1 / (1:5)
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- time_signal(spectrum_obj)
+
+  expect_equal(signal_obj$plot_color, colors_homey$major)
+
+  # Define label and coordinate range
+  label <- "Super Major Chord"
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
+})
+

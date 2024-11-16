@@ -9,7 +9,7 @@
   title = "",
   coordinate_range = NULL,
   number_of_cycles = NULL,
-  resolution = 300
+  resolution = 99
 )
 }
 \arguments{

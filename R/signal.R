@@ -71,7 +71,7 @@ print.signal <- function(x, ...) {
 #' @param number_of_cycles A numeric value specifying the number of cycles to plot. Defaults to 3 if not provided.
 #' @param resolution Number of points to sample within the range.
 #' @export
-plot.signal <- function(x, title = '', coordinate_range = NULL, number_of_cycles = NULL, resolution = 300) {
+plot.signal <- function(x, title = '', coordinate_range = NULL, number_of_cycles = NULL, resolution = 99) {
 
   # Validate that both coordinate_range and number_of_cycles are not provided simultaneously
   if (!is.null(coordinate_range) && !is.null(number_of_cycles)) {
@@ -139,13 +139,28 @@ plot.signal <- function(x, title = '', coordinate_range = NULL, number_of_cycles
 #' @return A combined plot using `cowplot::plot_grid`, with the composite wave on top and individual component plots below.
 #'
 #' @export
-plot_details.signal <- function(x, title = '', number_of_cycles = 3, resolution = 1000) {
-  # Define the coordinate range for all plots
-  coordinate_range <- seq(
-    0,
-    number_of_cycles * x$spectrum$fundamental_cycle_length,
-    length.out = resolution
-  )
+plot_details.signal <- function(x, title = '', coordinate_range = NULL, number_of_cycles = NULL, resolution = 99) {
+  # Validate that both coordinate_range and number_of_cycles are not provided simultaneously
+  if (!is.null(coordinate_range) && !is.null(number_of_cycles)) {
+    stop("Please provide either 'coordinate_range' or 'number_of_cycles', not both.")
+  }
+
+  # Default to 3 cycles if number_of_cycles is NULL
+  if (is.null(number_of_cycles)) {
+    number_of_cycles <- 3
+  }
+
+  # Calculate the coordinate range based on number_of_cycles
+  if (is.null(coordinate_range)) {
+    # If coordinate_range is not provided, calculate it based on the fundamental cycle length
+    coordinate_range <- c(0, number_of_cycles * x$spectrum$fundamental_cycle_length)
+  }
+
+  # Validate coordinate_range
+  if (length(coordinate_range) != 2 || !is.numeric(coordinate_range)) {
+    stop("coordinate_range must be a numeric vector of length 2.")
+  }
+
 
   # Create the composite wave plot
   composite_plot <- x %>%
@@ -154,7 +169,8 @@ plot_details.signal <- function(x, title = '', number_of_cycles = 3, resolution 
                        paste0(x$spectral_label, ':'),
                        sprintf("%.2f", x$spectrum$fundamental_component),
                        paste0('(',x$spectral_units,')')),
-                       coordinate_range = c(0, max(coordinate_range)))
+         coordinate_range = coordinate_range,
+         resolution = resolution)
 
   # Generate individual plots for each component in the spectrum
   spectrum_type = get(class(x$spectrum)[1])
@@ -173,14 +189,16 @@ plot_details.signal <- function(x, title = '', number_of_cycles = 3, resolution 
       plot(title = paste(
         paste0(x$spectral_label, ':'),
         sprintf("%.2f", x$spectrum$component[i]), paste0('(',x$spectral_units,')')),
-        coordinate_range = c(0, max(coordinate_range)))
+        coordinate_range = coordinate_range,
+        resolution = resolution)
   })
 
-  # Combine the composite plot and individual plots using cowplot
-  cowplot::plot_grid(
-    composite_plot,
-    cowplot::plot_grid(plotlist = individual_plots, ncol = 1),
-    ncol = 1,
-    rel_heights = c(1, length(individual_plots))  # Composite wave gets more space
-  )
+  # Combine composite_plot and individual_plots into a single list
+  all_plots <- c(list(composite_plot), individual_plots)
+
+  # Set relative heights: 2 for the first plot, 1 for each individual plot
+  rel_heights <- c(2, rep(1, length(individual_plots)))
+
+  # Use plot_grid with rel_heights to adjust the sizes
+  print(cowplot::plot_grid(plotlist = all_plots, ncol = 1, rel_heights = rel_heights))
 }

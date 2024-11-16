@@ -4,7 +4,13 @@
 \alias{plot_details.signal}
 \title{Plot Detailed Signal for a Spectrum}
 \usage{
-plot_details.signal(x, title = "", number_of_cycles = 3, resolution = 1000)
+plot_details.signal(
+  x,
+  title = "",
+  coordinate_range = NULL,
+  number_of_cycles = NULL,
+  resolution = 99
+)
 }
 \arguments{
 \item{x}{A spectrum object.}

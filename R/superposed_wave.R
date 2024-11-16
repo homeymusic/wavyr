@@ -89,8 +89,8 @@ superposed_wave <- function(
 #' @export
 plot.superposed_wave <- function(x, label = '',
                                  space_time_range = 25,
-                                 resolution = 300,
-                                 line_plot_resolution = 300,
+                                 resolution = 99,
+                                 line_plot_resolution = 99,
                                  beat_wavelength_spectrum_color = colors_homey$beat, ...) {
 
   # Customize the wavelength spectrum plot to include beat_wavelength_spectrum overlay

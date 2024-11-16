@@ -46,7 +46,7 @@ test_that("signal has correct metadata", {
   # Verify that the stored spectrum has correct components and amplitudes
   expect_equal(signal_obj$plot_color, colors_homey$neutral)
   expect_equal(signal_obj$physical_label, 'Coordinate')
-  expect_equal(signal_obj$spectral_label, 'Signal from Spectrum')
+  expect_equal(signal_obj$spectral_label, 'Spectrum')
   expect_equal(signal_obj$observable_label, 'Amplitude')
   expect_equal(signal_obj$physical_units, 'Natural Coordinate Units')
   expect_equal(signal_obj$observable_units, 'Natural Amplitude Units')
@@ -168,8 +168,27 @@ test_that("detailed signal plots match expected output", {
   # Define label and coordinate range
   label <- "Feynman's Beats Details"
 
-  plot_details.signal(signal_obj)
+  plot_details.signal(signal_obj, resolution = 1111)
 
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })
+test_that("10 random frequencies looks intersting", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- spectrum(
+    component = c(60,64,67,79,72) %>% midi_to_freq(),
+    amplitude =1 / (1:5)
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- signal(spectrum_obj)
+
+  expect_equal(signal_obj$plot_color, colors_homey$neutral)
+
+  # Define label and coordinate range
+  label <- "Super Major Chord"
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
+})
+

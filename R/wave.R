@@ -156,8 +156,8 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
 #' @export
 plot.wave <- function(x, label = '',
                           space_time_range = 25,
-                          resolution = 300,
-                          line_plot_resolution = 300,
+                          resolution = 99,
+                          line_plot_resolution = 99,
                           wavelength_spectrum_grob = NULL, ...) {
 
   f0 <- x$frequency_spectrum$fundamental_frequency
@@ -335,12 +335,17 @@ plot.wave <- function(x, label = '',
     cowplot::plot_grid(
       # Row 1 and 2: Rectangular plots with composite_2d spanning two rows in the third column
       cowplot::plot_grid(
+
         # Nested column 1: composite_space stacked above wavelength_spectrum_grob
-        cowplot::plot_grid(x$wavelength_spectrum %>% space_signal() %>% plot(),
+        cowplot::plot_grid(x$wavelength_spectrum %>% space_signal() %>% plot(
+          title='Space Series'
+        ),
                            wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
 
         # Nested column 2: composite_time stacked above frequency_spectrum_grob
-        cowplot::plot_grid(x$frequency_spectrum %>% time_signal() %>% plot(),
+        cowplot::plot_grid(x$frequency_spectrum %>% time_signal() %>% plot(
+          title='Time Series'
+        ),
                            frequency_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
 
         # Column 3: composite_2d spanning two rows
