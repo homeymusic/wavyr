@@ -1,10 +1,47 @@
 # tests/testthat/test_stern_brocot_cpp.R
 
+expected_columns <- c(
+  "original_value",
+  "num",
+  "den",
+  "uncertainty",
+  "depth",
+  "path",
+  "path_id", # Path as an integer identifier
+  "shannon_entropy",
+  "hamming_weight",
+  "run_length_encoding"
+)
+
+test_that("if x is less than unceratinty it returns interesting stuff", {
+
+  result <- stern_brocot_cpp(1, 2)  # Replace with actual test case if needed
+  expect_equal(names(result), expected_columns)
+  expect_equal(result$num, 1)  # Replace with actual expected value
+  expect_equal(result$den, 1)  # Replace with actual expected value
+
+  result <- stern_brocot_cpp(50.234, 60)  # Replace with actual test case if needed
+  expect_equal(names(result), expected_columns)
+  expect_equal(result$num, 50)  # Replace with actual expected value
+  expect_equal(result$den, 1)  # Replace with actual expected value
+
+  result <- stern_brocot_cpp(0.25, 0.5)  # Replace with actual test case if needed
+  expect_equal(names(result), expected_columns)
+  expect_equal(result$num, 1)  # Replace with actual expected value
+  expect_equal(result$den, 2)  # Replace with actual expected value
+
+  result <- stern_brocot_cpp(0.25, 0.5)  # Replace with actual test case if needed
+  expect_equal(names(result), expected_columns)
+  expect_equal(result$num, 1)  # Replace with actual expected value
+  expect_equal(result$den, 2)  # Replace with actual expected value
+
+})
+
 test_that("stern_brocot_cpp function returns correct rational approximation", {
   # Test case 1: Standard input with small uncertainty
   result <- stern_brocot_cpp(2.5, 0.01)
   expect_s3_class(result, "data.frame")  # Expect a data frame
-  expect_named(result, c("original_value", "num", "den", "uncertainty"))  # Check column names
+  expect_equal(names(result), expected_columns)
 
   # Check if the approximation is reasonable
   approx_value <- result$num / result$den
@@ -48,4 +85,34 @@ test_that("stern_brocot_cpp does not return zero numerator or denominator", {
   expect_true(result$num != 0, info = "Stern-Brocot should never return a 0 numerator")
   expect_true(result$den != 0, info = "Stern-Brocot should never return a 0 denominator")
   expect_equal(result$original_value, x, info = "The original value should match the input")
+})
+
+test_that("depth_cpp computes correct values", {
+  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
+  expect_equal(result$depth, 5)  # Replace with actual expected value
+})
+
+test_that("path_cpp computes correct values", {
+  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
+  expect_equal(result$path, "01001")  # Replace with actual expected value
+})
+
+test_that("path_id_cpp computes correct values", {
+  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
+  expect_equal(result$path_id, 9)  # Replace with actual expected value
+})
+
+test_that("shannon_entropy_cpp computes correct values", {
+  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
+  expect_equal(result$shannon_entropy, 1.0)  # Replace with actual expected value
+})
+
+test_that("hamming_weight_cpp computes correct values", {
+  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
+  expect_equal(result$hamming_weight, 3)  # Replace with actual expected value
+})
+
+test_that("run_length_encoding_cpp computes correct values", {
+  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
+  expect_equal(result$run_length_encoding, 4)  # Replace with actual expected value
 })
