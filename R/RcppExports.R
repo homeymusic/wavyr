@@ -13,6 +13,30 @@ compute_beats_cpp <- function(wavelength, amplitude, tolerance = 1e-6) {
     .Call(`_wavyr_compute_beats_cpp`, wavelength, amplitude, tolerance)
 }
 
+shannon_entropy_cpp <- function(bits) {
+    .Call(`_wavyr_shannon_entropy_cpp`, bits)
+}
+
+hamming_weight_cpp <- function(bits) {
+    .Call(`_wavyr_hamming_weight_cpp`, bits)
+}
+
+run_length_encoding_cpp <- function(bits) {
+    .Call(`_wavyr_run_length_encoding_cpp`, bits)
+}
+
+depth_cpp <- function(bits) {
+    .Call(`_wavyr_depth_cpp`, bits)
+}
+
+as_string_cpp <- function(bits) {
+    .Call(`_wavyr_as_string_cpp`, bits)
+}
+
+as_integer_cpp <- function(bits) {
+    .Call(`_wavyr_as_integer_cpp`, bits)
+}
+
 stern_brocot_cpp <- function(x, uncertainty) {
     .Call(`_wavyr_stern_brocot_cpp`, x, uncertainty)
 }

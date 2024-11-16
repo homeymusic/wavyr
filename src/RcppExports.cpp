@@ -49,6 +49,72 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// shannon_entropy_cpp
+double shannon_entropy_cpp(const std::vector<int>& bits);
+RcppExport SEXP _wavyr_shannon_entropy_cpp(SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(shannon_entropy_cpp(bits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hamming_weight_cpp
+double hamming_weight_cpp(const std::vector<int>& bits);
+RcppExport SEXP _wavyr_hamming_weight_cpp(SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(hamming_weight_cpp(bits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// run_length_encoding_cpp
+double run_length_encoding_cpp(const std::vector<int>& bits);
+RcppExport SEXP _wavyr_run_length_encoding_cpp(SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(run_length_encoding_cpp(bits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// depth_cpp
+int depth_cpp(const std::vector<int>& bits);
+RcppExport SEXP _wavyr_depth_cpp(SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(depth_cpp(bits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// as_string_cpp
+std::string as_string_cpp(const std::vector<int>& bits);
+RcppExport SEXP _wavyr_as_string_cpp(SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(as_string_cpp(bits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// as_integer_cpp
+int as_integer_cpp(const std::vector<int>& bits);
+RcppExport SEXP _wavyr_as_integer_cpp(SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(as_integer_cpp(bits));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stern_brocot_cpp
 DataFrame stern_brocot_cpp(const double x, const double uncertainty);
 RcppExport SEXP _wavyr_stern_brocot_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
@@ -66,6 +132,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 3},
     {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 3},
     {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 3},
+    {"_wavyr_shannon_entropy_cpp", (DL_FUNC) &_wavyr_shannon_entropy_cpp, 1},
+    {"_wavyr_hamming_weight_cpp", (DL_FUNC) &_wavyr_hamming_weight_cpp, 1},
+    {"_wavyr_run_length_encoding_cpp", (DL_FUNC) &_wavyr_run_length_encoding_cpp, 1},
+    {"_wavyr_depth_cpp", (DL_FUNC) &_wavyr_depth_cpp, 1},
+    {"_wavyr_as_string_cpp", (DL_FUNC) &_wavyr_as_string_cpp, 1},
+    {"_wavyr_as_integer_cpp", (DL_FUNC) &_wavyr_as_integer_cpp, 1},
     {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}
 };
