@@ -50,7 +50,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // stern_brocot_cpp
-NumericVector stern_brocot_cpp(const double x, const double uncertainty);
+DataFrame stern_brocot_cpp(const double x, const double uncertainty);
 RcppExport SEXP _wavyr_stern_brocot_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

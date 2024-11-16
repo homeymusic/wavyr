@@ -11,23 +11,31 @@ using namespace Rcpp;
  //' @param x Number to convert to rational fraction
  //' @param uncertainty Binary search stops once the desired uncertainty is reached
  //'
- //' @return A ratio of num / den
+ //' @return A data frame with columns: `original_value`, `num`, `den`, and `uncertainty`
  //' @export
  // [[Rcpp::export]]
- NumericVector stern_brocot_cpp(const double x, const double uncertainty) {
+ DataFrame stern_brocot_cpp(const double x, const double uncertainty) {
    if (x <= 0) stop("STOP: x must be greater than 0");
    if (uncertainty <= 0) stop("STOP: uncertainty must be greater than 0");
 
    int cycles = 0;
 
-
-
    if (x <= uncertainty) {
      cycles = 1;
      if (uncertainty < 1) {
-       return NumericVector::create(1, static_cast<int>(1 / uncertainty));
+       return DataFrame::create(
+         _["original_value"] = x,
+         _["num"] = 1,
+         _["den"] = static_cast<int>(1 / uncertainty),
+         _["uncertainty"] = uncertainty
+       );
      } else {
-       return NumericVector::create(1, static_cast<int>(uncertainty));
+       return DataFrame::create(
+         _["original_value"] = x,
+         _["num"] = 1,
+         _["den"] = static_cast<int>(uncertainty),
+         _["uncertainty"] = uncertainty
+       );
      }
    }
 
@@ -65,5 +73,10 @@ using namespace Rcpp;
    if (mediant_num <= 0) stop("STOP: mediant_num is less than or equal to zero");
    if (mediant_den <= 0) stop("STOP: mediant_den is less than or equal to zero");
 
-   return NumericVector::create(mediant_num, mediant_den);
+   return DataFrame::create(
+     _["original_value"] = x,
+     _["num"] = mediant_num,
+     _["den"] = mediant_den,
+     _["uncertainty"] = uncertainty
+   );
  }

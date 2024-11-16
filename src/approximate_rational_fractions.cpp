@@ -114,8 +114,8 @@ using namespace Rcpp;
  //' @export
  // [[Rcpp::export]]
  DataFrame approximate_rational_fractions_cpp(NumericVector x,
-                                          const double uncertainty,
-                                          const double deviation) {
+                                              const double uncertainty,
+                                              const double deviation) {
 
    if (deviation <= uncertainty) {
      stop("Deviation must be greater than uncertainty.");
@@ -124,8 +124,6 @@ using namespace Rcpp;
    x = unique(x);
 
    const int     n = x.size();
-   NumericVector nums(n);
-   NumericVector dens(n);
    NumericVector pseudo_x(n);
    NumericVector approximations(n);
    NumericVector errors(n);
@@ -137,13 +135,22 @@ using namespace Rcpp;
      stop("Pseudo octave must be greater than 1. The deviation value is likely too large.");
    }
 
+   // Vectors to store the results
+   NumericVector nums(n);
+   NumericVector dens(n);
+
    for (int i = 0; i < n; ++i) {
-     pseudo_x[i]                  = pow(2.0, log(x[i]) / log(pseudo_octave_double));
-     const NumericVector fraction = stern_brocot_cpp(pseudo_x[i], uncertainty);
-     nums[i]                      = fraction[0];
-     dens[i]                      = fraction[1];
-     approximations[i]            = nums[i] / dens[i];
-     errors[i]                    = approximations[i] - pseudo_x[i];
+     pseudo_x[i] = pow(2.0, log(x[i]) / log(pseudo_octave_double));
+
+     // Call updated stern_brocot_cpp to get DataFrame output
+     DataFrame sb_result = stern_brocot_cpp(pseudo_x[i], uncertainty);
+
+     // Extract numerator and denominator
+     nums[i] = sb_result["num"];
+     dens[i] = sb_result["den"];
+
+     approximations[i] = nums[i] / dens[i];
+     errors[i] = approximations[i] - pseudo_x[i];
    }
 
    return DataFrame::create(
@@ -154,7 +161,6 @@ using namespace Rcpp;
      _("den")                    = dens,
      _("approximation")          = approximations,
      _("error")                  = errors,
-     _("uncertainty")               = uncertainty
+     _("uncertainty")            = uncertainty
    );
  }
-
