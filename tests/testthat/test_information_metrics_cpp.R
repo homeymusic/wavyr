@@ -28,19 +28,20 @@ binary_test_cases <- list(
        integer = 101)                       # Integer representation (01100101 in binary)
 )
 
-# Test for integer conversion
-test_that("to_integer_cpp converts bits to integer correctly", {
-  for (case in binary_test_cases) {
-    result <- as_integer_cpp(case$string)
-    expect_equal(result, case$integer)
-  }
-})
 
 # Shannon Entropy
 test_that("shannon_entropy_cpp computes correct values", {
   for (case in binary_test_cases) {
     result <- shannon_entropy_cpp(case$string)
     expect_equal(result, case$shannon_entropy, tolerance = 1e-6)
+  }
+})
+
+# Test for integer conversion
+test_that("to_integer_cpp converts bits to integer correctly", {
+  for (case in binary_test_cases) {
+    result <- as_integer_cpp(case$string)
+    expect_equal(result, case$integer)
   }
 })
 
@@ -74,5 +75,43 @@ test_that("as_string_cpp converts bits to string correctly", {
     result <- as_string_cpp(case$string)
     expected_string <- paste(case$string, collapse = "")
     expect_equal(result, expected_string)
+  }
+})
+
+# Test Shannon Entropy with the entropy package (Expanded)
+test_that("shannon_entropy_cpp matches entropy package implementation (expanded)", {
+  library(entropy)
+  # Define more diverse test cases
+  test_cases <- list(
+    c(0, 0, 0, 0, 0),                # All zeros
+    c(1, 1, 1, 1, 1),                # All ones
+    c(0, 1, 0, 1, 0, 1),             # Alternating
+    c(1, 0, 1, 0, 1, 0, 1, 0),       # Alternating starting with 1
+    c(0, 1, 1, 0, 0, 1, 0, 1),       # Mixed
+    c(1, 1, 0, 0, 1, 1, 0, 0),       # Repeating blocks
+    c(1, 0, 0, 1, 0, 0, 1, 1),       # Irregular pattern
+    c(0),                            # Single bit (0)
+    c(1),                            # Single bit (1)
+    c(0, 1),                         # Minimal binary pair
+    c(rep(0, 100)),                  # All zeros (long sequence)
+    c(rep(1, 100)),                  # All ones (long sequence)
+    rep(c(0, 1), 50),                # Alternating long sequence
+    c(0, 0, 0, 1, 1, 1, 0, 0, 1),    # Pattern with clusters
+    c(1, 1, 1, 0, 0, 0, 1, 1, 0),    # Inverse of above
+    c(0, 1, 0, 1, 1, 0, 1, 1, 0, 1), # Long mixed pattern
+    rep(c(1, 0, 0), 33),             # Repeated triplet
+    rep(c(0, 1, 1), 33)              # Repeated triplet (inverted)
+  )
+
+  for (test_bits in test_cases) {
+    # Calculate using Rcpp function
+    cpp_result <- shannon_entropy_cpp(test_bits)
+
+    # Calculate using entropy package
+    counts <- table(test_bits)
+    entropy_pkg_result <- entropy.empirical(counts, unit = "log2")
+
+    # Compare results
+    expect_equal(cpp_result, entropy_pkg_result, tolerance = 1e-6)
   }
 })

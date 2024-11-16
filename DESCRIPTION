@@ -12,7 +12,8 @@ Encoding: UTF-8
 LazyData: true
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr
+    vdiffr,
+    entropy
 Config/testthat/edition: 3
 Imports:
     cowplot,
