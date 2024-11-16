@@ -96,18 +96,18 @@ P8_ratio          = midi_to_freq(72) / midi_to_freq(60)
 P8_result         = stern_brocot_cpp(P8_ratio, gabor_uncertainty)  # Replace with actual test case if needed
 
 test_that("depth_cpp computes correct values", {
-  expect_equal(tritone_result$depth, 3)  # Replace with actual expected value
-  expect_equal(P8_result$depth, 0)  # Replace with actual expected value
+  expect_equal(tritone_result$depth, 4)  # Replace with actual expected value
+  expect_equal(P8_result$depth, 1)  # Replace with actual expected value
 })
 
 test_that("path_cpp computes correct values", {
-  expect_equal(tritone_result$path, "010")  # Replace with actual expected value
-  expect_equal(P8_result$path, "")  # Replace with actual expected value
+  expect_equal(tritone_result$path, "1010")  # Replace with actual expected value
+  expect_equal(P8_result$path, "1")  # Replace with actual expected value
 })
 
 test_that("path_id_cpp computes correct values", {
-  expect_equal(tritone_result$path_id, 2)  # Replace with actual expected value
-  expect_equal(P8_result$path_id, 0)  # Replace with actual expected value
+  expect_equal(tritone_result$path_id, 10)  # Replace with actual expected value
+  expect_equal(P8_result$path_id, 1)  # Replace with actual expected value
 })
 
 test_that("shannon_entropy_cpp computes correct values", {
@@ -118,11 +118,11 @@ test_that("shannon_entropy_cpp computes correct values", {
 })
 
 test_that("hamming_weight_cpp computes correct values", {
-  expect_equal(tritone_result$hamming_weight, 1)  # Replace with actual expected value
-  expect_equal(P8_result$hamming_weight, 0)  # Replace with actual expected value
+  expect_equal(tritone_result$hamming_weight, 2)  # Replace with actual expected value
+  expect_equal(P8_result$hamming_weight, 1)  # Replace with actual expected value
 })
 
 test_that("run_length_encoding_cpp computes correct values", {
-  expect_equal(tritone_result$run_length_encoding, 3)  # Replace with actual expected value
-  expect_equal(P8_result$run_length_encoding, 0)  # Replace with actual expected value
+  expect_equal(tritone_result$run_length_encoding, 4)  # Replace with actual expected value
+  expect_equal(P8_result$run_length_encoding, 1)  # Replace with actual expected value
 })

@@ -52,7 +52,7 @@ DataFrame create_stern_brocot_df(
    double approximation;
 
    // Create the path as a vector of integers, starting with 0
-   std::vector<int> path;  // Path starts with 0
+   std::vector<int> path = {1};;  // Path starts with 0
 
    const double valid_min = x - uncertainty;
    const double valid_max = x + uncertainty;
@@ -119,7 +119,7 @@ DataFrame create_stern_brocot_df(
    if (mediant_den <= 0) stop("STOP: mediant_den is less than or equal to zero");
 
    // Ensure cycles == depth before returning
-   if (cycles != path.size()) {
+   if (cycles != path.size() - 1) {
      stop("STOP: cycles value does not match the depth. cycles: " + std::to_string(cycles) + ", path size: " + std::to_string(path.size()));
    }
    // Return the DataFrame with the estimated values and metrics calculated
