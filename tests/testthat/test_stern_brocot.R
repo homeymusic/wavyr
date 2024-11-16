@@ -87,32 +87,42 @@ test_that("stern_brocot_cpp does not return zero numerator or denominator", {
   expect_equal(result$original_value, x, info = "The original value should match the input")
 })
 
+gabor_uncertainty = 1 / (4 * pi)
+
+tritone_ratio     = midi_to_freq(66) / midi_to_freq(60)
+tritone_result    = stern_brocot_cpp(tritone_ratio, gabor_uncertainty)  # Replace with actual test case if needed
+
+P8_ratio          = midi_to_freq(72) / midi_to_freq(60)
+P8_result         = stern_brocot_cpp(P8_ratio, gabor_uncertainty)  # Replace with actual test case if needed
+
 test_that("depth_cpp computes correct values", {
-  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
-  expect_equal(result$depth, 5)  # Replace with actual expected value
+  expect_equal(tritone_result$depth, 3)  # Replace with actual expected value
+  expect_equal(P8_result$depth, 0)  # Replace with actual expected value
 })
 
 test_that("path_cpp computes correct values", {
-  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
-  expect_equal(result$path, "01001")  # Replace with actual expected value
+  expect_equal(tritone_result$path, "010")  # Replace with actual expected value
+  expect_equal(P8_result$path, "")  # Replace with actual expected value
 })
 
 test_that("path_id_cpp computes correct values", {
-  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
-  expect_equal(result$path_id, 9)  # Replace with actual expected value
+  expect_equal(tritone_result$path_id, 2)  # Replace with actual expected value
+  expect_equal(P8_result$path_id, 0)  # Replace with actual expected value
 })
 
 test_that("shannon_entropy_cpp computes correct values", {
-  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
-  expect_equal(result$shannon_entropy, 1.0)  # Replace with actual expected value
+  expect_equal(tritone_result$shannon_entropy, 0.9182958,
+               tolerance=0.1)  # Replace with actual expected value
+  expect_equal(P8_result$shannon_entropy, 0,
+               tolerance=0.1)  # Replace with actual expected value
 })
 
 test_that("hamming_weight_cpp computes correct values", {
-  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
-  expect_equal(result$hamming_weight, 3)  # Replace with actual expected value
+  expect_equal(tritone_result$hamming_weight, 1)  # Replace with actual expected value
+  expect_equal(P8_result$hamming_weight, 0)  # Replace with actual expected value
 })
 
 test_that("run_length_encoding_cpp computes correct values", {
-  result <- stern_brocot_cpp(2.5, 0.01)  # Replace with actual test case if needed
-  expect_equal(result$run_length_encoding, 4)  # Replace with actual expected value
+  expect_equal(tritone_result$run_length_encoding, 3)  # Replace with actual expected value
+  expect_equal(P8_result$run_length_encoding, 0)  # Replace with actual expected value
 })

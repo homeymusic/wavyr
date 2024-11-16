@@ -52,7 +52,7 @@ DataFrame create_stern_brocot_df(
    double approximation;
 
    // Create the path as a vector of integers, starting with 0
-   std::vector<int> path = {0};  // Path starts with 0
+   std::vector<int> path;  // Path starts with 0
 
    const double valid_min = x - uncertainty;
    const double valid_max = x + uncertainty;
@@ -75,16 +75,13 @@ DataFrame create_stern_brocot_df(
      if (uncertainty < 1) {
        num = 1;  // Approximation for num
        den = static_cast<int>(1 / uncertainty);  // Denominator based on uncertainty
-     } else if (uncertainty > 1 && x <= 1) {
+     } else if (uncertainty > 1 && x < 1) {
        num = static_cast<int>(uncertainty);  // Approximation for num
        den = 1;  // Denominator is 1
      } else {
        num = static_cast<int>(x);  // Approximation for num
        den = 1;  // Denominator is 1
      }
-
-     // Set path
-     path.push_back(0);  // Path ID starts at 0
 
      // Return the DataFrame with the estimated values, metrics calculated inside the function
      return create_stern_brocot_df(
@@ -97,14 +94,19 @@ DataFrame create_stern_brocot_df(
      double x0 = 2 * x - approximation;
 
      if (approximation < valid_min) {
-       left_num = mediant_num; left_den = mediant_den;
+       left_num = mediant_num;
+       left_den = mediant_den;
        int k = floor((right_num - x0 * right_den) / (x0 * left_den - left_num));
-       right_num += k * left_num; right_den += k * left_den;
-
-     } else if (valid_max < approximation) {
-       right_num = mediant_num; right_den = mediant_den;
+       right_num += k * left_num;
+       right_den += k * left_den;
+       path.push_back(0);  // Left movement (append 0)
+     } else {
+       right_num = mediant_num;
+       right_den = mediant_den;
        int k = floor((x0 * left_den - left_num) / (right_num - x0 * right_den));
-       left_num += k * right_num; left_den += k * right_den;
+       left_num += k * right_num;
+       left_den += k * right_den;
+       path.push_back(1);  // Right movement (append 1)
      }
 
      mediant_num = left_num + right_num;
@@ -116,6 +118,10 @@ DataFrame create_stern_brocot_df(
    if (mediant_num <= 0) stop("STOP: mediant_num is less than or equal to zero");
    if (mediant_den <= 0) stop("STOP: mediant_den is less than or equal to zero");
 
+   // Ensure cycles == depth before returning
+   if (cycles != path.size()) {
+     stop("STOP: cycles value does not match the depth. cycles: " + std::to_string(cycles) + ", path size: " + std::to_string(path.size()));
+   }
    // Return the DataFrame with the estimated values and metrics calculated
    return create_stern_brocot_df(
      x, mediant_num, mediant_den, uncertainty, path
