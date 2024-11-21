@@ -37,7 +37,6 @@ frequency_spectrum <- function(frequency, amplitude = NULL, reference = NULL) {
   # Add frequency-specific fields
   spectrum_obj$frequency <- spectrum_obj$component
   spectrum_obj$fundamental_frequency <- spectrum_obj$fundamental_component
-  spectrum_obj$reference <- spectrum_obj$reference
 
   # Set class to frequency_spectrum
   class(spectrum_obj) <- c("frequency_spectrum", class(spectrum_obj))

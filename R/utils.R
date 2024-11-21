@@ -11,6 +11,9 @@ midi_to_freq <- function(midi) {
 SPEED_OF_SOUND <- midi_to_freq(65)
 
 #' @export
+DEFAULT_SPEED_OF_MEDIUM <- SPEED_OF_SOUND
+
+#' @export
 FLOATING_POINT_TOLERANCE <- 1e-6
 
 # Define colors and helper functions

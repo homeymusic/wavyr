@@ -8,31 +8,16 @@ test_that("property class has required parameter value, correct class, and defau
   # Test if the value is set correctly
   expect_equal(p$value, 10)
 
-  # Test if the default unit is set correctly
-  expect_equal(p$unit, 'unit')
-
-  # Test if the default unit is set correctly
-  expect_equal(p$unit_latex, 'latex unit')
-
-  # Test if the default symbol is set correctly
-  expect_equal(p$symbol, 'symbol')
-
-  expect_equal(p$symbol_latex, 'latex symbol')
-
-  # Test if the default name is set correctly
-  expect_equal(p$name, 'name')
-
-  # Test if as_spatial throws the correct error when called on a dimension object
-  expect_error(p %>% as_angular_frequency(), "no applicable method for 'as_angular_frequency'")
-
   # Test that 'value' is required and throws an error if missing
-  expect_error(property(), "`value` must be numeric or a property object")
+  expect_error(property(), "`x` must be numeric or a property object")
 
 })
 
 test_that("property class accepts another property object as input", {
   # Create a base property object
   base_property <- property(20)
+
+  expect_equal(base_property$value, 20)
 
   # Create a new property using the base property as input
   new_property <- property(base_property)
@@ -46,19 +31,19 @@ test_that("property class accepts another property object as input", {
 
 test_that("property class throws an error if input is not numeric or property class", {
   # Attempt to create a property object with an invalid input
-  expect_error(property(c(10, 20)), "`value` must be of length 1")
-  expect_error(property(list(10)), "value` must be numeric or a property object")
-  expect_error(property("string"), "`value` must be numeric or a property object")
+  expect_error(property(c(10, 20)), "`x` must be of length 1")
+  expect_error(property(list(10)), "x` must be numeric or a property object")
+  expect_error(property("string"), "`x` must be numeric or a property object")
 })
 
 test_that("property class throws an error if input has length greater than 1", {
   # Attempt to create a property object with a numeric vector
-  expect_error(property(c(10, 20)), "`value` must be of length 1")
+  expect_error(property(c(10, 20)), "`x` must be of length 1")
 
   # Attempt to create a property object with another property of invalid length
   invalid_property <- structure(
     list(value = c(10, 20)),
     class = "property"
   )
-  expect_error(property(invalid_property), "`value` must be of length 1")
+  expect_error(property(invalid_property), "`x` must be of length 1")
 })

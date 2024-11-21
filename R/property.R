@@ -1,65 +1,58 @@
 # Define the generic property constructor
 #' @export
-property <- function(x) {
+property <- function(x, metadata) {
   UseMethod("property")
 }
 
 # Internal function for creating a property object
-.property <- function(x) {
+.property <- function(x, metadata = list()) {
+
   structure(
-    list(
-      value = x,
-      unit = "unit",
-      unit_latex = "latex unit",
-      symbol = "symbol",
-      symbol_latex = "latex symbol",
-      name = "name"
-    ),
-    class = "property"
+    modifyList(metadata, list(
+      value = x
+    )),
+    class = 'property'
   )
+
 }
 
 # Method for creating a property from a numeric value
 #' @export
-property.numeric <- function(x) {
+property.numeric <- function(x, metadata=list()) {
   if (length(x) != 1) {
-    stop("`value` must be of length 1")
+    stop("`x` must be of length 1")
   }
-  .property(x)
+  .property(x, metadata)
 }
 
 # Method for creating a property from another property object
 #' @export
-property.property <- function(x) {
+property.property <- function(x, metadata=list()) {
   if (length(x$value) != 1) {
-    stop("`value` must be of length 1")
+    stop("`x` must be of length 1")
   }
-  .property(convert(x)$value)
+
+  if (length(metadata) == 0 || class(x)[1] == metadata$class_name) {
+    return(x)
+  }
+
+  value = x$value
+
+  value = DEFAULT_SPEED_OF_MEDIUM / value
+
+  .property(value, metadata = metadata)
 }
 
 #' @export
-property.default <- function(value) {
-  stop("`value` must be numeric or a property object")
-}
-
-# Define the generic property constructor
-#' @export
-convert <- function(x) {
-  UseMethod("convert")
+property.default <- function(x) {
+  stop("`x` must be numeric or a property object")
 }
 
 #' @export
-convert.property <- function(x) {
-  x
-}
+Dimension <- list(spatial = "spatial", temporal = "temporal")
 
 #' @export
-as_angular_frequency <- function(x, ...) {
-  UseMethod("as_angular_frequency")
-}
+Rotation  <- list(linear = "linear", angular = "angular")
 
 #' @export
-as_linear_wavelength <- function(x, ...) {
-  UseMethod("as_linear_wavelength")
-}
-
+Measure   <- list(extent = "extent", rate = "rate")
