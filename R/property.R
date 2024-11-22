@@ -38,16 +38,17 @@ property.property <- function(x, metadata=list()) {
 
   value = x$value
 
+  if (x$rotation != metadata$rotation) {
+
+    value = 2 * pi * value
+  }
+
   if (x$dimension != metadata$dimension) {
     value = value / DEFAULT_SPEED_OF_MEDIUM
   }
 
   if (x$measure != metadata$measure) {
     value = 1 / value
-  }
-
-  if (x$rotation != metadata$rotation) {
-    value = 2 * pi * value
   }
 
   .property(value, metadata = metadata)
