@@ -7,7 +7,7 @@ linear_wavelength <- function(x) {
     name         = "linear wavelength",
     symbol_latex = "\\lambda",
     symbol       = "\u03BB",
-    unit_latex   = "m",
+    unit_latex   = "\\text{m}",
     unit         = "m",
     rotation     = Rotation$linear,
     dimension    = Dimension$spatial,

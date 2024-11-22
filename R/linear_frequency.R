@@ -7,7 +7,7 @@ linear_frequency <- function(x) {
     name         = "linear frequency",
     symbol_latex = "f",
     symbol       = "f",
-    unit_latex   = "Hz",
+    unit_latex   = "\\text{Hz}",
     unit         = "Hz",
     rotation     = Rotation$linear,
     dimension    = Dimension$temporal,

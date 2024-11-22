@@ -15,8 +15,10 @@ test_that("linear_frequency subclass has correct classes", {
 
   # Check that the default unit, symbol, and name are inherited from `property`
   expect_equal(f$unit, "Hz")
-  expect_equal(f$unit_latex, "Hz")
+  expect_equal(f$unit_latex, "\\text{Hz}")
+
   expect_equal(f$symbol, "f")
   expect_equal(f$symbol_latex, "f")
+
   expect_equal(f$name, "linear frequency")
 })
