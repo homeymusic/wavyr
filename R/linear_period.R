@@ -23,3 +23,4 @@ linear_period <- function(x) {
   )
 
 }
+

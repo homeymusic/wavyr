@@ -23,4 +23,3 @@ angular_frequency <- function(x) {
   )
 
 }
-

@@ -23,4 +23,3 @@ angular_period <- function(x) {
   )
 
 }
-

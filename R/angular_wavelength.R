@@ -23,4 +23,3 @@ angular_wavelength <- function(x) {
   )
 
 }
-

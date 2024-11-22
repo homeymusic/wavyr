@@ -23,3 +23,4 @@ linear_frequency <- function(x) {
   )
 
 }
+
