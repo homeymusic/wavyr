@@ -202,7 +202,7 @@ test_that("graph plot of all relationships renders correctly", {
 })
 
 test_that("path_length 1 with relationships 'Rotation' returns the correct node pairs and column names", {
-  result <- property_relationships(path_length = 1, relationships = c("Rotation")) %>% dplyr::arrange(from)
+  result <- property_relationships(path_length = 1, relationships = c("Linear ~ Angular")) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
@@ -223,7 +223,7 @@ test_that("path_length 1 with relationships 'Rotation' returns the correct node 
 })
 
 test_that("path_length 2 with relationships 'Rotation' and 'Measure' returns the correct node pairs and column names", {
-  relationships = c("Rotation", "Measure")
+  relationships = c("Linear ~ Angular", "Rate ~ Extent")
   result <- property_relationships(path_length = 2, relationships = relationships) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
@@ -245,7 +245,7 @@ test_that("path_length 2 with relationships 'Rotation' and 'Measure' returns the
 })
 
 test_that("path_length 3 with relationships 'Rotation', 'Measure', and 'Dimension' returns the correct node pairs and column names", {
-  relationships <- c("Rotation", "Measure", "Dimension")
+  relationships = c("Linear ~ Angular", "Rate ~ Extent", "Time ~ Space")
   result <- property_relationships(path_length = 3, relationships = relationships) %>% dplyr::arrange(from)
 
   # Check that the column names are correct

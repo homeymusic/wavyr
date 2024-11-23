@@ -111,9 +111,9 @@ PROPERTY_EDGES <- data.frame(
     PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
   ),
   relationship = c(
-    "Measure", "Measure", "Measure", "Measure",
-    "Rotation", "Rotation", "Rotation", "Rotation",
-    "Dimension", "Dimension", "Dimension", "Dimension"
+    rep("Rate ~ Extent",4),
+    rep("Linear ~ Angular", 4),
+    rep("Time ~ Space", 4)
   )
 )
 
