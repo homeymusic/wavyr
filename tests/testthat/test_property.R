@@ -201,49 +201,68 @@ test_that("graph plot of all relationships renders correctly", {
   )
 })
 
-# test_that("path_length 1 with relationships 'Rotation' returns the correct node pairs and column names", {
-#   result <- property_relationships(path_length = 1, relationships = c("Rotation"))
-#
-#   # Check that the column names are correct
-#   expect_equal(colnames(result), c("from", "to", "order", "relationships"))
-#
-#   # Check that all entries in the 'relationships' column have the value 'Rotation'
-#   expect_true(all(result$relationships == "Rotation"))
-#
-#   expect_equal(nrow(result), 4)
-#
-#   # Expected node pairs
-#   expected_pairs <- data.frame(
-#     from = c("linear_frequency", "linear_wavenumber", "linear_period", "linear_wavelength"),
-#     to = c("angular_frequency", "angular_wavenumber", "angular_period", "angular_wavelength"),
-#     order = rep(1, 4),  # Assuming path_length 1
-#     relationships = rep("Rotation", 4)
-#   )
-#
-#   # Check if the result matches the expected node pairs
-#   expect_equal(result, expected_pairs)
-# })
-#
-# test_that("path_length 2 with relationships 'Rotation' and 'Measure' returns the correct node pairs and column names", {
-#   relationships = c("Rotation", "Measure")
-#   result <- property_relationships(path_length = 2, relationships = relationships)
-#
-#   # Check that the column names are correct
-#   expect_equal(colnames(result), c("from", "to", "order", "relationships"))
-#
-#   # Check that all entries in the 'relationships' column have the correct values
-#   expect_true(all(result$relationships %in% relationships))
-#
-#   expect_equal(nrow(result), 4)  # Adjust based on expected results
-#
-#   # Expected node pairs for path_length 2 and relationships 'Rotation' and 'Measure'
-#   expected_pairs <- data.frame(
-#     from = c("linear_frequency", "linear_period", "linear_wavenumber", "linear_wavelength"),
-#     to = c("angular_period", "angular_frequency", "angular_wavelength", "angular_wavenumber"),
-#     order = rep(2, 4),  # Assuming path_length 2
-#     relationships = rep(list(relationships), 4)
-#   )
-#
-#   # Check if the result matches the expected node pairs
-#   expect_equal(result, expected_pairs)
-# })
+test_that("path_length 1 with relationships 'Rotation' returns the correct node pairs and column names", {
+  result <- property_relationships(path_length = 1, relationships = c("Rotation")) %>% dplyr::arrange(from)
+
+  # Check that the column names are correct
+  expect_equal(colnames(result), c("from", "to", "path_length"))
+
+  expect_equal(nrow(result), 8)
+
+  # Expected node pairs
+  expected_pairs <- data.frame(
+    from = c("linear_frequency", "linear_wavenumber", "linear_period", "linear_wavelength",
+             "angular_frequency", "angular_wavenumber", "angular_period", "angular_wavelength"),
+    to = c("angular_frequency", "angular_wavenumber", "angular_period", "angular_wavelength",
+           "linear_frequency", "linear_wavenumber", "linear_period", "linear_wavelength"),
+    path_length = rep(1, 8)  # Assuming path_length 1
+  ) %>% dplyr::arrange(from)
+
+  # Check if the result matches the expected node pairs
+  expect_equal(result, expected_pairs)
+})
+
+test_that("path_length 2 with relationships 'Rotation' and 'Measure' returns the correct node pairs and column names", {
+  relationships = c("Rotation", "Measure")
+  result <- property_relationships(path_length = 2, relationships = relationships) %>% dplyr::arrange(from)
+
+  # Check that the column names are correct
+  expect_equal(colnames(result), c("from", "to", "path_length"))
+
+  expect_equal(nrow(result), 8)  # Adjust based on expected results
+
+  # Expected node pairs for path_length 2 and relationships 'Rotation' and 'Measure'
+  expected_pairs <- data.frame(
+    from = c("linear_frequency", "linear_period", "linear_wavenumber", "linear_wavelength",
+             "angular_period", "angular_frequency", "angular_wavelength", "angular_wavenumber"),
+    to = c("angular_period", "angular_frequency", "angular_wavelength", "angular_wavenumber",
+           "linear_frequency", "linear_period", "linear_wavenumber", "linear_wavelength"),
+    path_length = rep(2, 4)  # Assuming path_length 2
+  ) %>% dplyr::arrange(from)
+
+  # Check if the result matches the expected node pairs
+  expect_equal(result, expected_pairs)
+})
+
+test_that("path_length 3 with relationships 'Rotation', 'Measure', and 'Dimension' returns the correct node pairs and column names", {
+  relationships <- c("Rotation", "Measure", "Dimension")
+  result <- property_relationships(path_length = 3, relationships = relationships) %>% dplyr::arrange(from)
+
+  # Check that the column names are correct
+  expect_equal(colnames(result), c("from", "to", "path_length"))
+
+  # Check the number of rows matches the expected results
+  expect_equal(nrow(result), 8)
+
+  # Expected node pairs for path_length 3 and relationships 'Rotation', 'Measure', and 'Dimension'
+  expected_pairs <- data.frame(
+    from = c("angular_frequency", "angular_period", "angular_wavelength", "angular_wavenumber",
+             "linear_frequency", "linear_period", "linear_wavelength", "linear_wavenumber"),
+    to = c("linear_wavelength", "linear_wavenumber", "linear_frequency", "linear_period",
+           "angular_wavelength", "angular_wavenumber", "angular_frequency", "angular_period"),
+    path_length = rep(3, 8)
+  ) %>% dplyr::arrange(from)
+
+  # Check if the result matches the expected node pairs
+  expect_equal(result, expected_pairs)
+})

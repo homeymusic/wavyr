@@ -171,7 +171,7 @@ property_relationships <- function(path_length, relationships = NULL) {
   # Optionally filter edges by relationships
   subgraph <- if (!is.null(relationships)) {
     edge_indices <- igraph::E(graph)[igraph::E(graph)$relationship %in% relationships]
-    igraph::subgraph.edges(graph, edge_indices)
+    igraph::subgraph_from_edges(graph, edge_indices)
   } else {
     graph
   }
