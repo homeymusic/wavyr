@@ -1,15 +1,9 @@
 test_that("PROPERTIES$angular_frequency subclass has correct classes", {
-  # Create a PROPERTIES$angular_frequency object
   w <- angular_frequency(10)
-
-  # Check that the object has the correct classes
   expect_true(inherits(w, "angular_frequency"))
   expect_true(inherits(w, "property"))
-
-  # Check if the value is set correctly (from the `property` class)
   expect_equal(w$value, 10)
 })
-
 test_that("PROPERTIES$angular_frequency constants are legit", {
   expect_equal(PROPERTIES$angular_frequency$name, "angular frequency")
   expect_equal(PROPERTIES$angular_frequency$class_name, "angular_frequency")

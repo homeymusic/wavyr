@@ -1,11 +1,7 @@
 test_that("angular_period subclass has correct classes", {
-  # Create a angular_period object
   T_ang <- angular_period(10)
-
-  # Check that the object has the correct classes
   expect_true(inherits(T_ang, "angular_period"))
   expect_true(inherits(T_ang, "property"))
-  # Check if the value is set correctly (from the `property` class)
   expect_equal(T_ang$value, 10)
 })
 test_that("angular_period subclass has correct classes", {
@@ -20,4 +16,3 @@ test_that("angular_period subclass has correct classes", {
   expect_equal(PROPERTIES$angular_period$linear_angular,  LINEAR_ANGULAR$angular)
   expect_equal(PROPERTIES$angular_period$rate_extent,   RATE_EXTENT$extent)
 })
-
