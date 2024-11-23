@@ -202,7 +202,7 @@ test_that("graph plot of all relationships renders correctly", {
 })
 
 test_that("path_length 1 with relationships 'LINEAR_ANGULAR' returns the correct node pairs and column names", {
-  result <- filter_graph_by(path_length = 1, relationships = c("Linear ~ Angular")) %>% dplyr::arrange(from)
+  result <- filter_graph_by(path_length = 1, relationships = c(LINEAR_ANGULAR$label)) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
@@ -223,7 +223,7 @@ test_that("path_length 1 with relationships 'LINEAR_ANGULAR' returns the correct
 })
 
 test_that("path_length 2 with relationships 'LINEAR_ANGULAR' and 'RATE_EXTENT' returns the correct node pairs and column names", {
-  relationships = c("Linear ~ Angular", "Rate ~ Extent")
+  relationships = c(LINEAR_ANGULAR$label, RATE_EXTENT$label)
   result <- filter_graph_by(path_length = 2, relationships = relationships) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
@@ -279,11 +279,17 @@ test_that("path_length 4 for all returns nodes directly connected by edges", {
   expect_equal(nrow(result), 0)
 })
 
-# test_that("we can convert following the shortest path in the graph",{
-#   conversion = DEFAULT_SPEED_OF_MEDIUM %>% convert_from_to(
-#     'linear_frequency','angular_wavelength'
-#   )
-#   expect_equal(conversion$path_length, 3)
-#   expect_equal(conversion$path %>% sort(), c('') %>% sort())
-#   expect_equal(conversion$value, 0.0)
-# })
+test_that("we can convert following the shortest path in the graph",{
+  conversion = 1 %>% convert_from_to(
+    'linear_frequency','angular_wavelength'
+  )
+  expect_equal(conversion$edge_path_length, 3)
+  expect_equal(class(conversion$edge_path), "igraph.es")
+  expect_equal(conversion$edge_path %>% as.numeric(), c(1,10,8))
+  expect_equal(conversion$function_label, c(
+    "1 / x",
+    "x / c",
+    "x / (2 * pi)"
+  ))
+  expect_equal(conversion$value, 8)
+})

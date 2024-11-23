@@ -48,7 +48,7 @@ test_that("path_length 0 returns nodes paired with themselves", {
 
 # Test for path_length 1 (nodes directly connected by edges)
 test_that("path_length 1 for Rate ~ Extent returns nodes directly connected by edges", {
-  relationships = c("Rate ~ Extent")
+  relationships = c(RATE_EXTENT$label)
 
   result <- filter_graph_by(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
 
@@ -98,7 +98,7 @@ test_that("angluar w to and from angular k works", {
 
 # Test for path_length 1 (nodes directly connected by edges)
 test_that("path_length 1 for Linear ~ Angular returns nodes directly connected by edges", {
-  relationships = c("Linear ~ Angular")
+  relationships = c(LINEAR_ANGULAR$label)
 
   result <- filter_graph_by(path_length = 1, relationships = relationships)
 
@@ -110,7 +110,7 @@ test_that("path_length 1 for Linear ~ Angular returns nodes directly connected b
 
 # Test for path_length 1 (nodes directly connected by edges)
 test_that("path_length 1 for Time ~ Space returns nodes directly connected by edges", {
-  relationships = c("Time ~ Space")
+  relationships = c(SPACE_TIME$label)
 
   result <- filter_graph_by(path_length = 1, relationships = relationships)
 

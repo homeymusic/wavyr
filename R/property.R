@@ -100,20 +100,22 @@ convert_from_to <- function(x, start_node, end_node) {
     stop("No path found between nodes.")
   }
 
+  new_x = x
+
   # Loop through the path and apply the corresponding transformation for each edge
   for (i in 1:(length(path$epath[[1]]))) {
     edge_id <- path$epath[[1]][i]
-
-    # Get the relationship label and mathematical relationship for the current edge
-    edge <- PROPERTY_EDGES[PROPERTY_EDGES$edge_id == edge_id, ]
-
-    # Apply the transformation specified for this edge (mathematical relationship)
-    # This can be expanded based on the edge's mathematical function
-    current_value <- apply_transformation(current_value, edge$mathematical_relationship)
+    function_definition = PROPERTY_EDGES[edge_id,]$function_definition[[1]]
+    new_x = do.call(function_definition, list(new_x))
   }
 
   # Return the final transformed value
-  return(current_value)
+  return(list(
+    value = new_x,
+    function_label = PROPERTY_EDGES[path$epath[[1]],]$function_label,
+    edge_path = path$epath[[1]],
+    edge_path_length = path$epath[[1]] %>% length()
+  ))
 }
 
 #' Filter the graph of wave properties by path length and edge types
@@ -160,16 +162,20 @@ filter_graph_by <- function(path_length, relationships = NULL) {
 
 #' @export
 SPACE_TIME     <- list(space = "space", time = "time",
-                       label = "Space ~ Time",
-                       expression = "Space \u2194 Time")
+                       label = "space ~ time",
+                       expression = "space %<->% time")
 #' @export
 LINEAR_ANGULAR <- list(linear = "linear", angular = "angular",
-                       label = "Linear ~ Angular",
-                       expression = "Linear \u2194 Angular")
+                       label = "linear ~ angular",
+                       expression = "linear %<->% angular")
 #' @export
 RATE_EXTENT    <- list(extent = "extent", rate = "rate",
-                       label = "Rate ~ Extent",
-                       expression = "Rate \u2194 Extent")
+                       label = "rate ~ extent",
+                       expression = "rate %<->% extent")
+
+FN_DOUBLE_X <- function(x) {
+  2 * x
+}
 
 PROPERTIES <- list(
   angular_frequency = 'angular_frequency',
@@ -217,7 +223,12 @@ PROPERTY_EDGES <- data.frame(
     rep(LINEAR_ANGULAR$label, 4),
     rep(SPACE_TIME$label, 4)
   ),
-  mathematical_relationship = c(
+  relationship_expression = c(
+    rep(RATE_EXTENT$expression, 4),
+    rep(LINEAR_ANGULAR$expression, 4),
+    rep(SPACE_TIME$expression, 4)
+  ),
+  function_label = c(
     # Rate ~ Extent
     "1 / x", "1 / x", "1 / x", "1 / x",
     # Linear ~ Angular
@@ -227,6 +238,7 @@ PROPERTY_EDGES <- data.frame(
   )
 )
 
+PROPERTY_EDGES$function_definition <- rep(list(FN_DOUBLE_X), times = 12)
 
 # Create the graph as an undirected graph
 PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
@@ -238,7 +250,7 @@ PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
 PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
   # Use arcs for edges with subtle radii
   ggraph::geom_edge_arc(
-    ggplot2::aes(label = relationship),
+    ggplot2::aes(label = relationship_expression),
     angle_calc = 'along',
     arrow = NULL, # Remove the arrowheads for undirected graph
     end_cap = ggraph::circle(3, 'mm'),
@@ -251,7 +263,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     label_colour = "gray"  # Set labels to gray
   ) +
   ggraph::geom_edge_arc(
-    ggplot2::aes(label = mathematical_relationship),
+    ggplot2::aes(label = function_label),
     angle_calc = 'along',
     arrow = NULL, # Remove the arrowheads for undirected graph
     end_cap = ggraph::circle(3, 'mm'),
