@@ -9,9 +9,9 @@ angular_wavenumber <- function(x) {
     unit_latex   = "\\frac{\\text{rad}}{\\text{m}}",
     symbol       = "k_angular",
     symbol_latex = "k_\\text{angular}",
-    rotation     = Rotation$angular,
-    dimension    = Dimension$spatial,
-    measure      = Measure$rate,
+    rotation     = LINEAR_ANGULAR$angular,
+    dimension    = SPACE_TIME$spatial,
+    measure      = RATE_EXTENT$rate,
     class_name   = class_name
   )
 

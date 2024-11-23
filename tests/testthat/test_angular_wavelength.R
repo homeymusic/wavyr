@@ -6,9 +6,9 @@ test_that("angular_wavelength subclass has correct classes", {
   expect_true(inherits(l_a, "angular_wavelength"))
   expect_true(inherits(l_a, "property"))
   expect_equal(l_a$class_name, 'angular_wavelength')
-  expect_equal(l_a$dimension, Dimension$spatial)
-  expect_equal(l_a$rotation,  Rotation$angular)
-  expect_equal(l_a$measure,   Measure$extent)
+  expect_equal(l_a$dimension, SPACE_TIME$spatial)
+  expect_equal(l_a$rotation,  LINEAR_ANGULAR$angular)
+  expect_equal(l_a$measure,   RATE_EXTENT$extent)
 
   # Check if the value is set correctly (from the `property` class)
   expect_equal(l_a$value, 10)

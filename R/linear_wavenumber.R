@@ -9,9 +9,9 @@ linear_wavenumber <- function(x) {
     symbol       = "k_linear",
     unit_latex   = "\\text{m}^{-1}",
     unit         = "1/m",
-    rotation     = Rotation$linear,
-    dimension    = Dimension$spatial,
-    measure      = Measure$rate,
+    rotation     = LINEAR_ANGULAR$linear,
+    dimension    = SPACE_TIME$spatial,
+    measure      = RATE_EXTENT$rate,
     class_name   = class_name
   )
 

@@ -30,7 +30,9 @@ validate_property_conversions <- function(result, expected_properties) {
     expected_to_value <- expected_properties[[to_class]]
 
     # Validate the 'to' property value
-    expect_equal(to_obj$value, expected_to_value, tolerance = 0.1)
+    expect_equal(to_obj$value, expected_to_value, tolerance = 0.1,
+                 info = paste("from:", from_class,
+                              "to:", to_class))
   }
 }
 
@@ -44,12 +46,47 @@ test_that("path_length 0 returns nodes paired with themselves", {
   validate_property_conversions(result, expected_properties)
 })
 
-# # Test for path_length 1 (nodes directly connected by edges)
-# test_that("path_length 1 returns nodes directly connected by edges", {
-#   # Get all the node pairs from path_length 1
-#   result <- property_relationships(1) %>%
-#     dplyr::select(from, to)
-#
-#   # Validate the property conversions for path_length 1
-#   validate_property_conversions(result, expected_properties)
-# })
+# Test for path_length 1 (nodes directly connected by edges)
+test_that("path_length 1 for Rate ~ Extent returns nodes directly connected by edges", {
+  relationships = c("Rate ~ Extent")
+
+  result <- property_relationships(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
+
+  expect_equal(nrow(result), 8)
+
+  # Validate the property conversions for path_length 1
+  validate_property_conversions(result, expected_properties)
+})
+
+test_that("angluar w to and from linear f works", {
+
+  # w to f
+  w = angular_frequency(expected_properties$angular_frequency)
+  expect_equal(w$value, expected_properties$angular_frequency)
+
+  f = linear_frequency(w)
+  expect_equal(f$value, expected_properties$linear_frequency)
+
+  # f to w
+  f = linear_frequency(expected_properties$linear_frequency)
+  expect_equal(f$value, expected_properties$linear_frequency)
+
+  w = angular_frequency(f)
+  expect_equal(w$value, expected_properties$angular_frequency)
+
+
+})
+
+# Test for path_length 1 (nodes directly connected by edges)
+test_that("path_length 1 for Linear ~ Angular returns nodes directly connected by edges", {
+  relationships = c("Linear ~ Angular")
+
+  result <- property_relationships(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
+
+  expect_equal(nrow(result), 8)
+
+  # Validate the property conversions for path_length 1
+  validate_property_conversions(result, expected_properties)
+})
+
+

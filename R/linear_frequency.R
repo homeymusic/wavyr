@@ -9,9 +9,9 @@ linear_frequency <- function(x) {
     symbol       = "f",
     unit_latex   = "\\text{Hz}",
     unit         = "Hz",
-    rotation     = Rotation$linear,
-    dimension    = Dimension$temporal,
-    measure      = Measure$rate,
+    rotation     = LINEAR_ANGULAR$linear,
+    dimension    = SPACE_TIME$temporal,
+    measure      = RATE_EXTENT$rate,
     class_name   = class_name
   )
 

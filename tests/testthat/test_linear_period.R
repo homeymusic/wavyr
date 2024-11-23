@@ -6,9 +6,9 @@ test_that("linear_period subclass has correct classes", {
   expect_true(inherits(P, "linear_period"))
   expect_true(inherits(P, "property"))
   expect_equal(P$class_name, 'linear_period')
-  expect_equal(P$dimension, Dimension$temporal)
-  expect_equal(P$rotation,  Rotation$linear)
-  expect_equal(P$measure,   Measure$extent)
+  expect_equal(P$dimension, SPACE_TIME$temporal)
+  expect_equal(P$rotation,  LINEAR_ANGULAR$linear)
+  expect_equal(P$measure,   RATE_EXTENT$extent)
 
   # Check the value is set correctly (Prom the `property` class)
   expect_equal(P$value, 10)

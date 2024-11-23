@@ -36,31 +36,36 @@ property.property <- function(x, metadata = list()) {
 
   value <- x$value
 
-  # Debugging output
-  print(paste("Converting from", class(x)[1], "to", metadata$class_name))
-  print(paste("Initial value:", value))
-
   # Apply measure transformation (if needed)
   if (x$measure != metadata$measure) {
     value = 1 / value
-    print(paste("After measure adjustment:", value))
   }
 
   # Apply dimension transformation (if needed)
   if (x$dimension != metadata$dimension) {
-    value = value * DEFAULT_SPEED_OF_MEDIUM
-    print(paste("After dimension adjustment:", value))
+    if (x$measure == RATE_EXTENT$rate) {
+      value = value * DEFAULT_SPEED_OF_MEDIUM
+    } else {
+      value = value / DEFAULT_SPEED_OF_MEDIUM
+    }
   }
 
   # Apply rotation transformation (if needed)
   if (x$rotation != metadata$rotation) {
-    value = 2 * pi * value
-    print(paste("After rotation adjustment:", value))
+    if (x$measure == RATE_EXTENT$rate) {
+      if (x$rotation == LINEAR_ANGULAR$linear && metadata$rotation == LINEAR_ANGULAR$angular) {
+        value = 2 * pi * value
+      } else if (x$rotation == LINEAR_ANGULAR$angular && metadata$rotation == LINEAR_ANGULAR$linear) {
+        value = value / (2 * pi)
+      }
+    } else {
+      if (x$rotation == LINEAR_ANGULAR$linear && metadata$rotation == LINEAR_ANGULAR$angular) {
+        value = value / (2 * pi)
+      } else if (x$rotation == LINEAR_ANGULAR$angular && metadata$rotation == LINEAR_ANGULAR$linear) {
+        value = 2 * pi * value
+      }
+    }
   }
-
-  # Debugging output
-  print(paste("Final value:", value))
-
   # Construct the new property
   .property(value, metadata = metadata)
 }
@@ -111,11 +116,11 @@ property_relationships <- function(path_length, relationships = NULL) {
 
 
 #' @export
-Dimension <- list(spatial = "spatial", temporal = "temporal")
+SPACE_TIME <- list(spatial = "spatial", temporal = "temporal")
 #' @export
-Rotation  <- list(linear = "linear", angular = "angular")
+LINEAR_ANGULAR  <- list(linear = "linear", angular = "angular")
 #' @export
-Measure   <- list(extent = "extent", rate = "rate")
+RATE_EXTENT   <- list(extent = "extent", rate = "rate")
 
 PROPERTIES <- list(
   angular_frequency = 'angular_frequency',

@@ -6,9 +6,9 @@ test_that("linear_wavenumber subclass has correct classes", {
   expect_true(inherits(l, "linear_wavenumber"))
   expect_true(inherits(l, "property"))
   expect_equal(l$class_name, 'linear_wavenumber')
-  expect_equal(l$dimension, Dimension$spatial)
-  expect_equal(l$rotation,  Rotation$linear)
-  expect_equal(l$measure,   Measure$rate)
+  expect_equal(l$dimension, SPACE_TIME$spatial)
+  expect_equal(l$rotation,  LINEAR_ANGULAR$linear)
+  expect_equal(l$measure,   RATE_EXTENT$rate)
 
   # Check if the value is set correctly (from the `property` class)
   expect_equal(l$value, 10)

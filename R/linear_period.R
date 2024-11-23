@@ -9,9 +9,9 @@ linear_period <- function(x) {
     symbol       = "T",
     unit_latex   = "\\text{s}",
     unit         = "s",
-    rotation     = Rotation$linear,
-    dimension    = Dimension$temporal,
-    measure      = Measure$extent,
+    rotation     = LINEAR_ANGULAR$linear,
+    dimension    = SPACE_TIME$temporal,
+    measure      = RATE_EXTENT$extent,
     class_name   = class_name
   )
 

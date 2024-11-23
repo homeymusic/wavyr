@@ -6,9 +6,9 @@ test_that("angular_period subclass has correct classes", {
   expect_true(inherits(T_ang, "angular_period"))
   expect_true(inherits(T_ang, "property"))
   expect_equal(T_ang$class_name, 'angular_period')
-  expect_equal(T_ang$dimension, Dimension$temporal)
-  expect_equal(T_ang$rotation,  Rotation$angular)
-  expect_equal(T_ang$measure,   Measure$extent)
+  expect_equal(T_ang$dimension, SPACE_TIME$temporal)
+  expect_equal(T_ang$rotation,  LINEAR_ANGULAR$angular)
+  expect_equal(T_ang$measure,   RATE_EXTENT$extent)
 
   # Check if the value is set correctly (from the `property` class)
   expect_equal(T_ang$value, 10)
