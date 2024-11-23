@@ -44,9 +44,17 @@ property.property <- function(x, metadata = list()) {
   # Apply dimension transformation (if needed)
   if (x$dimension != metadata$dimension) {
     if (x$measure == RATE_EXTENT$rate) {
-      value = value * DEFAULT_SPEED_OF_MEDIUM
+      if (x$dimension == SPACE_TIME$spatial && metadata$dimension == SPACE_TIME$temporal) {
+        value = value * DEFAULT_SPEED_OF_MEDIUM
+      } else if (x$dimension == SPACE_TIME$temporal && metadata$dimension == SPACE_TIME$spatial) {
+        value = value / DEFAULT_SPEED_OF_MEDIUM
+      }
     } else {
-      value = value / DEFAULT_SPEED_OF_MEDIUM
+      if (x$dimension == SPACE_TIME$spatial && metadata$dimension == SPACE_TIME$temporal) {
+        value = value / DEFAULT_SPEED_OF_MEDIUM
+      } else if (x$dimension == SPACE_TIME$temporal && metadata$dimension == SPACE_TIME$spatial) {
+        value = value * DEFAULT_SPEED_OF_MEDIUM
+      }
     }
   }
 
@@ -75,8 +83,6 @@ property.default <- function(x) {
   stop("`x` must be numeric or a property object")
 }
 
-
-
 #' Get node pairs that are a specific path length apart in an igraph object
 #'
 #' @param path_length An integer specifying the number of edges (hops) between nodes.
@@ -88,8 +94,13 @@ property_relationships <- function(path_length, relationships = NULL) {
   # Validate inputs
   stopifnot(
     inherits(graph, "igraph"),
-    is.numeric(path_length) && path_length >= 0 && path_length == round(path_length)
+    is.numeric(path_length) && path_length == round(path_length)
   )
+
+  # Return empty data frame with the usual columns if path_length is less than 0 or greater than 4
+  if (path_length < 0 || path_length > 3) {
+    return(data.frame(from = character(0), to = character(0), path_length = integer(0)))
+  }
 
   # Optionally filter edges by relationships
   subgraph <- if (!is.null(relationships)) {
@@ -113,7 +124,6 @@ property_relationships <- function(path_length, relationships = NULL) {
     stringsAsFactors = FALSE
   )
 }
-
 
 #' @export
 SPACE_TIME <- list(spatial = "spatial", temporal = "temporal")
@@ -235,3 +245,34 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
   ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
   ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
   ggplot2::coord_fixed(ratio = 1)  # Ensure equal aspect ratio for x and y axes
+
+
+# Convert a property value based on the graph's path between nodes
+convert_via_graph_path <- function(start_node, end_node) {
+
+  # Check if the graph is available
+  graph <- PROPERTY_RELATIONSHIPS
+
+  # Use igraph to find the shortest path between the start and end nodes
+  path <- igraph::shortest_paths(graph, from = start_node, to = end_node, output = "epath")
+
+  # Check if a path exists
+  if (length(path$epath[[1]]) == 0) {
+    stop("No path found between nodes.")
+  }
+
+  # Loop through the path and apply the corresponding transformation for each edge
+  for (i in 1:(length(path$epath[[1]]))) {
+    edge_id <- path$epath[[1]][i]
+
+    # Get the relationship label and mathematical relationship for the current edge
+    edge <- PROPERTY_EDGES[PROPERTY_EDGES$edge_id == edge_id, ]
+
+    # Apply the transformation specified for this edge (mathematical relationship)
+    # This can be expanded based on the edge's mathematical function
+    current_value <- apply_transformation(current_value, edge$mathematical_relationship)
+  }
+
+  # Return the final transformed value
+  return(current_value)
+}

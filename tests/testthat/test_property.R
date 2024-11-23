@@ -266,3 +266,15 @@ test_that("path_length 3 with relationships 'LINEAR_ANGULAR', 'RATE_EXTENT', and
   # Check if the result matches the expected node pairs
   expect_equal(result, expected_pairs)
 })
+
+test_that("path_length -1 for all returns nodes directly connected by edges", {
+  result <- property_relationships(path_length = -1)
+
+  expect_equal(nrow(result), 0)
+})
+
+test_that("path_length 4 for all returns nodes directly connected by edges", {
+  result <- property_relationships(path_length = 4)
+
+  expect_equal(nrow(result), 0)
+})

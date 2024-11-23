@@ -77,11 +77,30 @@ test_that("angluar w to and from linear f works", {
 
 })
 
+
+test_that("angluar w to and from angular k works", {
+
+  # w to k
+  w = angular_frequency(expected_properties$angular_frequency)
+  expect_equal(w$value, expected_properties$angular_frequency)
+
+  k = angular_wavenumber(w)
+  expect_equal(k$value, expected_properties$angular_wavenumber)
+
+  # f to w
+  k = angular_wavenumber(expected_properties$angular_wavenumber)
+  expect_equal(k$value, expected_properties$angular_wavenumber)
+
+  w = angular_frequency(k)
+  expect_equal(w$value, expected_properties$angular_frequency)
+
+})
+
 # Test for path_length 1 (nodes directly connected by edges)
 test_that("path_length 1 for Linear ~ Angular returns nodes directly connected by edges", {
   relationships = c("Linear ~ Angular")
 
-  result <- property_relationships(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
+  result <- property_relationships(path_length = 1, relationships = relationships)
 
   expect_equal(nrow(result), 8)
 
@@ -89,4 +108,24 @@ test_that("path_length 1 for Linear ~ Angular returns nodes directly connected b
   validate_property_conversions(result, expected_properties)
 })
 
+# Test for path_length 1 (nodes directly connected by edges)
+test_that("path_length 1 for Time ~ Space returns nodes directly connected by edges", {
+  relationships = c("Time ~ Space")
 
+  result <- property_relationships(path_length = 1, relationships = relationships)
+
+  expect_equal(nrow(result), 8)
+
+  # Validate the property conversions for path_length 1
+  validate_property_conversions(result, expected_properties)
+})
+
+# Test for path_length 1 (nodes directly connected by edges)
+test_that("path_length 1 for all returns nodes directly connected by edges", {
+  result <- property_relationships(path_length = 1)
+
+  expect_equal(nrow(result), 24)
+
+  # Validate the property conversions for path_length 1
+  validate_property_conversions(result, expected_properties)
+})
