@@ -128,21 +128,25 @@ PROPERTIES <- list(
   linear_wavenumber = 'linear_wavenumber'
 )
 
-# Define nodes with 3D-like positions (for a cube)
 PROPERTY_NODES <- data.frame(
   name = c(
     PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength,
     PROPERTIES$angular_frequency, PROPERTIES$angular_period, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
   ),
   label = c(
-    "Linear Frequency", "Linear Period", "Linear Wavenumber", "Linear Wavelength",
-    "Angular Frequency", "Angular Period", "Angular Wavenumber", "Angular Wavelength"
+    'atop(italic(f), atop("Linear Frequency", "(linear time rate)"))',
+    'atop(italic(T), atop("Linear Period", "(linear time extent)"))',
+    'atop(italic(k)["linear"], atop("Linear Wavenumber", "(linear space rate)"))',
+    'atop(italic(λ), atop("Linear Wavelength", "(linear space extent)"))',
+    'atop(italic(ω), atop("Angular Frequency", "(angular time rate)"))',
+    'atop(italic(τ)["angular"], atop("Angular Period", "(angular time extent)"))',
+    'atop(italic(k), atop("Angular Wavenumber", "(angular space rate)"))',
+    'atop(italic("\u019B")["angular"], atop("Angular Wavelength", "(angular space extent)"))'  # Lambda with a slash
   ),
-  x = c(0, 0, 1, 1, 2, 2, 3, 3), # Adjusted x-coordinates for a cube structure
-  y = c(2, 0, 3, 1, 2, 0, 3, 1)  # Adjusted y-coordinates for a cube structure
+  x = c(0, 0, 1, 1, 2, 2, 3, 3),  # Adjusted x-coordinates for a cube structure
+  y = c(2, 0, 3, 1, 2, 0, 3, 1)   # Adjusted y-coordinates for a cube structure
 )
 
-# Define 12 unique edges (undirected, no redundancy)
 PROPERTY_EDGES <- data.frame(
   from = c(
     PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber,
@@ -155,16 +159,25 @@ PROPERTY_EDGES <- data.frame(
     PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
   ),
   relationship = c(
-    rep("Rate ~ Extent",4),
+    rep("Rate ~ Extent", 4),
     rep("Linear ~ Angular", 4),
     rep("Time ~ Space", 4)
   ),
+  relationship_label = c(
+    rep("rate %<->% extent", 4),
+    rep("linear %<->% angular", 4),
+    rep("time %<->% space", 4)
+  ),
   mathematical_relationship = c(
-    rep("1/x", 4),
-    c("2 \u03C0 \u22C5 x", "2 \u03C0 \u22C5 x", "x / 2 \u03C0", "x / 2 \u03C0"),
-    c("x \u22C5 c", "x / c", "x \u22C5 c", "x / c")
+    # Rate ~ Extent
+    "1 / x", "1 / x", "1 / x", "1 / x",
+    # Linear ~ Angular
+    "2 * pi %.% x", "2 * pi %.% x", "x / (2 * pi)", "x / (2 * pi)",
+    # Time ~ Space
+    "x %.% c", "x / c", "x %.% c", "x / c"
   )
 )
+
 
 # Create the graph as an undirected graph
 PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
@@ -176,13 +189,14 @@ PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
 PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
   # Use arcs for edges with subtle radii
   ggraph::geom_edge_arc(
-    ggplot2::aes(label = relationship),
+    ggplot2::aes(label = relationship_label),
     angle_calc = 'along',
     arrow = NULL, # Remove the arrowheads for undirected graph
     end_cap = ggraph::circle(3, 'mm'),
     edge_width = 0.8,
     color = "gray", # Set arcs to gray
     strength = 0.0,
+    label_parse = T,
     label_size = 3,
     vjust = -0.8, # Adjust placement for visibility
     label_colour = "gray"  # Set labels to gray
@@ -195,6 +209,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     edge_width = 0.8,
     color = "gray", # Set arcs to gray
     strength = 0.0,
+    label_parse = T,
     label_size = 3,
     vjust = 1.5, # Adjust placement for visibility
     label_colour = "gray"  # Set labels to gray
@@ -204,7 +219,8 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
   # Add English title case node labels
   ggraph::geom_node_text(
     ggplot2::aes(label = label),
-    nudge_y = 0.15, # Offset node labels slightly
+    parse = T,
+    nudge_y = 0.3, # Offset node labels slightly
     size = 4
   ) +
   # Add title and expand the plot space
