@@ -6,9 +6,9 @@ test_that("linear_frequency subclass has correct classes", {
   expect_true(inherits(f, "linear_frequency"))
   expect_true(inherits(f, "property"))
   expect_equal(f$class_name, 'linear_frequency')
-  expect_equal(f$dimension, SPACE_TIME$temporal)
-  expect_equal(f$rotation,  LINEAR_ANGULAR$linear)
-  expect_equal(f$measure,   RATE_EXTENT$rate)
+  expect_equal(f$space_time, SPACE_TIME$time)
+  expect_equal(f$linear_angular,  LINEAR_ANGULAR$linear)
+  expect_equal(f$rate_extent,   RATE_EXTENT$rate)
 
   # Check if the value is set correctly (from the `property` class)
   expect_equal(f$value, 10)

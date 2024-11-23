@@ -36,40 +36,40 @@ property.property <- function(x, metadata = list()) {
 
   value <- x$value
 
-  # Apply measure transformation (if needed)
-  if (x$measure != metadata$measure) {
+  # Apply rate_extent transformation (if needed)
+  if (x$rate_extent != metadata$rate_extent) {
     value = 1 / value
   }
 
-  # Apply dimension transformation (if needed)
-  if (x$dimension != metadata$dimension) {
-    if (x$measure == RATE_EXTENT$rate) {
-      if (x$dimension == SPACE_TIME$spatial && metadata$dimension == SPACE_TIME$temporal) {
+  # Apply space_time transformation (if needed)
+  if (x$space_time != metadata$space_time) {
+    if (x$rate_extent == RATE_EXTENT$rate) {
+      if (x$space_time == SPACE_TIME$space && metadata$space_time == SPACE_TIME$time) {
         value = value * DEFAULT_SPEED_OF_MEDIUM
-      } else if (x$dimension == SPACE_TIME$temporal && metadata$dimension == SPACE_TIME$spatial) {
+      } else if (x$space_time == SPACE_TIME$time && metadata$space_time == SPACE_TIME$space) {
         value = value / DEFAULT_SPEED_OF_MEDIUM
       }
     } else {
-      if (x$dimension == SPACE_TIME$spatial && metadata$dimension == SPACE_TIME$temporal) {
+      if (x$space_time == SPACE_TIME$space && metadata$space_time == SPACE_TIME$time) {
         value = value / DEFAULT_SPEED_OF_MEDIUM
-      } else if (x$dimension == SPACE_TIME$temporal && metadata$dimension == SPACE_TIME$spatial) {
+      } else if (x$space_time == SPACE_TIME$time && metadata$space_time == SPACE_TIME$space) {
         value = value * DEFAULT_SPEED_OF_MEDIUM
       }
     }
   }
 
-  # Apply rotation transformation (if needed)
-  if (x$rotation != metadata$rotation) {
-    if (x$measure == RATE_EXTENT$rate) {
-      if (x$rotation == LINEAR_ANGULAR$linear && metadata$rotation == LINEAR_ANGULAR$angular) {
+  # Apply linear_angular transformation (if needed)
+  if (x$linear_angular != metadata$linear_angular) {
+    if (x$rate_extent == RATE_EXTENT$rate) {
+      if (x$linear_angular == LINEAR_ANGULAR$linear && metadata$linear_angular == LINEAR_ANGULAR$angular) {
         value = 2 * pi * value
-      } else if (x$rotation == LINEAR_ANGULAR$angular && metadata$rotation == LINEAR_ANGULAR$linear) {
+      } else if (x$linear_angular == LINEAR_ANGULAR$angular && metadata$linear_angular == LINEAR_ANGULAR$linear) {
         value = value / (2 * pi)
       }
     } else {
-      if (x$rotation == LINEAR_ANGULAR$linear && metadata$rotation == LINEAR_ANGULAR$angular) {
+      if (x$linear_angular == LINEAR_ANGULAR$linear && metadata$linear_angular == LINEAR_ANGULAR$angular) {
         value = value / (2 * pi)
-      } else if (x$rotation == LINEAR_ANGULAR$angular && metadata$rotation == LINEAR_ANGULAR$linear) {
+      } else if (x$linear_angular == LINEAR_ANGULAR$angular && metadata$linear_angular == LINEAR_ANGULAR$linear) {
         value = 2 * pi * value
       }
     }
@@ -83,13 +83,46 @@ property.default <- function(x) {
   stop("`x` must be numeric or a property object")
 }
 
-#' Get node pairs that are a specific path length apart in an igraph object
+#' Convert value from one wave property to another via the shortest path
+#' in the graph of all property types.
+#'
+#' @export
+convert_from_to <- function(x, start_node, end_node) {
+
+  # Check if the graph is available
+  graph <- PROPERTY_RELATIONSHIPS
+
+  # Use igraph to find the shortest path between the start and end nodes
+  path <- igraph::shortest_paths(graph, from = start_node, to = end_node, output = "epath")
+
+  # Check if a path exists
+  if (length(path$epath[[1]]) == 0) {
+    stop("No path found between nodes.")
+  }
+
+  # Loop through the path and apply the corresponding transformation for each edge
+  for (i in 1:(length(path$epath[[1]]))) {
+    edge_id <- path$epath[[1]][i]
+
+    # Get the relationship label and mathematical relationship for the current edge
+    edge <- PROPERTY_EDGES[PROPERTY_EDGES$edge_id == edge_id, ]
+
+    # Apply the transformation specified for this edge (mathematical relationship)
+    # This can be expanded based on the edge's mathematical function
+    current_value <- apply_transformation(current_value, edge$mathematical_relationship)
+  }
+
+  # Return the final transformed value
+  return(current_value)
+}
+
+#' Filter the graph of wave properties by path length and edge types
 #'
 #' @param path_length An integer specifying the number of edges (hops) between nodes.
 #' @param relationships A vector of relationships to filter edges by. If NULL, all relationships are considered.
 #' @return A data frame with pairs of nodes separated by the specified path length.
 #' @export
-property_relationships <- function(path_length, relationships = NULL) {
+filter_graph_by <- function(path_length, relationships = NULL) {
   graph = PROPERTY_RELATIONSHIPS
   # Validate inputs
   stopifnot(
@@ -126,11 +159,17 @@ property_relationships <- function(path_length, relationships = NULL) {
 }
 
 #' @export
-SPACE_TIME <- list(spatial = "spatial", temporal = "temporal")
+SPACE_TIME     <- list(space = "space", time = "time",
+                       label = "Space ~ Time",
+                       expression = "Space \u2194 Time")
 #' @export
-LINEAR_ANGULAR  <- list(linear = "linear", angular = "angular")
+LINEAR_ANGULAR <- list(linear = "linear", angular = "angular",
+                       label = "Linear ~ Angular",
+                       expression = "Linear \u2194 Angular")
 #' @export
-RATE_EXTENT   <- list(extent = "extent", rate = "rate")
+RATE_EXTENT    <- list(extent = "extent", rate = "rate",
+                       label = "Rate ~ Extent",
+                       expression = "Rate \u2194 Extent")
 
 PROPERTIES <- list(
   angular_frequency = 'angular_frequency',
@@ -174,14 +213,9 @@ PROPERTY_EDGES <- data.frame(
     PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
   ),
   relationship = c(
-    rep("Rate ~ Extent", 4),
-    rep("Linear ~ Angular", 4),
-    rep("Time ~ Space", 4)
-  ),
-  relationship_label = c(
-    rep("rate %<->% extent", 4),
-    rep("linear %<->% angular", 4),
-    rep("time %<->% space", 4)
+    rep(RATE_EXTENT$label, 4),
+    rep(LINEAR_ANGULAR$label, 4),
+    rep(SPACE_TIME$label, 4)
   ),
   mathematical_relationship = c(
     # Rate ~ Extent
@@ -204,7 +238,7 @@ PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
 PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
   # Use arcs for edges with subtle radii
   ggraph::geom_edge_arc(
-    ggplot2::aes(label = relationship_label),
+    ggplot2::aes(label = relationship),
     angle_calc = 'along',
     arrow = NULL, # Remove the arrowheads for undirected graph
     end_cap = ggraph::circle(3, 'mm'),
@@ -230,7 +264,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     label_colour = "gray"  # Set labels to gray
   ) +
   # Add PROPERTY_NODES with light blue color
-  ggraph::geom_node_point(size = 8, color = "lightblue") +
+  ggraph::geom_node_point(size = 8, color = "darkgray") +
   # Add English title case node labels
   ggraph::geom_node_text(
     ggplot2::aes(label = label),
@@ -246,33 +280,3 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
   ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
   ggplot2::coord_fixed(ratio = 1)  # Ensure equal aspect ratio for x and y axes
 
-
-# Convert a property value based on the graph's path between nodes
-convert_via_graph_path <- function(start_node, end_node) {
-
-  # Check if the graph is available
-  graph <- PROPERTY_RELATIONSHIPS
-
-  # Use igraph to find the shortest path between the start and end nodes
-  path <- igraph::shortest_paths(graph, from = start_node, to = end_node, output = "epath")
-
-  # Check if a path exists
-  if (length(path$epath[[1]]) == 0) {
-    stop("No path found between nodes.")
-  }
-
-  # Loop through the path and apply the corresponding transformation for each edge
-  for (i in 1:(length(path$epath[[1]]))) {
-    edge_id <- path$epath[[1]][i]
-
-    # Get the relationship label and mathematical relationship for the current edge
-    edge <- PROPERTY_EDGES[PROPERTY_EDGES$edge_id == edge_id, ]
-
-    # Apply the transformation specified for this edge (mathematical relationship)
-    # This can be expanded based on the edge's mathematical function
-    current_value <- apply_transformation(current_value, edge$mathematical_relationship)
-  }
-
-  # Return the final transformed value
-  return(current_value)
-}

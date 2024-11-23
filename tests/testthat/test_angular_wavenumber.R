@@ -6,9 +6,9 @@ test_that("angular_wavenumber subclass has correct classes", {
   expect_true(inherits(w, "angular_wavenumber"))
   expect_true(inherits(w, "property"))
   expect_equal(w$class_name, 'angular_wavenumber')
-  expect_equal(w$dimension, SPACE_TIME$spatial)
-  expect_equal(w$rotation,  LINEAR_ANGULAR$angular)
-  expect_equal(w$measure,   RATE_EXTENT$rate)
+  expect_equal(w$space_time, SPACE_TIME$space)
+  expect_equal(w$linear_angular,  LINEAR_ANGULAR$angular)
+  expect_equal(w$rate_extent,   RATE_EXTENT$rate)
 
   # Check if the value is set correctly (from the `property` class)
   expect_equal(w$value, 10)

@@ -9,9 +9,9 @@ linear_wavelength <- function(x) {
     symbol       = "\u03BB",
     unit_latex   = "\\text{m}",
     unit         = "m",
-    rotation     = LINEAR_ANGULAR$linear,
-    dimension    = SPACE_TIME$spatial,
-    measure      = RATE_EXTENT$extent,
+    linear_angular     = LINEAR_ANGULAR$linear,
+    space_time    = SPACE_TIME$space,
+    rate_extent      = RATE_EXTENT$extent,
     class_name   = class_name
   )
 

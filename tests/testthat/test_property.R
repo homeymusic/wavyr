@@ -119,7 +119,7 @@ test_that("node path_length calculation is correct", {
 
 # Test 8: path_length 0 should return nodes paired with themselves
 test_that("path_length 0 returns nodes paired with themselves", {
-  result <- property_relationships(0)
+  result <- filter_graph_by(0)
   expect_equal(nrow(result), 8)
   expected_pairs <- data.frame(
     from = c("linear_frequency", "linear_period", "linear_wavenumber", "linear_wavelength",
@@ -133,7 +133,7 @@ test_that("path_length 0 returns nodes paired with themselves", {
 
 # Test 9: path_length 1 returns nodes directly connected by edges
 test_that("path_length 1 returns nodes directly connected by edges", {
-  result <- property_relationships(1) %>% dplyr::arrange(from)
+  result <- filter_graph_by(1) %>% dplyr::arrange(from)
   expect_equal(nrow(result), 24)
 
   expected_pairs <- data.frame(
@@ -153,7 +153,7 @@ test_that("path_length 1 returns nodes directly connected by edges", {
 
 # Test 10: path_length 2 nodes should return nodes that are 2 edges apart
 test_that("path_length 2 returns nodes 2 steps apart", {
-  result <- property_relationships(2) %>% dplyr::arrange(from)
+  result <- filter_graph_by(2) %>% dplyr::arrange(from)
 
   expect_equal(nrow(result), 24)
 
@@ -179,7 +179,7 @@ test_that("path_length 2 returns nodes 2 steps apart", {
 
 # Test 11: path_length 3 returns nodes 3 steps apart
 test_that("path_length 3 returns nodes 3 steps apart", {
-  result <- property_relationships(3) %>% dplyr::arrange(from)
+  result <- filter_graph_by(3) %>% dplyr::arrange(from)
   expect_equal(nrow(result), 8)
 
   expected_pairs <- data.frame(
@@ -202,7 +202,7 @@ test_that("graph plot of all relationships renders correctly", {
 })
 
 test_that("path_length 1 with relationships 'LINEAR_ANGULAR' returns the correct node pairs and column names", {
-  result <- property_relationships(path_length = 1, relationships = c("Linear ~ Angular")) %>% dplyr::arrange(from)
+  result <- filter_graph_by(path_length = 1, relationships = c("Linear ~ Angular")) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
@@ -224,7 +224,7 @@ test_that("path_length 1 with relationships 'LINEAR_ANGULAR' returns the correct
 
 test_that("path_length 2 with relationships 'LINEAR_ANGULAR' and 'RATE_EXTENT' returns the correct node pairs and column names", {
   relationships = c("Linear ~ Angular", "Rate ~ Extent")
-  result <- property_relationships(path_length = 2, relationships = relationships) %>% dplyr::arrange(from)
+  result <- filter_graph_by(path_length = 2, relationships = relationships) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
@@ -245,8 +245,8 @@ test_that("path_length 2 with relationships 'LINEAR_ANGULAR' and 'RATE_EXTENT' r
 })
 
 test_that("path_length 3 with relationships 'LINEAR_ANGULAR', 'RATE_EXTENT', and 'SPACE_TIME' returns the correct node pairs and column names", {
-  relationships = c("Linear ~ Angular", "Rate ~ Extent", "Time ~ Space")
-  result <- property_relationships(path_length = 3, relationships = relationships) %>% dplyr::arrange(from)
+  relationships = c(LINEAR_ANGULAR$label, RATE_EXTENT$label, SPACE_TIME$label)
+  result <- filter_graph_by(path_length = 3, relationships = relationships) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
@@ -268,13 +268,22 @@ test_that("path_length 3 with relationships 'LINEAR_ANGULAR', 'RATE_EXTENT', and
 })
 
 test_that("path_length -1 for all returns nodes directly connected by edges", {
-  result <- property_relationships(path_length = -1)
+  result <- filter_graph_by(path_length = -1)
 
   expect_equal(nrow(result), 0)
 })
 
 test_that("path_length 4 for all returns nodes directly connected by edges", {
-  result <- property_relationships(path_length = 4)
+  result <- filter_graph_by(path_length = 4)
 
   expect_equal(nrow(result), 0)
 })
+
+# test_that("we can convert following the shortest path in the graph",{
+#   conversion = DEFAULT_SPEED_OF_MEDIUM %>% convert_from_to(
+#     'linear_frequency','angular_wavelength'
+#   )
+#   expect_equal(conversion$path_length, 3)
+#   expect_equal(conversion$path %>% sort(), c('') %>% sort())
+#   expect_equal(conversion$value, 0.0)
+# })

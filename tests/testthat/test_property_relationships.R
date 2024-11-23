@@ -39,7 +39,7 @@ validate_property_conversions <- function(result, expected_properties) {
 # Test for path_length 0 (nodes paired with themselves)
 test_that("path_length 0 returns nodes paired with themselves", {
   # Get all the node pairs from path_length 0
-  result <- property_relationships(0) %>%
+  result <- filter_graph_by(0) %>%
     dplyr::select(from, to)
 
   # Validate the property conversions for path_length 0
@@ -50,7 +50,7 @@ test_that("path_length 0 returns nodes paired with themselves", {
 test_that("path_length 1 for Rate ~ Extent returns nodes directly connected by edges", {
   relationships = c("Rate ~ Extent")
 
-  result <- property_relationships(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
+  result <- filter_graph_by(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
 
   expect_equal(nrow(result), 8)
 
@@ -100,7 +100,7 @@ test_that("angluar w to and from angular k works", {
 test_that("path_length 1 for Linear ~ Angular returns nodes directly connected by edges", {
   relationships = c("Linear ~ Angular")
 
-  result <- property_relationships(path_length = 1, relationships = relationships)
+  result <- filter_graph_by(path_length = 1, relationships = relationships)
 
   expect_equal(nrow(result), 8)
 
@@ -112,7 +112,7 @@ test_that("path_length 1 for Linear ~ Angular returns nodes directly connected b
 test_that("path_length 1 for Time ~ Space returns nodes directly connected by edges", {
   relationships = c("Time ~ Space")
 
-  result <- property_relationships(path_length = 1, relationships = relationships)
+  result <- filter_graph_by(path_length = 1, relationships = relationships)
 
   expect_equal(nrow(result), 8)
 
@@ -122,7 +122,7 @@ test_that("path_length 1 for Time ~ Space returns nodes directly connected by ed
 
 # Test for path_length 1 (nodes directly connected by edges)
 test_that("path_length 1 for all returns nodes directly connected by edges", {
-  result <- property_relationships(path_length = 1)
+  result <- filter_graph_by(path_length = 1)
 
   expect_equal(nrow(result), 24)
 

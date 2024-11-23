@@ -9,9 +9,9 @@ angular_frequency <- function(x) {
     unit_latex   = "\\frac{\\text{rad}}{\\text{s}}",
     symbol       = "\u03C9",
     symbol_latex = "\\omega",
-    rotation     = LINEAR_ANGULAR$angular,
-    dimension    = SPACE_TIME$temporal,
-    measure      = RATE_EXTENT$rate,
+    linear_angular     = LINEAR_ANGULAR$angular,
+    space_time    = SPACE_TIME$time,
+    rate_extent      = RATE_EXTENT$rate,
     class_name   = class_name
   )
 

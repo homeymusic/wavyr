@@ -9,9 +9,9 @@ angular_period <- function(x) {
     unit_latex   = "\\frac{\\text{s}}{\\text{rad}}",
     symbol       = "T_angular",
     symbol_latex = "T_\\text{angular}",
-    rotation     = LINEAR_ANGULAR$angular,
-    dimension    = SPACE_TIME$temporal,
-    measure      = RATE_EXTENT$extent,
+    linear_angular     = LINEAR_ANGULAR$angular,
+    space_time    = SPACE_TIME$time,
+    rate_extent      = RATE_EXTENT$extent,
     class_name   = class_name
   )
 

@@ -9,9 +9,9 @@ angular_wavelength <- function(x) {
     unit_latex   = "\\frac{\\text{m}}{\\text{rad}}",
     symbol       = "l_angular",
     symbol_latex = "\\lambda_\\text{angular}",
-    rotation     = LINEAR_ANGULAR$angular,
-    dimension    = SPACE_TIME$spatial,
-    measure      = RATE_EXTENT$extent,
+    linear_angular     = LINEAR_ANGULAR$angular,
+    space_time    = SPACE_TIME$space,
+    rate_extent      = RATE_EXTENT$extent,
     class_name   = class_name
   )
 
