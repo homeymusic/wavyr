@@ -1,23 +1,18 @@
 test_that("linear_wavelength subclass has correct classes", {
-  # Create a linear_wavelength object
   l <- linear_wavelength(10)
-
-  # Check that the object has the correct classes
   expect_true(inherits(l, "linear_wavelength"))
   expect_true(inherits(l, "property"))
-  expect_equal(l$class_name, 'linear_wavelength')
-  expect_equal(l$space_time, SPACE_TIME$space)
-  expect_equal(l$linear_angular,  LINEAR_ANGULAR$linear)
-  expect_equal(l$rate_extent,   RATE_EXTENT$extent)
-
-  # Check if the value is set correctly (from the `property` class)
   expect_equal(l$value, 10)
-
-  expect_equal(l$unit, "m")
-  expect_equal(l$unit_latex, "\\text{m}")
-
-  expect_equal(l$symbol, "\u03BB")
-  expect_equal(l$symbol_latex, "\\lambda")
-
-  expect_equal(l$name, "linear wavelength")
+})
+test_that("linear_wavelength subclass has correct classes", {
+  expect_equal(PROPERTIES$linear_wavelength$class_name, 'linear_wavelength')
+  expect_equal(PROPERTIES$linear_wavelength$space_time, SPACE_TIME$space)
+  expect_equal(PROPERTIES$linear_wavelength$linear_angular,  LINEAR_ANGULAR$linear)
+  expect_equal(PROPERTIES$linear_wavelength$rate_extent,   RATE_EXTENT$extent)
+  expect_equal(PROPERTIES$linear_wavelength$unit, "m")
+  expect_equal(PROPERTIES$linear_wavelength$unit_latex, "\\text{m}")
+  expect_equal(PROPERTIES$linear_wavelength$symbol, "\u03BB")
+  expect_equal(PROPERTIES$linear_wavelength$symbol_latex, "\\lambda")
+  expect_equal(PROPERTIES$linear_wavelength$symbol_expression, "italic(λ)")
+  expect_equal(PROPERTIES$linear_wavelength$name, "linear wavelength")
 })

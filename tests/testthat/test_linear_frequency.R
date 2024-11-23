@@ -1,24 +1,18 @@
 test_that("linear_frequency subclass has correct classes", {
-  # Create a linear_frequency object
   f <- linear_frequency(10)
-
-  # Check that the object has the correct classes
   expect_true(inherits(f, "linear_frequency"))
   expect_true(inherits(f, "property"))
-  expect_equal(f$class_name, 'linear_frequency')
-  expect_equal(f$space_time, SPACE_TIME$time)
-  expect_equal(f$linear_angular,  LINEAR_ANGULAR$linear)
-  expect_equal(f$rate_extent,   RATE_EXTENT$rate)
-
-  # Check if the value is set correctly (from the `property` class)
   expect_equal(f$value, 10)
-
-  # Check that the default unit, symbol, and name are inherited from `property`
-  expect_equal(f$unit, "Hz")
-  expect_equal(f$unit_latex, "\\text{Hz}")
-
-  expect_equal(f$symbol, "f")
-  expect_equal(f$symbol_latex, "f")
-
-  expect_equal(f$name, "linear frequency")
+})
+test_that("linear_frequency subclass has correct classes", {
+  expect_equal(PROPERTIES$linear_frequency$name, "linear frequency")
+  expect_equal(PROPERTIES$linear_frequency$class_name, 'linear_frequency')
+  expect_equal(PROPERTIES$linear_frequency$unit, "Hz")
+  expect_equal(PROPERTIES$linear_frequency$unit_latex, "\\text{Hz}")
+  expect_equal(PROPERTIES$linear_frequency$symbol, "f")
+  expect_equal(PROPERTIES$linear_frequency$symbol_latex, "f")
+  expect_equal(PROPERTIES$linear_frequency$symbol_expression, "italic(f)")
+  expect_equal(PROPERTIES$linear_frequency$space_time, SPACE_TIME$time)
+  expect_equal(PROPERTIES$linear_frequency$linear_angular,  LINEAR_ANGULAR$linear)
+  expect_equal(PROPERTIES$linear_frequency$rate_extent,   RATE_EXTENT$rate)
 })

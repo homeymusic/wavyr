@@ -64,15 +64,67 @@ ANGULAR_WAVENUMBER <-list(
   symbol_expression = "italic(k)"
 )
 
+LINEAR_FREQUENCY <- list(
+  name = "linear frequency",
+  class_name = 'linear_frequency',
+  unit = "Hz",
+  unit_latex = "\\text{Hz}",
+  symbol = "f",
+  symbol_latex = "f",
+  symbol_expression = "italic(f)",
+  space_time = SPACE_TIME$time,
+  linear_angular = LINEAR_ANGULAR$linear,
+  rate_extent = RATE_EXTENT$rate
+)
+
+LINEAR_PERIOD <- list(
+  name = "linear period",
+  class_name = 'linear_period',
+  unit = "s",
+  unit_latex = "\\text{s}",
+  symbol = "T",
+  symbol_latex = "T",
+  symbol_expression = "italic(T)",
+  space_time = SPACE_TIME$time,
+  linear_angular = LINEAR_ANGULAR$linear,
+  rate_extent = RATE_EXTENT$extent
+)
+
+LINEAR_WAVELENGTH <- list(
+  class_name = 'linear_wavelength',
+  space_time = SPACE_TIME$space,
+  linear_angular = LINEAR_ANGULAR$linear,
+  rate_extent = RATE_EXTENT$extent,
+  unit = "m",
+  unit_latex = "\\text{m}",
+  symbol = "\u03BB",
+  symbol_latex = "\\lambda",
+  symbol_expression = "italic(λ)",
+  name = "linear wavelength"
+)
+
+LINEAR_WAVENUMBER <- list(
+  class_name = 'linear_wavenumber',
+  space_time = SPACE_TIME$space,
+  linear_angular = LINEAR_ANGULAR$linear,
+  rate_extent = RATE_EXTENT$rate,
+  unit = "1/m",
+  unit_latex = "\\text{m}^{-1}",
+  symbol = "k_linear",
+  symbol_latex = "k_{\\text{linear}}",
+  symbol_expression = 'italic(k)["linear"]',
+  name = "linear wavenumber"
+)
+
 PROPERTIES <- list(
-  angular_frequency = ANGULAR_FREQUENCY,
-  angular_period = ANGULAR_PERIOD,
+  angular_frequency  = ANGULAR_FREQUENCY,
+  angular_period     = ANGULAR_PERIOD,
   angular_wavelength = ANGULAR_WAVELENGTH,
   angular_wavenumber = ANGULAR_WAVENUMBER,
-  linear_frequency = 'linear_frequency',
-  linear_period = 'linear_period',
-  linear_wavelength = 'linear_wavelength',
-  linear_wavenumber = 'linear_wavenumber'
+  linear_frequency   = LINEAR_FREQUENCY,
+  linear_period      = LINEAR_PERIOD,
+  linear_wavelength  = LINEAR_WAVELENGTH,
+  linear_wavenumber  = LINEAR_WAVENUMBER
 )
 #
 # PROPERTY_NODES <- data.frame(
