@@ -25,38 +25,6 @@ property.numeric <- function(x, metadata=list()) {
   .property(x, metadata)
 }
 
-# Conversion relationships
-conversion_matrix <- list(
-  measure = list(
-    extent_to_rate = function(value) 1 / value,
-    rate_to_extent = function(value) 1 / value
-  ),
-  dimension = list(
-    temporal_to_spatial = function(value, metadata) {
-      if (metadata$class_name %in% c("linear_wavelength", "angular_wavelength")) {
-        # Temporal → Spatial (Frequency → Wavelength)
-        DEFAULT_SPEED_OF_MEDIUM / value
-      } else {
-        # Temporal → Spatial (Frequency → Wavenumber)
-        value / DEFAULT_SPEED_OF_MEDIUM
-      }
-    },
-    spatial_to_temporal = function(value, metadata) {
-      if (metadata$class_name %in% c("linear_wavelength", "angular_wavelength")) {
-        # Spatial → Temporal (Wavelength → Frequency)
-        DEFAULT_SPEED_OF_MEDIUM / value
-      } else {
-        # Spatial → Temporal (Wavenumber → Frequency)
-        value * DEFAULT_SPEED_OF_MEDIUM
-      }
-    }
-  ),
-  rotation = list(
-    linear_to_angular = function(value) 2 * pi * value,
-    angular_to_linear = function(value) value / (2 * pi)
-  )
-)
-
 # Generic conversion method for properties
 #' @export
 property.property <- function(x, metadata = list()) {
@@ -76,31 +44,19 @@ property.property <- function(x, metadata = list()) {
 
   # Apply measure transformation (if needed)
   if (x$measure != metadata$measure) {
-    if (x$measure == Measure$extent && metadata$measure == Measure$rate) {
-      value <- conversion_matrix$measure$extent_to_rate(value)
-    } else if (x$measure == Measure$rate && metadata$measure == Measure$extent) {
-      value <- conversion_matrix$measure$rate_to_extent(value)
-    }
+    value = 1 / value
     print(paste("After measure adjustment:", value))
   }
 
   # Apply dimension transformation (if needed)
   if (x$dimension != metadata$dimension) {
-    if (x$dimension == Dimension$temporal && metadata$dimension == Dimension$spatial) {
-      value <- conversion_matrix$dimension$temporal_to_spatial(value, metadata)
-    } else if (x$dimension == Dimension$spatial && metadata$dimension == Dimension$temporal) {
-      value <- conversion_matrix$dimension$spatial_to_temporal(value, metadata)
-    }
+    value = value * DEFAULT_SPEED_OF_MEDIUM
     print(paste("After dimension adjustment:", value))
   }
 
   # Apply rotation transformation (if needed)
   if (x$rotation != metadata$rotation) {
-    if (x$rotation == Rotation$linear && metadata$rotation == Rotation$angular) {
-      value <- conversion_matrix$rotation$linear_to_angular(value)
-    } else if (x$rotation == Rotation$angular && metadata$rotation == Rotation$linear) {
-      value <- conversion_matrix$rotation$angular_to_linear(value)
-    }
+    value = 2  * pi * value
     print(paste("After rotation adjustment:", value))
   }
 
@@ -200,13 +156,21 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
 #' Get node pairs that are a certain number of degrees apart in a tidygraph object
 #'
 #' @param degree An integer indicating the number of degrees (edges) between nodes
+#' @param relationships A vector of relationships, optional. If provided, it must match the degree length.
 #' @return A data frame with pairs of nodes that are 'degree' edges apart
 #' @export
-property_relationships_degree <- function(degree) {
+property_relationships <- function(degree, relationships = NULL) {
 
   # Check if 'degree' is valid (should be non-negative integer)
   if (!is.numeric(degree) || degree < 0 || degree != round(degree)) {
     stop("`degree` should be a non-negative integer.")
+  }
+
+  # If relationships are provided, check if the length matches the degree
+  if (!is.null(relationships)) {
+    if (length(relationships) != degree) {
+      stop("The length of relationships must match the degree.")
+    }
   }
 
   # If degree is 0, return a list of all nodes paired with themselves
@@ -217,6 +181,13 @@ property_relationships_degree <- function(degree) {
 
     # Return a tibble with each node paired with itself
     return(tibble::tibble(from = node_names, to = node_names))
+  }
+
+  # If relationships are provided, filter edges by relationships
+  edges <- PROPERTY_EDGES
+  if (!is.null(relationships)) {
+    edges <- edges %>%
+      dplyr::filter(relationship %in% relationships)
   }
 
   # Calculate all pairwise distances using igraph::distances
@@ -238,6 +209,17 @@ property_relationships_degree <- function(degree) {
   result_df <- distances_df %>%
     dplyr::filter(distance == degree) %>%
     dplyr::select(from = rowid, to, distance)  # Rename and select relevant columns
+
+  # Add the relationships column if provided (or leave it blank if relationships is NULL)
+  if (!is.null(relationships)) {
+    result_df$relationships <- relationships
+  }
+
+  # Filter by relationships only if relationships is not NULL
+  if (!is.null(relationships)) {
+    result_df <- result_df %>%
+      dplyr::filter(paste(from, to) %in% paste(edges$from, edges$to))
+  }
 
   # Return the result
   return(result_df)
