@@ -6,19 +6,17 @@ property <- function(x, metadata) {
 
 # Internal function for creating a property object
 .property <- function(x, metadata = list()) {
-
   structure(
     modifyList(metadata, list(
       value = x
     )),
     class = 'property'
   )
-
 }
 
 # Method for creating a property from a numeric value
 #' @export
-property.numeric <- function(x, metadata=list()) {
+property.numeric <- function(x, metadata = list()) {
   if (length(x) != 1) {
     stop("`x` must be of length 1")
   }
@@ -56,7 +54,7 @@ property.property <- function(x, metadata = list()) {
 
   # Apply rotation transformation (if needed)
   if (x$rotation != metadata$rotation) {
-    value = 2  * pi * value
+    value = 2 * pi * value
     print(paste("After rotation adjustment:", value))
   }
 
@@ -80,18 +78,18 @@ Rotation  <- list(linear = "linear", angular = "angular")
 Measure   <- list(extent = "extent", rate = "rate")
 
 PROPERTIES <- list(
-  angular_frequency='angular_frequency',
-  angular_period='angular_period',
-  angular_wavelength='angular_wavelength',
-  angular_wavenumber='angular_wavenumber',
-  linear_frequency='linear_frequency',
-  linear_period='linear_period',
-  linear_wavelength='linear_wavelength',
-  linear_wavenumber='linear_wavenumber'
+  angular_frequency = 'angular_frequency',
+  angular_period = 'angular_period',
+  angular_wavelength = 'angular_wavelength',
+  angular_wavenumber = 'angular_wavenumber',
+  linear_frequency = 'linear_frequency',
+  linear_period = 'linear_period',
+  linear_wavelength = 'linear_wavelength',
+  linear_wavenumber = 'linear_wavenumber'
 )
 
 # Define nodes with 3D-like positions (for a cube)
-PROPERTY_NODES <- tibble::tibble(
+PROPERTY_NODES <- data.frame(
   name = c(
     PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength,
     PROPERTIES$angular_frequency, PROPERTIES$angular_period, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
@@ -101,15 +99,15 @@ PROPERTY_NODES <- tibble::tibble(
 )
 
 # Define 12 unique edges (undirected, no redundancy)
-PROPERTY_EDGES <- tibble::tibble(
+PROPERTY_EDGES <- data.frame(
   from = c(
-    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber,PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber,
-    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber,PROPERTIES$linear_period, PROPERTIES$linear_wavelength,
+    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber,
+    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$linear_period, PROPERTIES$linear_wavelength,
     PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$angular_frequency, PROPERTIES$angular_period
   ),
   to = c(
-    PROPERTIES$linear_period, PROPERTIES$linear_wavelength,PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
-    PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber,PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
+    PROPERTIES$linear_period, PROPERTIES$linear_wavelength, PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
+    PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber, PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
     PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
   ),
   relationship = c(
@@ -119,10 +117,13 @@ PROPERTY_EDGES <- tibble::tibble(
   )
 )
 
-# Create the graph as an undirected graph (with no redundant edges)
-PROPERTY_RELATIONSHIPS <- tidygraph::tbl_graph(nodes = PROPERTY_NODES, edges = PROPERTY_EDGES, directed = FALSE)
+# Create the graph as an undirected graph
+PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
+  d = PROPERTY_EDGES,
+  vertices = PROPERTY_NODES,
+  directed = FALSE
+)
 
-# Visualize the graph with gray arcs and light blue PROPERTY_NODES
 PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
   # Use arcs for edges with subtle radii
   ggraph::geom_edge_arc(
@@ -153,74 +154,39 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
   ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
   ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2))
 
-#' Get node pairs that are a certain number of degrees apart in a tidygraph object
+#' Get node pairs that are a specific path length apart in an igraph object
 #'
-#' @param degree An integer indicating the number of degrees (edges) between nodes
-#' @param relationships A vector of relationships, optional. If provided, it must match the degree length.
-#' @return A data frame with pairs of nodes that are 'degree' edges apart
+#' @param path_length An integer specifying the number of edges (hops) between nodes.
+#' @param relationships A vector of relationships to filter edges by. If NULL, all relationships are considered.
+#' @return A data frame with pairs of nodes separated by the specified path length.
 #' @export
-property_relationships <- function(degree, relationships = NULL) {
+property_relationships <- function(path_length, relationships = NULL) {
+  graph = PROPERTY_RELATIONSHIPS
+  # Validate inputs
+  stopifnot(
+    inherits(graph, "igraph"),
+    is.numeric(path_length) && path_length >= 0 && path_length == round(path_length)
+  )
 
-  # Check if 'degree' is valid (should be non-negative integer)
-  if (!is.numeric(degree) || degree < 0 || degree != round(degree)) {
-    stop("`degree` should be a non-negative integer.")
+  # Optionally filter edges by relationships
+  subgraph <- if (!is.null(relationships)) {
+    edge_indices <- igraph::E(graph)[igraph::E(graph)$relationship %in% relationships]
+    igraph::subgraph.edges(graph, edge_indices)
+  } else {
+    graph
   }
 
-  # If relationships are provided, check if the length matches the degree
-  if (!is.null(relationships)) {
-    if (length(relationships) != degree) {
-      stop("The length of relationships must match the degree.")
-    }
-  }
+  # Calculate pairwise distances
+  distances <- igraph::distances(subgraph, mode = "all")
 
-  # If degree is 0, return a list of all nodes paired with themselves
-  if (degree == 0) {
-    node_names <- PROPERTY_RELATIONSHIPS %>%
-      tidygraph::activate(nodes) %>%
-      dplyr::pull(name)  # Extract the node names
+  # Extract node pairs at the given path length
+  valid_pairs <- which(distances == path_length, arr.ind = TRUE)
 
-    # Return a tibble with each node paired with itself
-    return(tibble::tibble(from = node_names, to = node_names))
-  }
-
-  # If relationships are provided, filter edges by relationships
-  edges <- PROPERTY_EDGES
-  if (!is.null(relationships)) {
-    edges <- edges %>%
-      dplyr::filter(relationship %in% relationships)
-  }
-
-  # Calculate all pairwise distances using igraph::distances
-  distances_matrix <- PROPERTY_RELATIONSHIPS %>%
-    tidygraph::activate(nodes) %>%
-    igraph::distances()  # Use igraph::distances() for shortest paths
-
-  # Convert the distances matrix to a data frame
-  distances_df <- as.data.frame(distances_matrix)
-
-  # Add row and column names for 'from' and 'to' nodes
-  distances_df$rowid <- rownames(distances_df)
-  distances_df <- tidyr::pivot_longer(distances_df,
-                                      cols = -rowid,
-                                      names_to = "to",
-                                      values_to = "distance")
-
-  # Filter for pairs of nodes that are exactly 'degree' apart
-  result_df <- distances_df %>%
-    dplyr::filter(distance == degree) %>%
-    dplyr::select(from = rowid, to, distance)  # Rename and select relevant columns
-
-  # Add the relationships column if provided (or leave it blank if relationships is NULL)
-  if (!is.null(relationships)) {
-    result_df$relationships <- relationships
-  }
-
-  # Filter by relationships only if relationships is not NULL
-  if (!is.null(relationships)) {
-    result_df <- result_df %>%
-      dplyr::filter(paste(from, to) %in% paste(edges$from, edges$to))
-  }
-
-  # Return the result
-  return(result_df)
+  # Return result as a data frame
+  data.frame(
+    from = igraph::V(subgraph)$name[valid_pairs[, 1]],
+    to = igraph::V(subgraph)$name[valid_pairs[, 2]],
+    path_length = path_length,
+    stringsAsFactors = FALSE
+  )
 }

@@ -34,22 +34,22 @@ validate_property_conversions <- function(result, expected_properties) {
   }
 }
 
-# Test for degree 0 (nodes paired with themselves)
-test_that("degree 0 returns nodes paired with themselves", {
-  # Get all the node pairs from degree 0
+# Test for path_length 0 (nodes paired with themselves)
+test_that("path_length 0 returns nodes paired with themselves", {
+  # Get all the node pairs from path_length 0
   result <- property_relationships(0) %>%
     dplyr::select(from, to)
 
-  # Validate the property conversions for degree 0
+  # Validate the property conversions for path_length 0
   validate_property_conversions(result, expected_properties)
 })
 
-# # Test for degree 1 (nodes directly connected by edges)
-# test_that("degree 1 returns nodes directly connected by edges", {
-#   # Get all the node pairs from degree 1
+# # Test for path_length 1 (nodes directly connected by edges)
+# test_that("path_length 1 returns nodes directly connected by edges", {
+#   # Get all the node pairs from path_length 1
 #   result <- property_relationships(1) %>%
 #     dplyr::select(from, to)
 #
-#   # Validate the property conversions for degree 1
+#   # Validate the property conversions for path_length 1
 #   validate_property_conversions(result, expected_properties)
 # })
