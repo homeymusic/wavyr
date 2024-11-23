@@ -2,18 +2,18 @@
 % Please edit documentation in R/property.R
 \name{property_relationships}
 \alias{property_relationships}
-\title{Get node pairs that are a certain number of path_lengths apart in an igraph object}
+\title{Get node pairs that are a specific path length apart in an igraph object}
 \usage{
 property_relationships(path_length, relationships = NULL)
 }
 \arguments{
-\item{path_length}{An integer indicating the number of path_lengths (edges) between nodes}
+\item{path_length}{An integer specifying the number of edges (hops) between nodes.}
 
-\item{relationships}{A vector of relationships, optional. If provided, it must match the path_length length.}
+\item{relationships}{A vector of relationships to filter edges by. If NULL, all relationships are considered.}
 }
 \value{
-A data frame with pairs of nodes that are 'path_length' edges apart
+A data frame with pairs of nodes separated by the specified path length.
 }
 \description{
-Get node pairs that are a certain number of path_lengths apart in an igraph object
+Get node pairs that are a specific path length apart in an igraph object
 }

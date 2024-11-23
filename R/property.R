@@ -70,89 +70,7 @@ property.default <- function(x) {
   stop("`x` must be numeric or a property object")
 }
 
-#' @export
-Dimension <- list(spatial = "spatial", temporal = "temporal")
-#' @export
-Rotation  <- list(linear = "linear", angular = "angular")
-#' @export
-Measure   <- list(extent = "extent", rate = "rate")
 
-PROPERTIES <- list(
-  angular_frequency = 'angular_frequency',
-  angular_period = 'angular_period',
-  angular_wavelength = 'angular_wavelength',
-  angular_wavenumber = 'angular_wavenumber',
-  linear_frequency = 'linear_frequency',
-  linear_period = 'linear_period',
-  linear_wavelength = 'linear_wavelength',
-  linear_wavenumber = 'linear_wavenumber'
-)
-
-# Define nodes with 3D-like positions (for a cube)
-PROPERTY_NODES <- data.frame(
-  name = c(
-    PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength,
-    PROPERTIES$angular_frequency, PROPERTIES$angular_period, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
-  ),
-  x = c(0, 0, 1, 1, 2, 2, 3, 3), # Adjusted x-coordinates for a cube structure
-  y = c(2, 0, 3, 1, 2, 0, 3, 1)  # Adjusted y-coordinates for a cube structure
-)
-
-# Define 12 unique edges (undirected, no redundancy)
-PROPERTY_EDGES <- data.frame(
-  from = c(
-    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber,
-    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$linear_period, PROPERTIES$linear_wavelength,
-    PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$angular_frequency, PROPERTIES$angular_period
-  ),
-  to = c(
-    PROPERTIES$linear_period, PROPERTIES$linear_wavelength, PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
-    PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber, PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
-    PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
-  ),
-  relationship = c(
-    rep("Rate ~ Extent",4),
-    rep("Linear ~ Angular", 4),
-    rep("Time ~ Space", 4)
-  )
-)
-
-# Create the graph as an undirected graph
-PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
-  d = PROPERTY_EDGES,
-  vertices = PROPERTY_NODES,
-  directed = FALSE
-)
-
-PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
-  # Use arcs for edges with subtle radii
-  ggraph::geom_edge_arc(
-    ggplot2::aes(label = relationship),
-    angle_calc = 'along',
-    # label_dodge = ggplot2::unit(2.5, 'mm'),
-    arrow = NULL, # Remove the arrowheads for undirected graph
-    end_cap = ggraph::circle(3, 'mm'),
-    edge_width = 0.8,
-    color = "gray", # Set arcs to gray
-    strength = 0.0,
-    label_size = 3,
-    vjust = -0.3,
-    label_colour = "gray"  # Set labels to gray
-  ) +
-  # Add PROPERTY_NODES with light blue color
-  ggraph::geom_node_point(size = 8, color = "lightblue") +
-  # Add node labels
-  ggraph::geom_node_text(
-    ggplot2::aes(label = name),
-    nudge_y = 0.15, # Offset node labels slightly
-    size = 4
-  ) +
-  # Add title and expand the plot space
-  ggplot2::ggtitle("Wave Properties") +
-  ggraph::theme_graph(base_family = "sans") +
-  ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0.5), "cm")) +
-  ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
-  ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2))
 
 #' Get node pairs that are a specific path length apart in an igraph object
 #'
@@ -190,3 +108,109 @@ property_relationships <- function(path_length, relationships = NULL) {
     stringsAsFactors = FALSE
   )
 }
+
+
+#' @export
+Dimension <- list(spatial = "spatial", temporal = "temporal")
+#' @export
+Rotation  <- list(linear = "linear", angular = "angular")
+#' @export
+Measure   <- list(extent = "extent", rate = "rate")
+
+PROPERTIES <- list(
+  angular_frequency = 'angular_frequency',
+  angular_period = 'angular_period',
+  angular_wavelength = 'angular_wavelength',
+  angular_wavenumber = 'angular_wavenumber',
+  linear_frequency = 'linear_frequency',
+  linear_period = 'linear_period',
+  linear_wavelength = 'linear_wavelength',
+  linear_wavenumber = 'linear_wavenumber'
+)
+
+# Define nodes with 3D-like positions (for a cube)
+PROPERTY_NODES <- data.frame(
+  name = c(
+    PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength,
+    PROPERTIES$angular_frequency, PROPERTIES$angular_period, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
+  ),
+  label = c(
+    "Linear Frequency", "Linear Period", "Linear Wavenumber", "Linear Wavelength",
+    "Angular Frequency", "Angular Period", "Angular Wavenumber", "Angular Wavelength"
+  ),
+  x = c(0, 0, 1, 1, 2, 2, 3, 3), # Adjusted x-coordinates for a cube structure
+  y = c(2, 0, 3, 1, 2, 0, 3, 1)  # Adjusted y-coordinates for a cube structure
+)
+
+# Define 12 unique edges (undirected, no redundancy)
+PROPERTY_EDGES <- data.frame(
+  from = c(
+    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber,
+    PROPERTIES$linear_frequency, PROPERTIES$linear_wavenumber, PROPERTIES$linear_period, PROPERTIES$linear_wavelength,
+    PROPERTIES$linear_frequency, PROPERTIES$linear_period, PROPERTIES$angular_frequency, PROPERTIES$angular_period
+  ),
+  to = c(
+    PROPERTIES$linear_period, PROPERTIES$linear_wavelength, PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
+    PROPERTIES$angular_frequency, PROPERTIES$angular_wavenumber, PROPERTIES$angular_period, PROPERTIES$angular_wavelength,
+    PROPERTIES$linear_wavenumber, PROPERTIES$linear_wavelength, PROPERTIES$angular_wavenumber, PROPERTIES$angular_wavelength
+  ),
+  relationship = c(
+    rep("Rate ~ Extent",4),
+    rep("Linear ~ Angular", 4),
+    rep("Time ~ Space", 4)
+  ),
+  mathematical_relationship = c(
+    rep("1/x", 4),
+    c("2 \u03C0 \u22C5 x", "2 \u03C0 \u22C5 x", "x / 2 \u03C0", "x / 2 \u03C0"),
+    c("x \u22C5 c", "x / c", "x \u22C5 c", "x / c")
+  )
+)
+
+# Create the graph as an undirected graph
+PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
+  d = PROPERTY_EDGES,
+  vertices = PROPERTY_NODES,
+  directed = FALSE
+)
+
+PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
+  # Use arcs for edges with subtle radii
+  ggraph::geom_edge_arc(
+    ggplot2::aes(label = relationship),
+    angle_calc = 'along',
+    arrow = NULL, # Remove the arrowheads for undirected graph
+    end_cap = ggraph::circle(3, 'mm'),
+    edge_width = 0.8,
+    color = "gray", # Set arcs to gray
+    strength = 0.0,
+    label_size = 3,
+    vjust = -0.8, # Adjust placement for visibility
+    label_colour = "gray"  # Set labels to gray
+  ) +
+  ggraph::geom_edge_arc(
+    ggplot2::aes(label = mathematical_relationship),
+    angle_calc = 'along',
+    arrow = NULL, # Remove the arrowheads for undirected graph
+    end_cap = ggraph::circle(3, 'mm'),
+    edge_width = 0.8,
+    color = "gray", # Set arcs to gray
+    strength = 0.0,
+    label_size = 3,
+    vjust = 1.5, # Adjust placement for visibility
+    label_colour = "gray"  # Set labels to gray
+  ) +
+  # Add PROPERTY_NODES with light blue color
+  ggraph::geom_node_point(size = 8, color = "lightblue") +
+  # Add English title case node labels
+  ggraph::geom_node_text(
+    ggplot2::aes(label = label),
+    nudge_y = 0.15, # Offset node labels slightly
+    size = 4
+  ) +
+  # Add title and expand the plot space
+  ggplot2::ggtitle("Wave Properties") +
+  ggraph::theme_graph(base_family = "sans") +
+  ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0.5), "cm")) +
+  ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+  ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+  ggplot2::coord_fixed(ratio = 1)  # Ensure equal aspect ratio for x and y axes
