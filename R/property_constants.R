@@ -124,28 +124,7 @@ PROPERTIES <- rbind(
   angular_wavelength = ANGULAR_WAVELENGTH
 )
 
-# Function to find rows matching exactly 2 of 3 columns
-find_matches <- function(target_row, nodes) {
-  matches <- apply(nodes, 1, function(row) sum(row == target_row))
-  nodes[matches == 2, , drop = FALSE]
-}
-
-# Loop through all rows and collect results
-PROPERTY_DIMENSIONS = PROPERTIES[, names(DIMENSIONS)]
-row.names(PROPERTY_DIMENSIONS) <- NULL
-EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(PROPERTY_DIMENSIONS), function(i) {
-  matches <- find_matches(PROPERTY_DIMENSIONS[i, ], PROPERTY_DIMENSIONS)
-  # Add "from" and "to" columns to track EDGE_DIMENSIONs
-  data.frame(from = i, to = which(apply(PROPERTY_DIMENSIONS, 1, function(row) sum(row == PROPERTY_DIMENSIONS[i, ])) == 2))
-}))
-
-# Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
-EDGE_DIMENSIONS <- data.frame(
-  from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
-  to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to]
-)
-
-# Function to create the label dynamically
+# Define the assemble_label function
 assemble_label <- function(property) {
   paste0(
     'atop(',
@@ -155,24 +134,71 @@ assemble_label <- function(property) {
   )
 }
 
+# Use lapply to iterate over the rows of PROPERTIES as lists
 PROPERTY_NODES <- data.frame(
-  name = sapply(PROPERTIES, function(property) property$class_name),
-  label = sapply(PROPERTIES, assemble_label),
+  name = PROPERTIES$class_name,
+  label = lapply(1:nrow(PROPERTIES), function(i) assemble_label(as.list(PROPERTIES[i, ]))) %>% unlist(),
   x = c(0, 0, 1, 1, 2, 2, 3, 3),  # Adjusted x-coordinates for a cube structure
   y = c(2, 0, 3, 1, 2, 0, 3, 1)   # Adjusted y-coordinates for a cube structure
 )
 
+# Function to find mismatches in dimensions
+find_mismatches <- function(target_row, nodes, dimension_names) {
+  apply(nodes, 1, function(row) {
+    # Identify differing dimensions
+    diff_cols <- dimension_names[row != target_row]
+    if (length(diff_cols) == 1) {
+      # Return the row index and differing dimension values
+      list(
+        row_index = which(apply(nodes, 1, function(x) all(x == row))),
+        from_dimension = as.character(target_row[diff_cols]),
+        to_dimension = as.character(row[diff_cols])
+      )
+    } else {
+      NULL
+    }
+  }) %>% purrr::compact() # Remove NULL values
+}
+
+# Use property dimensions to build the edges
+PROPERTY_DIMENSIONS <- PROPERTIES[, names(DIMENSIONS), drop = FALSE]
+row.names(PROPERTY_DIMENSIONS) <- NULL
+
+# Use property dimensions to build the edges
+EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(PROPERTY_DIMENSIONS), function(i) {
+  # Current row as the target row
+  target_row <- PROPERTY_DIMENSIONS[i, ]
+
+  # Find mismatches
+  mismatches <- find_mismatches(target_row, PROPERTY_DIMENSIONS, names(DIMENSIONS))
+
+  # Construct a data frame with from, to, and mismatched dimensions
+  do.call(rbind, lapply(mismatches, function(mismatch) {
+    data.frame(
+      from = i,
+      to = mismatch$row_index,
+      from_dimension = mismatch$from_dimension,
+      to_dimension = mismatch$to_dimension,
+      stringsAsFactors = FALSE
+    )
+  }))
+}))
+
+# Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
 PROPERTY_EDGES <- data.frame(
-  from = c(
-    PROPERTIES$linear_frequency$class_name, PROPERTIES$linear_wavenumber$class_name, PROPERTIES$angular_frequency$class_name, PROPERTIES$angular_wavenumber$class_name,
-    PROPERTIES$linear_frequency$class_name, PROPERTIES$linear_wavenumber$class_name, PROPERTIES$linear_period$class_name, PROPERTIES$linear_wavelength$class_name,
-    PROPERTIES$linear_frequency$class_name, PROPERTIES$linear_period$class_name, PROPERTIES$angular_frequency$class_name, PROPERTIES$angular_period$class_name
+  from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
+  to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to],
+  relationship = paste(
+    EDGE_DIMENSION_IDS$from_dimension,
+    '~',
+    EDGE_DIMENSION_IDS$to_dimension
   ),
-  to = c(
-    PROPERTIES$linear_period$class_name, PROPERTIES$linear_wavelength$class_name, PROPERTIES$angular_period$class_name, PROPERTIES$angular_wavelength$class_name,
-    PROPERTIES$angular_frequency$class_name, PROPERTIES$angular_wavenumber$class_name, PROPERTIES$angular_period$class_name, PROPERTIES$angular_wavelength$class_name,
-    PROPERTIES$linear_wavenumber$class_name, PROPERTIES$linear_wavelength$class_name, PROPERTIES$angular_wavenumber$class_name, PROPERTIES$angular_wavelength$class_name
-  )
+  relationship_expression = paste(
+    EDGE_DIMENSION_IDS$from_dimension,
+    '%->%',
+    EDGE_DIMENSION_IDS$to_dimension
+  ),
+  function_expression = rep('2 %.% x', length(EDGE_DIMENSION_IDS))
 )
 
 FN_DOUBLE_X <- function(x) {
@@ -184,44 +210,32 @@ PROPERTY_EDGES$function_definition <- rep(list(FN_DOUBLE_X), times = 12)
 PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
   d = PROPERTY_EDGES,
   vertices = PROPERTY_NODES,
-  directed = FALSE
+  directed = T
 )
 
 PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
-  # Use arcs for edges with subtle radii
+  # Use arcs for directed edges with varying strengths
   ggraph::geom_edge_arc(
-    ggplot2::aes(label = relationship_expression),
+    ggplot2::aes(label = relationship_expression),  # Label as aesthetic
     angle_calc = 'along',
-    arrow = NULL, # Remove the arrowheads for undirected graph
-    end_cap = ggraph::circle(3, 'mm'),
+    arrow = ggplot2::arrow(length = ggplot2::unit(4, "mm"), type = "closed"),  # Arrowheads for directed edges
+    start_cap = ggraph::circle(2, 'mm'),  # Start offset for arcs
+    end_cap = ggraph::circle(2, 'mm'),    # End offset for arcs
     edge_width = 0.8,
-    color = "gray", # Set arcs to gray
-    strength = 0.0,
-    label_parse = T,
+    strength = 0.2,
+    color = "gray",  # Set arcs to gray
+    label_parse = TRUE,
     label_size = 3,
-    vjust = -0.8, # Adjust placement for visibility
-    label_colour = "gray"  # Set labels to gray
-  ) +
-  ggraph::geom_edge_arc(
-    ggplot2::aes(label = function_label),
-    angle_calc = 'along',
-    arrow = NULL, # Remove the arrowheads for undirected graph
-    end_cap = ggraph::circle(3, 'mm'),
-    edge_width = 0.8,
-    color = "gray", # Set arcs to gray
-    strength = 0.0,
-    label_parse = T,
-    label_size = 3,
-    vjust = 1.5, # Adjust placement for visibility
-    label_colour = "gray"  # Set labels to gray
+    vjust = -0.5,  # Adjust label placement
+    label_colour = "black"  # Set labels to black for contrast
   ) +
   # Add PROPERTY_NODES with light blue color
   ggraph::geom_node_point(size = 8, color = "darkgray") +
-  # Add English title case node labels
+  # Add node labels
   ggraph::geom_node_text(
     ggplot2::aes(label = label),
-    parse = T,
-    nudge_y = 0.3, # Offset node labels slightly
+    parse = TRUE,
+    nudge_y = 0.3,  # Offset node labels slightly
     size = 4
   ) +
   # Add title and expand the plot space
@@ -232,3 +246,4 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
   ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
   ggplot2::coord_fixed(ratio = 1)  # Ensure equal aspect ratio for x and y axes
 
+print(PROPERTY_RELATIONSHIPS_PLOT)
