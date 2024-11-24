@@ -20,16 +20,16 @@ find_matches <- function(target_row, nodes) {
 }
 
 # Loop through all rows and collect results
-EDGE_IDS <- do.call(rbind, lapply(1:nrow(NODE_DIMENSIONS), function(i) {
+EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(NODE_DIMENSIONS), function(i) {
   matches <- find_matches(NODE_DIMENSIONS[i, ], NODE_DIMENSIONS)
-  # Add "from" and "to" columns to track edges
+  # Add "from" and "to" columns to track EDGE_DIMENSIONs
   data.frame(from = i, to = which(apply(NODE_DIMENSIONS, 1, function(row) sum(row == NODE_DIMENSIONS[i, ])) == 2))
 }))
 
-# Create the EDGES table using EDGE_IDS
-EDGES <- data.frame(
-  from = NODE_DIMENSIONS$description[EDGE_IDS$from],
-  to = NODE_DIMENSIONS$description[EDGE_IDS$to]
+# Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
+EDGE_DIMENSIONS <- data.frame(
+  from = NODE_DIMENSIONS$description[EDGE_DIMENSION_IDS$from],
+  to = NODE_DIMENSIONS$description[EDGE_DIMENSION_IDS$to]
 )
 
 ANGULAR_FREQUENCY <- data.frame(
