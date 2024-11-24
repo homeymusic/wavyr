@@ -1,18 +1,42 @@
-SPACE_TIME     <- list(space = "space", time = "time",
-                       label = "space ~ time",
-                       expression = "space %<->% time")
-LINEAR_ANGULAR <- list(linear = "linear", angular = "angular",
-                       label = "linear ~ angular",
-                       expression = "linear %<->% angular")
-RATE_EXTENT    <- list(extent = "extent", rate = "rate",
-                       label = "rate ~ extent",
-                       expression = "rate %<->% extent")
+# Define the dimensions
+LINEAR_ANGULAR <- list(linear = "linear", angular = "angular")
+SPACE_TIME     <- list(space = "space", time = "time")
+RATE_EXTENT    <- list(extent = "extent", rate = "rate")
 
-FN_DOUBLE_X <- function(x) {
-  2 * x
+DIMENSIONS <- list(
+  linear_angular = LINEAR_ANGULAR,
+  space_time = SPACE_TIME,
+  rate_extent = RATE_EXTENT
+)
+
+NODES <- expand.grid(
+  LINEAR_ANGULAR = unlist(LINEAR_ANGULAR),
+  SPACE_TIME = unlist(SPACE_TIME),
+  RATE_EXTENT = unlist(RATE_EXTENT)
+)
+
+NODES$description <- apply(NODES, 1, function(row) paste(row, collapse = ", "))
+
+# Function to find rows matching exactly 2 of 3 columns
+find_matches <- function(target_row, nodes) {
+  matches <- apply(nodes, 1, function(row) sum(row == target_row))
+  nodes[matches == 2, , drop = FALSE]
 }
 
-ANGULAR_FREQUENCY <- list(
+# Loop through all rows and collect results
+EDGE_IDS <- do.call(rbind, lapply(1:nrow(NODES), function(i) {
+  matches <- find_matches(NODES[i, ], NODES)
+  # Add "from" and "to" columns to track edges
+  data.frame(from = i, to = which(apply(NODES, 1, function(row) sum(row == NODES[i, ])) == 2))
+}))
+
+# Create the EDGES table using EDGE_IDS
+EDGES <- data.frame(
+  from = NODES$description[EDGE_IDS$from],
+  to = NODES$description[EDGE_IDS$to]
+)
+
+ANGULAR_FREQUENCY <- data.frame(
   name = "angular frequency",
   class_name = "angular_frequency",
   unit = "rad/s",
@@ -25,7 +49,7 @@ ANGULAR_FREQUENCY <- list(
   rate_extent = RATE_EXTENT$rate
 )
 
-ANGULAR_PERIOD <- list(
+ANGULAR_PERIOD <- data.frame(
   name = 'angular period',
   class_name = 'angular_period',
   unit = "s/rad",
@@ -38,7 +62,7 @@ ANGULAR_PERIOD <- list(
   rate_extent = RATE_EXTENT$extent
 )
 
-ANGULAR_WAVELENGTH <-list(
+ANGULAR_WAVELENGTH <-data.frame(
   name         = "angular wavelength",
   class_name   = "angular_wavelength",
   unit         = "m/rad",
@@ -51,7 +75,7 @@ ANGULAR_WAVELENGTH <-list(
   rate_extent       = RATE_EXTENT$extent
 )
 
-ANGULAR_WAVENUMBER <-list(
+ANGULAR_WAVENUMBER <-data.frame(
   name = "angular wavenumber",
   class_name = "angular_wavenumber",
   space_time = SPACE_TIME$space,
@@ -64,7 +88,7 @@ ANGULAR_WAVENUMBER <-list(
   symbol_expression = "italic(k)"
 )
 
-LINEAR_FREQUENCY <- list(
+LINEAR_FREQUENCY <- data.frame(
   name = "linear frequency",
   class_name = 'linear_frequency',
   unit = "Hz",
@@ -77,7 +101,7 @@ LINEAR_FREQUENCY <- list(
   rate_extent = RATE_EXTENT$rate
 )
 
-LINEAR_PERIOD <- list(
+LINEAR_PERIOD <- data.frame(
   name = "linear period",
   class_name = 'linear_period',
   unit = "s",
@@ -90,7 +114,7 @@ LINEAR_PERIOD <- list(
   rate_extent = RATE_EXTENT$extent
 )
 
-LINEAR_WAVELENGTH <- list(
+LINEAR_WAVELENGTH <- data.frame(
   class_name = 'linear_wavelength',
   space_time = SPACE_TIME$space,
   linear_angular = LINEAR_ANGULAR$linear,
@@ -103,7 +127,7 @@ LINEAR_WAVELENGTH <- list(
   name = "linear wavelength"
 )
 
-LINEAR_WAVENUMBER <- list(
+LINEAR_WAVENUMBER <- data.frame(
   class_name = 'linear_wavenumber',
   space_time = SPACE_TIME$space,
   linear_angular = LINEAR_ANGULAR$linear,
@@ -116,7 +140,7 @@ LINEAR_WAVENUMBER <- list(
   name = "linear wavenumber"
 )
 
-PROPERTIES <- list(
+PROPERTIES <- rbind(
   linear_frequency   = LINEAR_FREQUENCY,
   linear_period      = LINEAR_PERIOD,
   linear_wavenumber  = LINEAR_WAVENUMBER,
@@ -154,27 +178,12 @@ PROPERTY_EDGES <- data.frame(
     PROPERTIES$linear_period$class_name, PROPERTIES$linear_wavelength$class_name, PROPERTIES$angular_period$class_name, PROPERTIES$angular_wavelength$class_name,
     PROPERTIES$angular_frequency$class_name, PROPERTIES$angular_wavenumber$class_name, PROPERTIES$angular_period$class_name, PROPERTIES$angular_wavelength$class_name,
     PROPERTIES$linear_wavenumber$class_name, PROPERTIES$linear_wavelength$class_name, PROPERTIES$angular_wavenumber$class_name, PROPERTIES$angular_wavelength$class_name
-  ),
-  relationship = c(
-    rep(RATE_EXTENT$label, 4),
-    rep(LINEAR_ANGULAR$label, 4),
-    rep(SPACE_TIME$label, 4)
-  ),
-  relationship_expression = c(
-    rep(RATE_EXTENT$expression, 4),
-    rep(LINEAR_ANGULAR$expression, 4),
-    rep(SPACE_TIME$expression, 4)
-  ),
-  function_label = c(
-    # Rate ~ Extent
-    "1 / x", "1 / x", "1 / x", "1 / x",
-    # Linear ~ Angular
-    "2 * pi %.% x", "2 * pi %.% x", "x / (2 * pi)", "x / (2 * pi)",
-    # Time ~ Space
-    "x %.% c", "x / c", "x %.% c", "x / c"
   )
 )
 
+FN_DOUBLE_X <- function(x) {
+  2 * x
+}
 PROPERTY_EDGES$function_definition <- rep(list(FN_DOUBLE_X), times = 12)
 
 # Create the graph as an undirected graph
