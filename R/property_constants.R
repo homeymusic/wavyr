@@ -9,13 +9,9 @@ DIMENSIONS <- list(
   rate_extent = RATE_EXTENT
 )
 
-NODES <- expand.grid(
-  LINEAR_ANGULAR = unlist(LINEAR_ANGULAR),
-  SPACE_TIME = unlist(SPACE_TIME),
-  RATE_EXTENT = unlist(RATE_EXTENT)
-)
+NODE_DIMENSIONS <- expand.grid(DIMENSIONS)
 
-NODES$description <- apply(NODES, 1, function(row) paste(row, collapse = ", "))
+NODE_DIMENSIONS$description <- apply(NODE_DIMENSIONS, 1, function(row) paste(row, collapse = ", "))
 
 # Function to find rows matching exactly 2 of 3 columns
 find_matches <- function(target_row, nodes) {
@@ -24,16 +20,16 @@ find_matches <- function(target_row, nodes) {
 }
 
 # Loop through all rows and collect results
-EDGE_IDS <- do.call(rbind, lapply(1:nrow(NODES), function(i) {
-  matches <- find_matches(NODES[i, ], NODES)
+EDGE_IDS <- do.call(rbind, lapply(1:nrow(NODE_DIMENSIONS), function(i) {
+  matches <- find_matches(NODE_DIMENSIONS[i, ], NODE_DIMENSIONS)
   # Add "from" and "to" columns to track edges
-  data.frame(from = i, to = which(apply(NODES, 1, function(row) sum(row == NODES[i, ])) == 2))
+  data.frame(from = i, to = which(apply(NODE_DIMENSIONS, 1, function(row) sum(row == NODE_DIMENSIONS[i, ])) == 2))
 }))
 
 # Create the EDGES table using EDGE_IDS
 EDGES <- data.frame(
-  from = NODES$description[EDGE_IDS$from],
-  to = NODES$description[EDGE_IDS$to]
+  from = NODE_DIMENSIONS$description[EDGE_IDS$from],
+  to = NODE_DIMENSIONS$description[EDGE_IDS$to]
 )
 
 ANGULAR_FREQUENCY <- data.frame(
