@@ -117,33 +117,29 @@ LINEAR_WAVENUMBER <- list(
 )
 
 PROPERTIES <- list(
-  angular_frequency  = ANGULAR_FREQUENCY,
-  angular_period     = ANGULAR_PERIOD,
-  angular_wavelength = ANGULAR_WAVELENGTH,
-  angular_wavenumber = ANGULAR_WAVENUMBER,
   linear_frequency   = LINEAR_FREQUENCY,
   linear_period      = LINEAR_PERIOD,
+  linear_wavenumber  = LINEAR_WAVENUMBER,
   linear_wavelength  = LINEAR_WAVELENGTH,
-  linear_wavenumber  = LINEAR_WAVENUMBER
+  angular_frequency  = ANGULAR_FREQUENCY,
+  angular_period     = ANGULAR_PERIOD,
+  angular_wavenumber = ANGULAR_WAVENUMBER,
+  angular_wavelength = ANGULAR_WAVELENGTH
 )
 
+# Function to create the label dynamically
+assemble_label <- function(property) {
+  paste0(
+    'atop(',
+    property$symbol_expression, ', ',
+    'atop("', property$name, '", ',
+    '"[', property$linear_angular, ' ', property$space_time, ' ', property$rate_extent, ']"))'
+  )
+}
+
 PROPERTY_NODES <- data.frame(
-  name = c(
-    PROPERTIES$linear_frequency$class_name, PROPERTIES$linear_period$class_name,
-    PROPERTIES$linear_wavenumber$class_name, PROPERTIES$linear_wavelength$class_name,
-    PROPERTIES$angular_frequency$class_name, PROPERTIES$angular_period$class_name,
-    PROPERTIES$angular_wavenumber$class_name, PROPERTIES$angular_wavelength$class_name
-  ),
-  label = c(
-    'atop(italic(f), atop("Linear Frequency", "(linear time rate)"))',
-    'atop(italic(T), atop("Linear Period", "(linear time extent)"))',
-    'atop(italic(k)["linear"], atop("Linear Wavenumber", "(linear space rate)"))',
-    'atop(italic(λ), atop("Linear Wavelength", "(linear space extent)"))',
-    'atop(italic(ω), atop("Angular Frequency", "(angular time rate)"))',
-    'atop(italic(τ)["angular"], atop("Angular Period", "(angular time extent)"))',
-    'atop(italic(k), atop("Angular Wavenumber", "(angular space rate)"))',
-    'atop(italic("\u019B")["angular"], atop("Angular Wavelength", "(angular space extent)"))'  # Lambda with a slash
-  ),
+  name = sapply(PROPERTIES, function(property) property$class_name),
+  label = sapply(PROPERTIES, assemble_label),
   x = c(0, 0, 1, 1, 2, 2, 3, 3),  # Adjusted x-coordinates for a cube structure
   y = c(2, 0, 3, 1, 2, 0, 3, 1)   # Adjusted y-coordinates for a cube structure
 )
