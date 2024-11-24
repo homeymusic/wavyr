@@ -41,7 +41,7 @@ ANGULAR_WAVELENGTH <-data.frame(
   unit_latex   = "\\frac{\\text{m}}{\\text{rad}}",
   symbol       = "l_angular",
   symbol_latex = "\\lambda_\\text{angular}",
-  symbol_expression = "italic(λ)",
+  symbol_expression = 'italic(ƛ)["angular"]',
   linear_angular    = LINEAR_ANGULAR$angular,
   space_time        = SPACE_TIME$space,
   rate_extent       = RATE_EXTENT$extent
@@ -235,7 +235,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     start_cap = ggraph::circle(2, 'mm'),  # Start offset for arcs
     end_cap = ggraph::circle(2, 'mm'),    # End offset for arcs
     edge_width = 0.8,
-    strength = 0.2,
+    strength = 0.1,
     color = "gray",  # Set arcs to gray
     label_parse = TRUE,
     label_size = 3,
