@@ -9,29 +9,6 @@ DIMENSIONS <- list(
   rate_extent = RATE_EXTENT
 )
 
-NODE_DIMENSIONS <- expand.grid(DIMENSIONS)
-
-NODE_DIMENSIONS$description <- apply(NODE_DIMENSIONS, 1, function(row) paste(row, collapse = ", "))
-
-# Function to find rows matching exactly 2 of 3 columns
-find_matches <- function(target_row, nodes) {
-  matches <- apply(nodes, 1, function(row) sum(row == target_row))
-  nodes[matches == 2, , drop = FALSE]
-}
-
-# Loop through all rows and collect results
-EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(NODE_DIMENSIONS), function(i) {
-  matches <- find_matches(NODE_DIMENSIONS[i, ], NODE_DIMENSIONS)
-  # Add "from" and "to" columns to track EDGE_DIMENSIONs
-  data.frame(from = i, to = which(apply(NODE_DIMENSIONS, 1, function(row) sum(row == NODE_DIMENSIONS[i, ])) == 2))
-}))
-
-# Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
-EDGE_DIMENSIONS <- data.frame(
-  from = NODE_DIMENSIONS$description[EDGE_DIMENSION_IDS$from],
-  to = NODE_DIMENSIONS$description[EDGE_DIMENSION_IDS$to]
-)
-
 ANGULAR_FREQUENCY <- data.frame(
   name = "angular frequency",
   class_name = "angular_frequency",
@@ -145,6 +122,27 @@ PROPERTIES <- rbind(
   angular_period     = ANGULAR_PERIOD,
   angular_wavenumber = ANGULAR_WAVENUMBER,
   angular_wavelength = ANGULAR_WAVELENGTH
+)
+
+# Function to find rows matching exactly 2 of 3 columns
+find_matches <- function(target_row, nodes) {
+  matches <- apply(nodes, 1, function(row) sum(row == target_row))
+  nodes[matches == 2, , drop = FALSE]
+}
+
+# Loop through all rows and collect results
+PROPERTY_DIMENSIONS = PROPERTIES[, names(DIMENSIONS)]
+row.names(PROPERTY_DIMENSIONS) <- NULL
+EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(PROPERTY_DIMENSIONS), function(i) {
+  matches <- find_matches(PROPERTY_DIMENSIONS[i, ], PROPERTY_DIMENSIONS)
+  # Add "from" and "to" columns to track EDGE_DIMENSIONs
+  data.frame(from = i, to = which(apply(PROPERTY_DIMENSIONS, 1, function(row) sum(row == PROPERTY_DIMENSIONS[i, ])) == 2))
+}))
+
+# Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
+EDGE_DIMENSIONS <- data.frame(
+  from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
+  to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to]
 )
 
 # Function to create the label dynamically
