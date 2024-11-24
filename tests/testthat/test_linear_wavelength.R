@@ -6,9 +6,9 @@ test_that("linear_wavelength subclass has correct classes", {
 })
 test_that("linear_wavelength subclass has correct classes", {
   expect_equal(PROPERTIES$linear_wavelength$class_name, 'linear_wavelength')
-  expect_equal(PROPERTIES$linear_wavelength$space_time, SPACE_TIME$space)
+  expect_equal(PROPERTIES$linear_wavelength$space_time, TIME_SPACE$space)
   expect_equal(PROPERTIES$linear_wavelength$linear_angular,  LINEAR_ANGULAR$linear)
-  expect_equal(PROPERTIES$linear_wavelength$rate_extent,   RATE_EXTENT$extent)
+  expect_equal(PROPERTIES$linear_wavelength$rate_extent,   EXTENT_RATE$extent)
   expect_equal(PROPERTIES$linear_wavelength$unit, "m")
   expect_equal(PROPERTIES$linear_wavelength$unit_latex, "\\text{m}")
   expect_equal(PROPERTIES$linear_wavelength$symbol, "\u03BB")

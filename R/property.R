@@ -43,16 +43,16 @@ property.property <- function(x, metadata = list()) {
 
   # Apply space_time transformation (if needed)
   if (x$space_time != metadata$space_time) {
-    if (x$rate_extent == RATE_EXTENT$rate) {
-      if (x$space_time == SPACE_TIME$space && metadata$space_time == SPACE_TIME$time) {
+    if (x$rate_extent == EXTENT_RATE$rate) {
+      if (x$space_time == TIME_SPACE$space && metadata$space_time == TIME_SPACE$time) {
         value = value * DEFAULT_SPEED_OF_MEDIUM
-      } else if (x$space_time == SPACE_TIME$time && metadata$space_time == SPACE_TIME$space) {
+      } else if (x$space_time == TIME_SPACE$time && metadata$space_time == TIME_SPACE$space) {
         value = value / DEFAULT_SPEED_OF_MEDIUM
       }
     } else {
-      if (x$space_time == SPACE_TIME$space && metadata$space_time == SPACE_TIME$time) {
+      if (x$space_time == TIME_SPACE$space && metadata$space_time == TIME_SPACE$time) {
         value = value / DEFAULT_SPEED_OF_MEDIUM
-      } else if (x$space_time == SPACE_TIME$time && metadata$space_time == SPACE_TIME$space) {
+      } else if (x$space_time == TIME_SPACE$time && metadata$space_time == TIME_SPACE$space) {
         value = value * DEFAULT_SPEED_OF_MEDIUM
       }
     }
@@ -60,7 +60,7 @@ property.property <- function(x, metadata = list()) {
 
   # Apply linear_angular transformation (if needed)
   if (x$linear_angular != metadata$linear_angular) {
-    if (x$rate_extent == RATE_EXTENT$rate) {
+    if (x$rate_extent == EXTENT_RATE$rate) {
       if (x$linear_angular == LINEAR_ANGULAR$linear && metadata$linear_angular == LINEAR_ANGULAR$angular) {
         value = 2 * pi * value
       } else if (x$linear_angular == LINEAR_ANGULAR$angular && metadata$linear_angular == LINEAR_ANGULAR$linear) {

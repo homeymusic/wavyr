@@ -7,9 +7,9 @@ test_that("angular_wavenumber subclass has correct classes", {
 test_that("angular_wavenumber subclass has correct classes", {
   expect_equal(PROPERTIES$angular_wavenumber$name, "angular wavenumber")
   expect_equal(PROPERTIES$angular_wavenumber$class_name, "angular_wavenumber")
-  expect_equal(PROPERTIES$angular_wavenumber$space_time, SPACE_TIME$space)
+  expect_equal(PROPERTIES$angular_wavenumber$space_time, TIME_SPACE$space)
   expect_equal(PROPERTIES$angular_wavenumber$linear_angular,  LINEAR_ANGULAR$angular)
-  expect_equal(PROPERTIES$angular_wavenumber$rate_extent,   RATE_EXTENT$rate)
+  expect_equal(PROPERTIES$angular_wavenumber$rate_extent,   EXTENT_RATE$rate)
   expect_equal(PROPERTIES$angular_wavenumber$unit, "rad/m")
   expect_equal(PROPERTIES$angular_wavenumber$unit_latex, "\\frac{\\text{rad}}{\\text{m}}")
   expect_equal(PROPERTIES$angular_wavenumber$symbol, "k_angular")

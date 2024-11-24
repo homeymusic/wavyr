@@ -1,11 +1,11 @@
 LINEAR_ANGULAR <- list(linear = "linear", angular = "angular")
-SPACE_TIME     <- list(space = "space", time = "time")
-RATE_EXTENT    <- list(extent = "extent", rate = "rate")
+TIME_SPACE     <- list(time = "time", space = "space")
+EXTENT_RATE    <- list(extent = "extent", rate = "rate")
 
 DIMENSIONS <- list(
   linear_angular = LINEAR_ANGULAR,
-  space_time = SPACE_TIME,
-  rate_extent = RATE_EXTENT
+  space_time = TIME_SPACE,
+  rate_extent = EXTENT_RATE
 )
 
 ANGULAR_FREQUENCY <- data.frame(
@@ -16,9 +16,9 @@ ANGULAR_FREQUENCY <- data.frame(
   symbol = "\u03C9",
   symbol_latex = "\\omega",
   symbol_expression = "italic(ω)",
-  space_time = SPACE_TIME$time,
+  space_time = TIME_SPACE$time,
   linear_angular = LINEAR_ANGULAR$angular,
-  rate_extent = RATE_EXTENT$rate
+  rate_extent = EXTENT_RATE$rate
 )
 
 ANGULAR_PERIOD <- data.frame(
@@ -28,10 +28,10 @@ ANGULAR_PERIOD <- data.frame(
   unit_latex = "\\frac{\\text{s}}{\\text{rad}}",
   symbol = "T_angular",
   symbol_latex = "\\Tau_\\text{angular}",
-  symbol_expression = 'italic(τ)["angular"]',
-  space_time = SPACE_TIME$time,
+  symbol_expression = 'italic(T)["angular"]',
+  space_time = TIME_SPACE$time,
   linear_angular = LINEAR_ANGULAR$angular,
-  rate_extent = RATE_EXTENT$extent
+  rate_extent = EXTENT_RATE$extent
 )
 
 ANGULAR_WAVELENGTH <-data.frame(
@@ -43,16 +43,16 @@ ANGULAR_WAVELENGTH <-data.frame(
   symbol_latex = "\\lambda_\\text{angular}",
   symbol_expression = 'italic(ƛ)["angular"]',
   linear_angular    = LINEAR_ANGULAR$angular,
-  space_time        = SPACE_TIME$space,
-  rate_extent       = RATE_EXTENT$extent
+  space_time        = TIME_SPACE$space,
+  rate_extent       = EXTENT_RATE$extent
 )
 
 ANGULAR_WAVENUMBER <-data.frame(
   name = "angular wavenumber",
   class_name = "angular_wavenumber",
-  space_time = SPACE_TIME$space,
+  space_time = TIME_SPACE$space,
   linear_angular = LINEAR_ANGULAR$angular,
-  rate_extent = RATE_EXTENT$rate,
+  rate_extent = EXTENT_RATE$rate,
   unit = "rad/m",
   unit_latex = "\\frac{\\text{rad}}{\\text{m}}",
   symbol = "k_angular",
@@ -68,9 +68,9 @@ LINEAR_FREQUENCY <- data.frame(
   symbol = "f",
   symbol_latex = "f",
   symbol_expression = "italic(f)",
-  space_time = SPACE_TIME$time,
+  space_time = TIME_SPACE$time,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = RATE_EXTENT$rate
+  rate_extent = EXTENT_RATE$rate
 )
 
 LINEAR_PERIOD <- data.frame(
@@ -81,16 +81,16 @@ LINEAR_PERIOD <- data.frame(
   symbol = "T",
   symbol_latex = "T",
   symbol_expression = "italic(T)",
-  space_time = SPACE_TIME$time,
+  space_time = TIME_SPACE$time,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = RATE_EXTENT$extent
+  rate_extent = EXTENT_RATE$extent
 )
 
 LINEAR_WAVELENGTH <- data.frame(
   class_name = 'linear_wavelength',
-  space_time = SPACE_TIME$space,
+  space_time = TIME_SPACE$space,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = RATE_EXTENT$extent,
+  rate_extent = EXTENT_RATE$extent,
   unit = "m",
   unit_latex = "\\text{m}",
   symbol = "\u03BB",
@@ -101,9 +101,9 @@ LINEAR_WAVELENGTH <- data.frame(
 
 LINEAR_WAVENUMBER <- data.frame(
   class_name = 'linear_wavenumber',
-  space_time = SPACE_TIME$space,
+  space_time = TIME_SPACE$space,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = RATE_EXTENT$rate,
+  rate_extent = EXTENT_RATE$rate,
   unit = "1/m",
   unit_latex = "\\text{m}^{-1}",
   symbol = "k_linear",
