@@ -1,4 +1,3 @@
-# Define the dimensions
 LINEAR_ANGULAR <- list(linear = "linear", angular = "angular")
 SPACE_TIME     <- list(space = "space", time = "time")
 RATE_EXTENT    <- list(extent = "extent", rate = "rate")
@@ -184,6 +183,19 @@ EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(PROPERTY_DIMENSIONS), functio
   }))
 }))
 
+edge_expression <- function(from, to) {
+  mapply(function(f, t) {
+    from_index <- which(unlist(DIMENSIONS) == f)
+    to_index <- which(unlist(DIMENSIONS) == t)
+
+    if (from_index > to_index) {
+      paste(t, '%<-%', f)
+    } else {
+      paste(f, '%->%', t)
+    }
+  }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+}
+
 # Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
 PROPERTY_EDGES <- data.frame(
   from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
@@ -193,10 +205,11 @@ PROPERTY_EDGES <- data.frame(
     '~',
     EDGE_DIMENSION_IDS$to_dimension
   ),
-  relationship_expression = paste(
-    EDGE_DIMENSION_IDS$from_dimension,
-    '%->%',
-    EDGE_DIMENSION_IDS$to_dimension
+  relationship_expression = c(
+    edge_expression(
+      EDGE_DIMENSION_IDS$from_dimension,
+      EDGE_DIMENSION_IDS$to_dimension
+    )
   ),
   function_expression = rep('2 %.% x', length(EDGE_DIMENSION_IDS))
 )

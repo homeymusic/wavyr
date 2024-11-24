@@ -226,3 +226,12 @@ test_that("we can convert following the shortest path in the graph",{
   ))
   expect_equal(conversion$value, 8)
 })
+
+test_that('arrows makes sense for edge labels',{
+  from = c('rate', 'extent')
+  to = c('extent', 'rate')
+  expect_equal(
+    edge_expression(from, to),
+    c('extent %<-% rate','extent %->% rate')
+  )
+})
