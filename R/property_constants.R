@@ -356,22 +356,21 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS,
     edge_width = 0.8,
     color = "gray20"
   ) +
+  ggraph::geom_node_point(size = 12, color = "gray20") +
   ggraph::geom_edge_arc(
     ggplot2::aes(label = arc_expression),  # Label as aesthetic
     angle_calc = 'along',
-    arrow = ggplot2::arrow(length = ggplot2::unit(4, "mm"), type = "closed"),  # Arrowheads for directed edges
-    start_cap = ggraph::circle(2, 'mm'),  # Start offset for arcs
-    end_cap = ggraph::circle(2, 'mm'),    # End offset for arcs
-    edge_width = 0.8,
+    arrow = ggplot2::arrow(length = ggplot2::unit(1, "mm"), type = "closed"),  # Arrowheads for directed edges
+    start_cap = ggraph::circle(5, 'mm'),  # Start offset for arcs
+    end_cap = ggraph::circle(5, 'mm'),    # End offset for arcs
+    edge_width = 0.5,
     strength = 0.2,
-    color = "darkgray",  # Set arcs to gray
+    color = "gray",  # Set arcs to gray
     label_parse = TRUE,
     label_size = 3,
     vjust = -0.5,  # Adjust label placement
     label_colour = "darkgray"
   ) +
-  # Add PROPERTY_NODES with light blue color
-  ggraph::geom_node_point(size = 8, color = "gray20") +
   # Add node labels
   ggraph::geom_node_text(
     ggplot2::aes(label = label),
