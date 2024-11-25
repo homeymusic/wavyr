@@ -216,6 +216,15 @@ EX_1_OVER_X = '1 / x'
 DF_1_OVER_X = function(x) {1 * x}
 
 
+# TODO:
+# 1. Get existing tests to pass
+# 2. Add this stuff manual stuff below into tests
+# 3. Get rid of this stuff in the code by using PROPERTIES[5,] style code to pass everyhthing into the lookup
+#       * EXTENT_RATE is easy all are 1 / x
+#       * LINEAR_ANGULAR is half as easy: half are x / 2 pi and the other half are 2 pi x depending on direction
+#       * TIME_SPACE is a quarter easy : they depend on direction and whether they are rate or extent. c x or x / c.
+
+
 TRANSFORM_FUNCTIONS <- tibble::tribble(
   ~from,                        ~to,                            ~function_definition, ~function_expression,
 
