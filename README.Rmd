@@ -10,3 +10,7 @@ title: "wavyr"
 ### Signal Processing of Traveling Waves
 
 ![Schematic diagram of a general signal processing system.](man/figures/signals_spectra_schematic.png)
+
+### Relationships among Wave Properties
+
+![Directed graph of wave properties.](man/figures/wave_properties_directed_graph.png)
