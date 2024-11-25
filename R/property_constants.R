@@ -252,6 +252,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     ggplot2::aes(label = label),
     parse = TRUE,
     nudge_y = 0.3,  # Offset node labels slightly
+    nudge_x = -0.05,  # Offset node labels slightly
     size = 4
   ) +
   # Add title and expand the plot space
