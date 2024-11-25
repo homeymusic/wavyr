@@ -46,10 +46,12 @@ test_that("M3 Time Heisen Signal", {
   # Create the signal object from the spectrum
   signal_obj <- time_heisen_signal(M3_spectrum)
 
-  expect_equal(signal_obj$plot_color, colors_homey$major)
+  expect_equal(class(signal_obj), c("time_heisen_signal", "heisen_signal", "signal" ))
 
   # Define label and coordinate range
   label <- "M3 Time Signal"
+
+  plot_details.heisen_signal(signal_obj, resolution = 2000)
 
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
