@@ -11,15 +11,16 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // approximate_rational_fractions_cpp
-DataFrame approximate_rational_fractions_cpp(NumericVector x, const double uncertainty, const double deviation);
-RcppExport SEXP _wavyr_approximate_rational_fractions_cpp(SEXP xSEXP, SEXP uncertaintySEXP, SEXP deviationSEXP) {
+DataFrame approximate_rational_fractions_cpp(NumericVector x, const double uncertainty, const double deviation, Rcpp::Nullable<DataFrame> metadata);
+RcppExport SEXP _wavyr_approximate_rational_fractions_cpp(SEXP xSEXP, SEXP uncertaintySEXP, SEXP deviationSEXP, SEXP metadataSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< const double >::type uncertainty(uncertaintySEXP);
     Rcpp::traits::input_parameter< const double >::type deviation(deviationSEXP);
-    rcpp_result_gen = Rcpp::wrap(approximate_rational_fractions_cpp(x, uncertainty, deviation));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<DataFrame> >::type metadata(metadataSEXP);
+    rcpp_result_gen = Rcpp::wrap(approximate_rational_fractions_cpp(x, uncertainty, deviation, metadata));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -129,7 +130,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 3},
+    {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 4},
     {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 3},
     {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 3},
     {"_wavyr_shannon_entropy_cpp", (DL_FUNC) &_wavyr_shannon_entropy_cpp, 1},

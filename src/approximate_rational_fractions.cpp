@@ -108,6 +108,7 @@ using namespace Rcpp;
  //' @param x Vector of floating point numbers to approximate
  //' @param uncertainty Precision for finding rational fractions
  //' @param deviation Deviation for estimating least common multiples
+ //' @param metadata Optional data frame with metadata (must have the same number of rows as x)
  //'
  //' @return A data frame of rational numbers and metadata
  //'
@@ -115,19 +116,28 @@ using namespace Rcpp;
  // [[Rcpp::export]]
  DataFrame approximate_rational_fractions_cpp(NumericVector x,
                                               const double uncertainty,
-                                              const double deviation) {
+                                              const double deviation,
+                                              Rcpp::Nullable<DataFrame> metadata = R_NilValue) {
 
    if (deviation <= uncertainty) {
      stop("Deviation must be greater than uncertainty.");
    }
 
    x = unique(x);
+   const int n = x.size();
 
-   const int     n = x.size();
-   NumericVector pseudo_x(n);
-   NumericVector approximations(n);
-   NumericVector errors(n);
+   // Handle optional metadata and perform early validation
+   DataFrame meta;
+   if (metadata.isNotNull()) {
+     meta = metadata.get();
 
+     // Check that metadata has the same number of rows as x
+     if (meta.nrows() != n) {
+       stop("Metadata must have the same number of rows as the input vector x.");
+     }
+   }
+
+   // Precompute pseudo octave and ensure it's valid
    const DataFrame approximate_harmonics_df = approximate_harmonics(x, deviation);
    const double pseudo_octave_double = pseudo_octave(approximate_harmonics_df["pseudo_octave"]);
 
@@ -136,6 +146,9 @@ using namespace Rcpp;
    }
 
    // Vectors to store the results
+   NumericVector pseudo_x(n);
+   NumericVector approximations(n);
+   NumericVector errors(n);
    NumericVector nums(n);
    NumericVector dens(n);
 
@@ -153,14 +166,25 @@ using namespace Rcpp;
      errors[i] = approximations[i] - pseudo_x[i];
    }
 
-   return DataFrame::create(
-     _("rational_number")        = x,
-     _("pseudo_rational_number") = pseudo_x,
-     _("pseudo_octave")          = pseudo_octave_double,
-     _("num")                    = nums,
-     _("den")                    = dens,
-     _("approximation")          = approximations,
-     _("error")                  = errors,
-     _("uncertainty")            = uncertainty
+   // Create the main result DataFrame
+   DataFrame result = DataFrame::create(
+     _("x")             = x,
+     _("rational_x")    = approximations,
+     _("pseudo_x")      = pseudo_x,
+     _("pseudo_octave") = pseudo_octave_double,
+     _("num")           = nums,
+     _("den")           = dens,
+     _("error")         = errors,
+     _("uncertainty")   = uncertainty
    );
+
+   // Append metadata if provided
+   if (metadata.isNotNull()) {
+     CharacterVector meta_names = meta.names(); // Extract column names from metadata
+     for (int i = 0; i < meta.size(); ++i) {
+       result.push_back(meta[i], std::string(meta_names[i])); // Explicitly convert meta_names[i] to std::string
+     }
+   }
+
+   return result;
  }

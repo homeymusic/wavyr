@@ -74,8 +74,8 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
   # Calculate additional properties
   fractions <- approximate_rational_fractions_cpp(
     component / min(component),
-    1 / (4 * pi),
-    0.11
+    uncertainty = 1 / (4 * pi),
+    deviation   = 0.11
   )
 
   relative_cycle_length <- lcm_integers(fractions$den)

@@ -51,6 +51,19 @@ test_that("spectrum can calculate fractions", {
   expect_equal(sort(fractions$den), sort(c(1, 1, 2)))
 })
 
+
+test_that("spectrum can calculate fractions", {
+  spectrum_obj <- spectrum(
+    component = c(1, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  )
+
+  # Test fractions output
+  fractions <- spectrum_obj$fractions
+  expect_equal(sort(fractions$num), sort(c(3, 1, 3)))
+  expect_equal(sort(fractions$den), sort(c(1, 1, 2)))
+})
+
 test_that("spectrum can combine with another spectrum within tolerance", {
   # Create two spectrum objects
   spectrum1 <- spectrum(

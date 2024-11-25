@@ -9,18 +9,18 @@ test_that("approximate_rational_fractions_cpp works for simple inputs", {
 
   # Check structure
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("rational_number", "pseudo_rational_number",
+  expect_true(all(c("x", "pseudo_x",
                     "pseudo_octave", "num", "den",
-                    "approximation", "error", "uncertainty") %in% names(result)))
+                    "rational_x", "error", "uncertainty") %in% names(result)))
 
   # Check that input is preserved
-  expect_equal(result$rational_number, x)
+  expect_equal(result$x, x)
 
   # Check that errors are within uncertainty
   expect_true(all(abs(result$error) <= uncertainty))
 
   # Check that approximations are ratios of integers
-  expect_equal(result$num / result$den, result$approximation)
+  expect_equal(result$num / result$den, result$rational_x)
 })
 
 test_that("approximate_rational_fractions_cpp handles edge cases", {
@@ -44,7 +44,7 @@ test_that("approximate_rational_fractions_cpp handles identical inputs", {
   result <- approximate_rational_fractions_cpp(x, uncertainty, deviation)
 
   # Expect only one unique approximation
-  unique_approximations <- unique(result$approximation)
+  unique_approximations <- unique(result$rational_x)
   expect_length(unique_approximations, 1)
 
   # Ensure approximation is close to the input
@@ -109,5 +109,105 @@ test_that("approximate_rational_fractions_cpp handles large but valid deviations
   expect_error(
     approximate_rational_fractions_cpp(x, uncertainty, deviation),
     "Pseudo octave must be greater than 1. The deviation value is likely too large."
+  )
+})
+
+###
+# metadata
+###
+
+test_that("approximate_rational_fractions_cpp handles metadata round-tripping", {
+  x <- c(1.5, 2.25, 3.33)
+  uncertainty <- 1e-3
+  deviation <- 1e-2
+
+  # Metadata to round-trip
+  metadata <- data.frame(
+    id = c("a", "b", "c"),
+    notes = c("first", "second", "third")
+  )
+
+  result <- approximate_rational_fractions_cpp(x, uncertainty, deviation, metadata = metadata)
+
+  # Check structure
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("x", "pseudo_x", "pseudo_octave", "num", "den",
+                    "rational_x", "error", "uncertainty", "id", "notes") %in% names(result)))
+
+  # Check that metadata is preserved
+  expect_equal(result$id, metadata$id)
+  expect_equal(result$notes, metadata$notes)
+
+  # Check that input is preserved
+  expect_equal(result$x, x)
+
+  # Check that errors are within uncertainty
+  expect_true(all(abs(result$error) <= uncertainty))
+})
+
+test_that("approximate_rational_fractions_cpp handles missing metadata gracefully", {
+  x <- c(1.5, 2.25, 3.33)
+  uncertainty <- 1e-3
+  deviation <- 1e-2
+
+  # Call without metadata
+  result <- approximate_rational_fractions_cpp(x, uncertainty, deviation)
+
+  # Check structure
+  expect_s3_class(result, "data.frame")
+  expect_false(any(c("id", "notes") %in% names(result)))
+
+  # Check that input is preserved
+  expect_equal(result$x, x)
+
+  # Check that errors are within uncertainty
+  expect_true(all(abs(result$error) <= uncertainty))
+})
+
+test_that("approximate_rational_fractions_cpp adds new columns to metadata", {
+  x <- c(1.5, 2.25, 3.33)
+  uncertainty <- 1e-3
+  deviation <- 1e-2
+
+  # Metadata with existing and new columns
+  metadata <- data.frame(
+    id = c("a", "b", "c"),
+    notes = c("first", "second", "third"),
+    additional = c(10, 20, 30)
+  )
+
+  result <- approximate_rational_fractions_cpp(x, uncertainty, deviation, metadata = metadata)
+
+  # Check structure
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("id", "notes", "additional") %in% names(result)))
+
+  # Check that metadata is preserved
+  expect_equal(result$id, metadata$id)
+  expect_equal(result$notes, metadata$notes)
+  expect_equal(result$additional, metadata$additional)
+
+  # Check that input is preserved
+  expect_equal(result$x, x)
+
+  # Check that errors are within uncertainty
+  expect_true(all(abs(result$error) <= uncertainty))
+})
+
+test_that("approximate_rational_fractions_cpp handles mismatched metadata rows gracefully", {
+  x <- c(1.5, 2.25, 3.33)
+  uncertainty <- 1e-3
+  deviation <- 1e-2
+
+  # Metadata with a mismatched number of rows
+  metadata <- data.frame(
+    id = c("a", "b"),  # Only 2 rows, but x has 3 elements
+    notes = c("first", "second")
+  )
+
+  # Expect an error due to mismatch
+  expect_error(
+    approximate_rational_fractions_cpp(x, uncertainty, deviation, metadata = metadata),
+    "Metadata must have the same number of rows as the input vector x."
   )
 })

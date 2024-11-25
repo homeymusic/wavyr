@@ -240,7 +240,7 @@ test_that("cycle lengths vary correctly for JI major triad in frequency_spectrum
   expected_cycle_lengths <- c(1, 4, 2)
 
   # Check if the calculated cycle lengths match the expected values
-  expect_equal(frequency_spectrum_obj$fractions$rational_number %>% sort(), c(1,1.25,1.5))
+  expect_equal(frequency_spectrum_obj$fractions$rational_x %>% sort(), c(1,1.25,1.5))
   expect_equal(frequency_spectrum_obj$fractions$den %>% sort(), c(1,2,4))
   expect_equal(frequency_spectrum_obj$cycle_length %>% sort(), c(1,2,4))
 })
