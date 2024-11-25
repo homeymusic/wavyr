@@ -57,13 +57,29 @@ test_that("frequency_spectrum can calculate relative_cycle_length", {
 })
 
 test_that("frequency_spectrum calculates fractions accurately", {
+  expected_frequency = c(100, 200, 300)
+  expected_amplitude = c(1.0, 0.8, 0.5)
+
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
-    amplitude = c(1.0, 0.8, 0.5)
+    frequency = expected_frequency,
+    amplitude = expected_amplitude
+  )
+
+  expect_equal(
+    names(frequency_spectrum_obj$fractions),
+    c("rational_number", "pseudo_rational_number", "pseudo_octave", "num", "den",
+      "approximation", "error", "uncertainty", "component", "amplitude")
   )
 
   expect_equal(frequency_spectrum_obj$fractions$num, c(2, 3, 1))
   expect_equal(frequency_spectrum_obj$fractions$den, c(1, 1, 1))
+
+  expect_equal(frequency_spectrum_obj$fractions$component,
+               expected_frequency)
+
+  expect_equal(frequency_spectrum_obj$fractions$amplitude,
+               expected_amplitude)
+
 })
 
 test_that("frequency_spectrum calculates fractions for simple ratios", {

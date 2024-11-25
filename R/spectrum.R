@@ -78,6 +78,9 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
     0.11
   )
 
+  fractions$component  = component
+  fractions$amplitude = amplitude
+
   relative_cycle_length <- lcm_integers(fractions$den)
 
   # Calculate the fundamental component based on the inversion setting
