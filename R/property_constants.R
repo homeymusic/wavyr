@@ -198,98 +198,6 @@ DF_X_OVER_2PI = function(x) {x / (2 * pi)}
 EX_1_OVER_X = '1 / x'
 DF_1_OVER_X = function(x) {1 / x}
 
-
-TRANSFORM_FUNCTIONS <- tibble::tribble(
-  ~from,                        ~to,                            ~function_definition, ~function_expression, ~relationship_expression,
-
-  # Space Time Transforms
-
-  LINEAR_WAVENUMBER$class_name,  LINEAR_FREQUENCY$class_name,   DF_C_X,               EX_C_X,               'space %->% time',
-  LINEAR_PERIOD$class_name,      LINEAR_WAVELENGTH$class_name,  DF_C_X,               EX_C_X,               'space %<-% time',
-  ANGULAR_WAVENUMBER$class_name, ANGULAR_FREQUENCY$class_name,  DF_C_X,               EX_C_X,               'space %->% time',
-  ANGULAR_PERIOD$class_name,     ANGULAR_WAVELENGTH$class_name, DF_C_X,               EX_C_X,               'space %<-% time',
-
-  LINEAR_FREQUENCY$class_name,   LINEAR_WAVENUMBER$class_name,  DF_X_OVER_C,          EX_X_OVER_C,          'space %<-% time',
-  LINEAR_WAVELENGTH$class_name,  LINEAR_PERIOD$class_name,      DF_X_OVER_C,          EX_X_OVER_C,          'space %->% time',
-  ANGULAR_FREQUENCY$class_name,  ANGULAR_WAVENUMBER$class_name, DF_X_OVER_C,          EX_X_OVER_C,          'space %<-% time',
-  ANGULAR_WAVELENGTH$class_name, ANGULAR_PERIOD$class_name,     DF_X_OVER_C,          EX_X_OVER_C,          'space %->% time',
-
-  # Linear Angular Transforms
-
-  # Linear to Angular
-  LINEAR_FREQUENCY$class_name,   ANGULAR_FREQUENCY$class_name,  DF_2PI_X,             EX_2PI_X,             'linear %->% angular',
-  LINEAR_PERIOD$class_name,      ANGULAR_PERIOD$class_name,     DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %->% angular',
-  LINEAR_WAVENUMBER$class_name,  ANGULAR_WAVENUMBER$class_name, DF_2PI_X,             EX_2PI_X,             'linear %->% angular',
-  LINEAR_WAVELENGTH$class_name,  ANGULAR_WAVELENGTH$class_name, DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %->% angular',
-
-  # Angular to Linear
-  ANGULAR_FREQUENCY$class_name,  LINEAR_FREQUENCY$class_name,   DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %<-% angular',
-  ANGULAR_PERIOD$class_name,     LINEAR_PERIOD$class_name,      DF_2PI_X,             EX_2PI_X,             'linear %<-% angular',
-  ANGULAR_WAVENUMBER$class_name, LINEAR_WAVENUMBER$class_name,  DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %<-% angular',
-  ANGULAR_WAVELENGTH$class_name, LINEAR_WAVELENGTH$class_name,  DF_2PI_X,             EX_2PI_X,             'linear %<-% angular',
-
-  # Extent Rate Transforms
-
-  LINEAR_WAVENUMBER$class_name,  LINEAR_WAVELENGTH$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
-  LINEAR_FREQUENCY$class_name,   LINEAR_PERIOD$class_name,      DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
-  LINEAR_WAVELENGTH$class_name,  LINEAR_WAVENUMBER$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
-  LINEAR_PERIOD$class_name,      LINEAR_FREQUENCY$class_name,   DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
-
-  ANGULAR_WAVENUMBER$class_name, ANGULAR_WAVELENGTH$class_name, DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
-  ANGULAR_FREQUENCY$class_name,  ANGULAR_PERIOD$class_name,     DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
-  ANGULAR_WAVELENGTH$class_name, ANGULAR_WAVENUMBER$class_name, DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
-  ANGULAR_PERIOD$class_name,     ANGULAR_FREQUENCY$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate'
-)
-
-# TODO:
-# 1. [x] Get existing tests to pass
-# 2. [ ] Add this stuff manual stuff below into tests
-# 3. [ ] Get rid of this stuff in the code by using PROPERTIES[5,] style code to pass everyhthing into the lookup
-#       * EXTENT_RATE is easy all are 1 / x
-#       * LINEAR_ANGULAR is half as easy: half are x / 2 pi and the other half are 2 pi x depending on direction
-#       * SPACE_TIME is a quarter easy : they depend on direction and whether they are rate or extent. c x or x / c.
-
-# relationship_expression <- function(from, to) {
-#   browser()
-#   mapply(function(f=from, t=to) {
-#     browser()
-#     match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
-#     match_row$relationship_expression
-#   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
-# }
-
-relationship_expression <- function(from, to) {
-  stopifnot(nrow(from) == nrow(to))  # Ensure both data frames have the same number of rows
-
-  mapply(function(row_idx) {
-    # Extract rows as one-row data frames
-    f_row <- from[row_idx, , drop = FALSE]
-    t_row <- to[row_idx, , drop = FALSE]
-
-    if (f_row$linear_angular != t_row$linear_angular) {
-      dim = DIMENSIONS$linear_angular
-      from_dim = f_row$linear_angular
-    } else if (f_row$space_time != t_row$space_time) {
-      dim = DIMENSIONS$space_time
-      from_dim = f_row$space_time
-    } else if (f_row$extent_rate != t_row$extent_rate) {
-      dim = DIMENSIONS$extent_rate
-      from_dim = f_row$extent_rate
-    }
-
-    left  = dim[1]
-    right = dim[2]
-    if (from_dim ==left) {
-      arrow = "%->%"
-    } else {
-      arrow = "%<-%"
-    }
-
-    # Return relationship expression
-    paste(left, arrow, right)  # Replace with your logic
-  }, seq_len(nrow(from)), USE.NAMES = FALSE)  # Suppress automatic naming
-}
-
 function_expression <- function(from, to) {
   stopifnot(nrow(from) == nrow(to))  # Ensure both data frames have the same number of rows
 
@@ -371,6 +279,38 @@ function_definition <- function(from, to) {
     } else if (f_row$extent_rate != t_row$extent_rate) {
       return(DF_1_OVER_X)
     }
+  }, seq_len(nrow(from)), USE.NAMES = FALSE)  # Suppress automatic naming
+}
+
+relationship_expression <- function(from, to) {
+  stopifnot(nrow(from) == nrow(to))  # Ensure both data frames have the same number of rows
+
+  mapply(function(row_idx) {
+    # Extract rows as one-row data frames
+    f_row <- from[row_idx, , drop = FALSE]
+    t_row <- to[row_idx, , drop = FALSE]
+
+    if (f_row$linear_angular != t_row$linear_angular) {
+      dim = DIMENSIONS$linear_angular
+      from_dim = f_row$linear_angular
+    } else if (f_row$space_time != t_row$space_time) {
+      dim = DIMENSIONS$space_time
+      from_dim = f_row$space_time
+    } else if (f_row$extent_rate != t_row$extent_rate) {
+      dim = DIMENSIONS$extent_rate
+      from_dim = f_row$extent_rate
+    }
+
+    left  = dim[1]
+    right = dim[2]
+    if (from_dim ==left) {
+      arrow = "%->%"
+    } else {
+      arrow = "%<-%"
+    }
+
+    # Return relationship expression
+    paste(left, arrow, right)  # Replace with your logic
   }, seq_len(nrow(from)), USE.NAMES = FALSE)  # Suppress automatic naming
 }
 
