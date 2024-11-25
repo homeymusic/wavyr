@@ -66,15 +66,15 @@ convert_from_to <- function(x, start_node, end_node) {
   # Loop through the path and apply the corresponding transformation for each edge
   for (i in 1:(length(path$epath[[1]]))) {
     edge_id <- path$epath[[1]][i]
-    function_definition = PROPERTY_EDGES[edge_id,]$function_definition[[1]]
-    new_x = function_definition(new_x)
+    func = PROPERTY_EDGES[edge_id,]$function_definition[[1]][[1]]
+    new_x = func(new_x)
   }
 
   # Return the final transformed value
   return(list(
     value = new_x,
-    function_label = PROPERTY_EDGES[path$epath[[1]],]$function_label,
     edge_path = path$epath[[1]],
-    edge_path_length = path$epath[[1]] %>% length()
+    edge_path_length = path$epath[[1]] %>% length(),
+    property_edge = PROPERTY_EDGES[path$epath[[1]],]
   ))
 }

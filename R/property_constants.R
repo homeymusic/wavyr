@@ -183,23 +183,6 @@ EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(PROPERTY_DIMENSIONS), functio
   }))
 }))
 
-inverted_direction <- function(from, to) {
-  from_index <- which(unlist(DIMENSIONS) == from)
-  to_index <- which(unlist(DIMENSIONS) == to)
-  from_index > to_index
-}
-
-relationship_expression <- function(from, to) {
-  mapply(function(from, to) {
-    if (inverted_direction(from,to)) {
-      return(paste(to, '%<-%', from))
-    } else {
-      return(paste(from, '%->%', to))
-    }
-  }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
-}
-
-
 EX_C_X = 'c %.% x'
 DF_C_X = function(x) {DEFAULT_SPEED_OF_MEDIUM * x}
 
@@ -213,7 +196,7 @@ EX_X_OVER_2PI = 'x / ( 2 * pi )'
 DF_X_OVER_2PI = function(x) {x / (2 * pi)}
 
 EX_1_OVER_X = '1 / x'
-DF_1_OVER_X = function(x) {1 * x}
+DF_1_OVER_X = function(x) {1 / x}
 
 
 # TODO:
@@ -226,44 +209,53 @@ DF_1_OVER_X = function(x) {1 * x}
 
 
 TRANSFORM_FUNCTIONS <- tibble::tribble(
-  ~from,                        ~to,                            ~function_definition, ~function_expression,
+  ~from,                        ~to,                            ~function_definition, ~function_expression, ~relationship_expression,
 
   # Space Time Transforms
 
-  LINEAR_WAVENUMBER$class_name,  LINEAR_FREQUENCY$class_name,   DF_C_X,               EX_C_X,
-  LINEAR_PERIOD$class_name,      LINEAR_WAVELENGTH$class_name,  DF_C_X,               EX_C_X,
-  ANGULAR_WAVENUMBER$class_name, ANGULAR_FREQUENCY$class_name,  DF_C_X,               EX_C_X,
-  ANGULAR_PERIOD$class_name,     ANGULAR_WAVELENGTH$class_name, DF_C_X,               EX_C_X,
+  LINEAR_WAVENUMBER$class_name,  LINEAR_FREQUENCY$class_name,   DF_C_X,               EX_C_X,               'space %->% time',
+  LINEAR_PERIOD$class_name,      LINEAR_WAVELENGTH$class_name,  DF_C_X,               EX_C_X,               'space %<-% time',
+  ANGULAR_WAVENUMBER$class_name, ANGULAR_FREQUENCY$class_name,  DF_C_X,               EX_C_X,               'space %->% time',
+  ANGULAR_PERIOD$class_name,     ANGULAR_WAVELENGTH$class_name, DF_C_X,               EX_C_X,               'space %<-% time',
 
-  LINEAR_FREQUENCY$class_name,   LINEAR_WAVENUMBER$class_name,  DF_X_OVER_C,          EX_X_OVER_C,
-  LINEAR_WAVELENGTH$class_name,  LINEAR_PERIOD$class_name,      DF_X_OVER_C,          EX_X_OVER_C,
-  ANGULAR_FREQUENCY$class_name,  ANGULAR_WAVENUMBER$class_name, DF_X_OVER_C,          EX_X_OVER_C,
-  ANGULAR_WAVELENGTH$class_name, ANGULAR_PERIOD$class_name,     DF_X_OVER_C,          EX_X_OVER_C,
+  LINEAR_FREQUENCY$class_name,   LINEAR_WAVENUMBER$class_name,  DF_X_OVER_C,          EX_X_OVER_C,          'space %<-% time',
+  LINEAR_WAVELENGTH$class_name,  LINEAR_PERIOD$class_name,      DF_X_OVER_C,          EX_X_OVER_C,          'space %->% time',
+  ANGULAR_FREQUENCY$class_name,  ANGULAR_WAVENUMBER$class_name, DF_X_OVER_C,          EX_X_OVER_C,          'space %<-% time',
+  ANGULAR_WAVELENGTH$class_name, ANGULAR_PERIOD$class_name,     DF_X_OVER_C,          EX_X_OVER_C,          'space %->% time',
 
   # Linear Angular Transforms
 
-  LINEAR_FREQUENCY$class_name,   ANGULAR_FREQUENCY$class_name,  DF_2PI_X,             EX_2PI_X,
-  LINEAR_PERIOD$class_name,      ANGULAR_PERIOD$class_name,     DF_2PI_X,             EX_2PI_X,
-  LINEAR_WAVENUMBER$class_name,  ANGULAR_WAVENUMBER$class_name, DF_2PI_X,             EX_2PI_X,
-  LINEAR_WAVELENGTH$class_name,  ANGULAR_WAVELENGTH$class_name, DF_2PI_X,             EX_2PI_X,
+  # Linear to Angular
+  LINEAR_FREQUENCY$class_name,   ANGULAR_FREQUENCY$class_name,  DF_2PI_X,             EX_2PI_X,             'linear %->% angular',
+  LINEAR_PERIOD$class_name,      ANGULAR_PERIOD$class_name,     DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %->% angular',
+  LINEAR_WAVENUMBER$class_name,  ANGULAR_WAVENUMBER$class_name, DF_2PI_X,             EX_2PI_X,             'linear %->% angular',
+  LINEAR_WAVELENGTH$class_name,  ANGULAR_WAVELENGTH$class_name, DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %->% angular',
 
-  ANGULAR_FREQUENCY$class_name,  LINEAR_FREQUENCY$class_name,   DF_X_OVER_2PI,        EX_X_OVER_2PI,
-  ANGULAR_PERIOD$class_name,     LINEAR_PERIOD$class_name,      DF_X_OVER_2PI,        EX_X_OVER_2PI,
-  ANGULAR_WAVENUMBER$class_name, LINEAR_WAVENUMBER$class_name,  DF_X_OVER_2PI,        EX_X_OVER_2PI,
-  ANGULAR_WAVELENGTH$class_name, LINEAR_WAVELENGTH$class_name,  DF_X_OVER_2PI,        EX_X_OVER_2PI,
+  # Angular to Linear
+  ANGULAR_FREQUENCY$class_name,  LINEAR_FREQUENCY$class_name,   DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %<-% angular',
+  ANGULAR_PERIOD$class_name,     LINEAR_PERIOD$class_name,      DF_2PI_X,             EX_2PI_X,             'linear %<-% angular',
+  ANGULAR_WAVENUMBER$class_name, LINEAR_WAVENUMBER$class_name,  DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %<-% angular',
+  ANGULAR_WAVELENGTH$class_name, LINEAR_WAVELENGTH$class_name,  DF_2PI_X,             EX_2PI_X,             'linear %<-% angular',
 
   # Extent Rate Transforms
 
-  LINEAR_WAVENUMBER$class_name,  LINEAR_WAVELENGTH$class_name,  DF_1_OVER_X,          EX_1_OVER_X,
-  LINEAR_FREQUENCY$class_name,   LINEAR_PERIOD$class_name,      DF_1_OVER_X,          EX_1_OVER_X,
-  LINEAR_WAVELENGTH$class_name,  LINEAR_WAVENUMBER$class_name,  DF_1_OVER_X,          EX_1_OVER_X,
-  LINEAR_PERIOD$class_name,      LINEAR_FREQUENCY$class_name,   DF_1_OVER_X,          EX_1_OVER_X,
+  LINEAR_WAVENUMBER$class_name,  LINEAR_WAVELENGTH$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  LINEAR_FREQUENCY$class_name,   LINEAR_PERIOD$class_name,      DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  LINEAR_WAVELENGTH$class_name,  LINEAR_WAVENUMBER$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
+  LINEAR_PERIOD$class_name,      LINEAR_FREQUENCY$class_name,   DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
 
-  ANGULAR_WAVENUMBER$class_name, ANGULAR_WAVELENGTH$class_name, DF_1_OVER_X,          EX_1_OVER_X,
-  ANGULAR_FREQUENCY$class_name,  ANGULAR_PERIOD$class_name,     DF_1_OVER_X,          EX_1_OVER_X,
-  ANGULAR_WAVELENGTH$class_name, ANGULAR_WAVENUMBER$class_name, DF_1_OVER_X,          EX_1_OVER_X,
-  ANGULAR_PERIOD$class_name,     ANGULAR_FREQUENCY$class_name,  DF_1_OVER_X,          EX_1_OVER_X
+  ANGULAR_WAVENUMBER$class_name, ANGULAR_WAVELENGTH$class_name, DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  ANGULAR_FREQUENCY$class_name,  ANGULAR_PERIOD$class_name,     DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  ANGULAR_WAVELENGTH$class_name, ANGULAR_WAVENUMBER$class_name, DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
+  ANGULAR_PERIOD$class_name,     ANGULAR_FREQUENCY$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate'
 )
+
+relationship_expression <- function(from, to) {
+  mapply(function(f, t) {
+    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
+    match_row$relationship_expression
+  }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+}
 
 function_expression <- function(from, to) {
   mapply(function(f, t) {
@@ -284,8 +276,8 @@ PROPERTY_EDGES <- data.frame(
   from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
   to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to],
   relationship_expression = relationship_expression(
-    EDGE_DIMENSION_IDS$from_dimension,
-    EDGE_DIMENSION_IDS$to_dimension
+    PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
+    PROPERTIES$class_name[EDGE_DIMENSION_IDS$to]
   ),
   function_expression = function_expression(
     PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
@@ -329,21 +321,22 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS,
     end_cap = ggraph::circle(2, 'mm'),    # End offset for arcs
     edge_width = 0.8,
     strength = 0.2,
-    color = "gray",  # Set arcs to gray
+    color = "darkgray",  # Set arcs to gray
     label_parse = TRUE,
     label_size = 3,
     vjust = -0.5,  # Adjust label placement
-    label_colour = "black"  # Set labels to black for contrast
+    label_colour = "darkgray"
   ) +
   # Add PROPERTY_NODES with light blue color
-  ggraph::geom_node_point(size = 8, color = "darkgray") +
+  ggraph::geom_node_point(size = 8, color = "gray20") +
   # Add node labels
   ggraph::geom_node_text(
     ggplot2::aes(label = label),
     parse = TRUE,
     nudge_y = 0.3,  # Offset node labels slightly
     nudge_x = -0.05,  # Offset node labels slightly
-    size = 4
+    size = 4,
+    color = "gray20"
   ) +
   # Add title and expand the plot space
   ggplot2::ggtitle("Wave Properties") +

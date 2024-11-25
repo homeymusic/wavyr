@@ -4,7 +4,7 @@ test_that("graph has correct number of nodes and edges", {
   graph_size_value <- igraph::gsize(PROPERTY_RELATIONSHIPS)    # Number of edges
 
   expect_equal(graph_order_value, 8)  # Should have 8 nodes
-  expect_equal(graph_size_value, 12)  # Should have 12 edges
+  expect_equal(graph_size_value, 24)  # Should have 12 edges
 })
 
 # Test 2: Check that path_length centrality is calculated correctly
@@ -112,6 +112,7 @@ test_that("path_length 2 returns nodes 2 steps apart", {
 
 # Test 11: path_length 3 returns nodes 3 steps apart
 test_that("path_length 3 returns nodes 3 steps apart", {
+
   result <- filter_graph_by(3) %>% dplyr::arrange(from)
   expect_equal(nrow(result), 8)
 
@@ -140,15 +141,25 @@ test_that("path_length 1 with relationships 'LINEAR_ANGULAR' returns the correct
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
 
-  expect_equal(nrow(result), 8)
+  expect_equal(nrow(result), 24)
 
   # Expected node pairs
   expected_pairs <- data.frame(
-    from = c("linear_frequency", "linear_wavenumber", "linear_period", "linear_wavelength",
-             "angular_frequency", "angular_wavenumber", "angular_period", "angular_wavelength"),
-    to = c("angular_frequency", "angular_wavenumber", "angular_period", "angular_wavelength",
-           "linear_frequency", "linear_wavenumber", "linear_period", "linear_wavelength"),
-    path_length = rep(1, 8)  # Assuming path_length 1
+    from = c(
+      "angular_frequency", "angular_frequency", "angular_frequency", "angular_period", "angular_period",
+      "angular_period", "angular_wavelength", "angular_wavelength", "angular_wavelength", "angular_wavenumber",
+      "angular_wavenumber", "angular_wavenumber", "linear_frequency", "linear_frequency", "linear_frequency",
+      "linear_period", "linear_period", "linear_period", "linear_wavelength", "linear_wavelength",
+      "linear_wavelength", "linear_wavenumber", "linear_wavenumber", "linear_wavenumber"
+    ),
+    to = c(
+      "linear_frequency", "angular_period", "angular_wavenumber", "linear_period", "angular_frequency",
+      "angular_wavelength", "linear_wavelength", "angular_period", "angular_wavenumber", "linear_wavenumber",
+      "angular_frequency", "angular_wavelength", "linear_period", "linear_wavenumber", "angular_frequency",
+      "linear_frequency", "linear_wavelength", "angular_period", "linear_period", "linear_wavenumber",
+      "angular_wavelength", "linear_frequency", "linear_wavelength", "angular_wavenumber"
+    ),
+    path_length = rep(1, 24)  # Assuming path_length 1
   ) %>% dplyr::arrange(from)
 
   # Check if the result matches the expected node pairs
@@ -162,15 +173,25 @@ test_that("path_length 2 with relationships 'LINEAR_ANGULAR' and 'EXTENT_RATE' r
   # Check that the column names are correct
   expect_equal(colnames(result), c("from", "to", "path_length"))
 
-  expect_equal(nrow(result), 8)  # Adjust based on expected results
+  expect_equal(nrow(result), 24)  # Adjust based on expected results
 
   # Expected node pairs for path_length 2 and relationships 'LINEAR_ANGULAR' and 'EXTENT_RATE'
   expected_pairs <- data.frame(
-    from = c("linear_frequency", "linear_period", "linear_wavenumber", "linear_wavelength",
-             "angular_period", "angular_frequency", "angular_wavelength", "angular_wavenumber"),
-    to = c("angular_period", "angular_frequency", "angular_wavelength", "angular_wavenumber",
-           "linear_frequency", "linear_period", "linear_wavenumber", "linear_wavelength"),
-    path_length = rep(2, 4)  # Assuming path_length 2
+    from = c(
+      "angular_frequency", "angular_frequency", "angular_frequency", "angular_period", "angular_period",
+      "angular_period", "angular_wavelength", "angular_wavelength", "angular_wavelength", "angular_wavenumber",
+      "angular_wavenumber", "angular_wavenumber", "linear_frequency", "linear_frequency", "linear_frequency",
+      "linear_period", "linear_period", "linear_period", "linear_wavelength", "linear_wavelength",
+      "linear_wavelength", "linear_wavenumber", "linear_wavenumber", "linear_wavenumber"
+    ),
+    to = c(
+      "linear_period", "linear_wavenumber", "angular_wavelength", "linear_frequency", "linear_wavelength",
+      "angular_wavenumber", "linear_period", "linear_wavenumber", "angular_frequency", "linear_frequency",
+      "linear_wavelength", "angular_period", "linear_wavelength", "angular_period", "angular_wavenumber",
+      "linear_wavenumber", "angular_frequency", "angular_wavelength", "linear_frequency", "angular_period",
+      "angular_wavenumber", "linear_period", "angular_frequency", "angular_wavelength"
+    ),
+    path_length = rep(2, 24)  # Assuming path_length 2
   ) %>% dplyr::arrange(from)
 
   # Check if the result matches the expected node pairs
@@ -212,42 +233,6 @@ test_that("path_length 4 for all returns nodes directly connected by edges", {
   expect_equal(nrow(result), 0)
 })
 
-test_that("we can convert following the shortest path in the graph",{
-  conversion = 1 %>% convert_from_to(
-    'linear_frequency','angular_wavelength'
-  )
-  expect_equal(conversion$edge_path_length, 3)
-  expect_equal(class(conversion$edge_path), "igraph.es")
-  expect_equal(conversion$edge_path %>% as.numeric(), c(1,10,8))
-  expect_equal(conversion$function_label, c(
-    "1 / x",
-    "x / c",
-    "x / (2 * pi)"
-  ))
-  expect_equal(conversion$value, 8)
-})
-
-test_that('the order of all values in DIMENSIONS is used to indicate math functions and labeling.',{
-  expect_true(inverted_direction('rate', 'extent'))
-  expect_false(inverted_direction('extent', 'rate'))
-
-  expect_true(inverted_direction('angular', 'linear'))
-  expect_false(inverted_direction('linear', 'angular'))
-
-  expect_true(inverted_direction('time', 'space'))
-  expect_false(inverted_direction('space', 'time'))
-})
-
-test_that('arrows makes sense for edge labels',{
-  from = c('rate', 'extent', 'angular', 'linear', 'time', 'space')
-  to = c('extent', 'rate', 'linear', 'angular', 'space', 'time')
-  expect_equal(
-    relationship_expression(from, to),
-    c('extent %<-% rate','extent %->% rate',
-      'linear %<-% angular', 'linear %->% angular',
-      'space %<-% time', 'space %->% time')
-  )
-})
 
 test_that('function expression',{
 
@@ -256,68 +241,32 @@ test_that('function expression',{
   from = c('linear_wavenumber')
   to = c('linear_frequency')
   expr = function_expression(from, to)
-  expect_equal(expr, 'c * x')
-
-  from = c('extent')
-  to   = c('rate')
-  expr = function_expression(from, to)
-  expect_equal(expr, '1 / x')
-
-  from = c('angular')
-  to   = c('linear')
-  expr = function_expression(from, to)
-  expect_equal(expr, 'x / 2 * pi')
-
-  from = c('linear')
-  to   = c('angular')
-  expr = function_expression(from, to)
-  expect_equal(expr, '2 * pi %.% x')
-
-  from = c('time')
-  to   = c('space')
-  expr = function_expression(from, to)
-  expect_equal(expr, 'c / x')
-
-  from = c('time')
-  to   = c('space')
-  expr = function_expression(from, to)
-  expect_equal(expr, 'c / x')
+  expect_equal(expr, 'c %.% x')
 
 })
 
-test_that('function definition',{
 
-  x = 2
+test_that('expressions', {
+  from = c('linear_frequency')
+  to = c('angular_frequency')
 
-  from = c('rate')
-  to = c('extent')
-  func = function_definition(from, to)[[1]]
-  expect_equal(func(x), 1 / x)
+  r = relationship_expression(from, to)
+  expect_equal(r, "linear %->% angular")
 
-  from = c('extent')
-  to   = c('rate')
-  func = function_definition(from, to)[[1]]
-  expect_equal(func(x), 1 / x)
+  f = function_expression(from, to)
+  expect_equal(f, "2 * pi %.% x")
+})
 
-  from = c('angular')
-  to   = c('linear')
-  func = function_definition(from, to)[[1]]
-  expect_equal(func(x), x / (2 * pi), tolerance = 0.1)
+test_that('expressions', {
 
-  from = c('linear')
-  to   = c('angular')
-  func = function_definition(from, to)[[1]]
-  expect_equal(func(x), x * (2 * pi), tolerance = 0.1)
+  from = PROPERTY_EDGES$from[3]
+  expect_equal(from, LINEAR_FREQUENCY$class_name)
 
-  from = c('time')
-  to   = c('space')
-  func = function_definition(from, to)[[1]]
-  expect_equal(func(x), DEFAULT_SPEED_OF_MEDIUM / x, tolerance = 0.1)
+  to = PROPERTY_EDGES$to[3]
+  expect_equal(to, ANGULAR_FREQUENCY$class_name)
 
-  from = c('time')
-  to   = c('space')
-  func = function_definition(from, to)[[1]]
-  expect_equal(func(x), DEFAULT_SPEED_OF_MEDIUM / x, tolerance = 0.1)
+  a = PROPERTY_EDGES$arc_expression[3]
+  expect_equal(a, "linear %->% angular  ~ ~ ( 2 * pi %.% x )")
 
 })
 

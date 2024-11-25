@@ -49,7 +49,7 @@ test_that("property class throws an error if input has length greater than 1", {
 })
 
 test_that('all subclasses appear on property', {
-  expect_equal(PROPERTIES %>% names() %>% sort(), c(
+  expect_equal(PROPERTIES$class_name %>% sort(), c(
     'angular_frequency',
     'angular_period',
     'angular_wavelength',

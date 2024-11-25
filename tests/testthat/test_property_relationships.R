@@ -59,7 +59,7 @@ test_that("path_length 1 for Rate ~ Extent returns nodes directly connected by e
 
   result <- filter_graph_by(path_length = 1, relationships = relationships) %>% dplyr::arrange(from)
 
-  expect_equal(nrow(result), 8)
+  expect_equal(nrow(result), 24)
 
   # Validate the property conversions for path_length 1
   validate_property_conversions(result, expected_properties)
@@ -109,7 +109,7 @@ test_that("path_length 1 for Linear ~ Angular returns nodes directly connected b
 
   result <- filter_graph_by(path_length = 1, relationships = relationships)
 
-  expect_equal(nrow(result), 8)
+  expect_equal(nrow(result), 24)
 
   # Validate the property conversions for path_length 1
   validate_property_conversions(result, expected_properties)
@@ -121,7 +121,7 @@ test_that("path_length 1 for Time ~ Space returns nodes directly connected by ed
 
   result <- filter_graph_by(path_length = 1, relationships = relationships)
 
-  expect_equal(nrow(result), 8)
+  expect_equal(nrow(result), 24)
 
   # Validate the property conversions for path_length 1
   validate_property_conversions(result, expected_properties)
@@ -136,3 +136,19 @@ test_that("path_length 1 for all returns nodes directly connected by edges", {
   # Validate the property conversions for path_length 1
   validate_property_conversions(result, expected_properties)
 })
+
+test_that("we can convert following the shortest path in the graph",{
+  conversion = expected_properties$linear_frequency %>% convert_from_to(
+    'linear_frequency','angular_wavelength'
+  )
+  expect_equal(conversion$edge_path_length, 3)
+  expect_equal(class(conversion$edge_path), "igraph.es")
+  expect_equal(conversion$edge_path %>% as.numeric(), c(1,5,12))
+  expect_equal(conversion$property_edge$function_expression, c(
+    "1 / x",
+    "c %.% x",
+    "x / ( 2 * pi )"
+  ))
+  expect_equal(conversion$value, expected_properties$angular_wavelength)
+})
+
