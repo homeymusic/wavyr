@@ -257,15 +257,15 @@ TRANSFORM_FUNCTIONS <- tibble::tribble(
 )
 
 function_expression <- function(from, to) {
-  mapply(function(from, to) {
-    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == from & to == to)
+  mapply(function(f, t) {
+    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
     match_row$function_expression
   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
 function_definition <- function(from, to) {
-  mapply(function(from, to) {
-    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == from & to == to)
+  mapply(function(f, t) {
+    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
     match_row$function_definition
   }, from, to, SIMPLIFY = FALSE, USE.NAMES = FALSE)  # Disable automatic naming
 }
@@ -277,12 +277,11 @@ PROPERTY_EDGES <- data.frame(
   relationship_expression = relationship_expression(
     EDGE_DIMENSION_IDS$from_dimension,
     EDGE_DIMENSION_IDS$to_dimension
+  ),
+  function_expression = function_expression(
+    PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
+    PROPERTIES$class_name[EDGE_DIMENSION_IDS$to]
   )
-)
-
-PROPERTY_EDGES$function_expression = function_expression(
-  PROPERTY_EDGES$from,
-  PROPERTY_EDGES$to
 )
 
 # Add arc_label column by pasting two existing columns
