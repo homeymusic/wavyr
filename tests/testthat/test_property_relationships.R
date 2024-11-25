@@ -43,6 +43,24 @@ test_that('simple frequency conversion works', {
   expect_equal(l_ang$value, expected_properties$angular_wavelength)
 })
 
+test_that('round the horn works', {
+  f_obj = linear_frequency(expected_properties$linear_frequency)
+  expect_equal(f_obj$value, expected_properties$linear_frequency)
+  l_ang = f_obj %>%
+    linear_frequency() %>%
+    angular_wavelength() %>%
+    linear_period() %>%
+    angular_wavenumber() %>%
+    angular_period() %>%
+    linear_wavenumber() %>%
+    angular_frequency() %>%
+    linear_wavelength() %>%
+    angular_wavelength()
+
+
+  expect_equal(l_ang$value, expected_properties$angular_wavelength)
+})
+
 # Test for path_length 0 (nodes paired with themselves)
 test_that("path_length 0 returns nodes paired with themselves", {
   # Get all the node pairs from path_length 0
