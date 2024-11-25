@@ -198,8 +198,8 @@ test_that("path_length 2 with relationships 'LINEAR_ANGULAR' and 'EXTENT_RATE' r
   expect_equal(result, expected_pairs)
 })
 
-test_that("path_length 3 with relationships 'LINEAR_ANGULAR', 'EXTENT_RATE', and 'TIME_SPACE' returns the correct node pairs and column names", {
-  relationships = c(LINEAR_ANGULAR$label, EXTENT_RATE$label, TIME_SPACE$label)
+test_that("path_length 3 with relationships 'LINEAR_ANGULAR', 'EXTENT_RATE', and 'SPACE_TIME' returns the correct node pairs and column names", {
+  relationships = c(LINEAR_ANGULAR$label, EXTENT_RATE$label, SPACE_TIME$label)
   result <- filter_graph_by(path_length = 3, relationships = relationships) %>% dplyr::arrange(from)
 
   # Check that the column names are correct
@@ -208,7 +208,7 @@ test_that("path_length 3 with relationships 'LINEAR_ANGULAR', 'EXTENT_RATE', and
   # Check the number of rows matches the expected results
   expect_equal(nrow(result), 8)
 
-  # Expected node pairs for path_length 3 and relationships 'LINEAR_ANGULAR', 'EXTENT_RATE', and 'TIME_SPACE'
+  # Expected node pairs for path_length 3 and relationships 'LINEAR_ANGULAR', 'EXTENT_RATE', and 'SPACE_TIME'
   expected_pairs <- data.frame(
     from = c("angular_frequency", "angular_period", "angular_wavelength", "angular_wavenumber",
              "linear_frequency", "linear_period", "linear_wavelength", "linear_wavenumber"),
@@ -233,40 +233,89 @@ test_that("path_length 4 for all returns nodes directly connected by edges", {
   expect_equal(nrow(result), 0)
 })
 
+expected_edge_metadata <- tibble::tribble(
+  ~from,                        ~to,                            ~function_definition, ~function_expression, ~relationship_expression,
 
-test_that('function expression',{
+  # Space Time Transforms
 
-  x = 2
+  LINEAR_WAVENUMBER,  LINEAR_FREQUENCY,   DF_C_X,               EX_C_X,               'space %->% time',
+  LINEAR_PERIOD,      LINEAR_WAVELENGTH,  DF_C_X,               EX_C_X,               'space %<-% time',
+  ANGULAR_WAVENUMBER, ANGULAR_FREQUENCY,  DF_C_X,               EX_C_X,               'space %->% time',
+  ANGULAR_PERIOD,     ANGULAR_WAVELENGTH, DF_C_X,               EX_C_X,               'space %<-% time',
 
-  from = c('linear_wavenumber')
-  to = c('linear_frequency')
-  expr = function_expression(from, to)
-  expect_equal(expr, 'c %.% x')
+  LINEAR_FREQUENCY,   LINEAR_WAVENUMBER,  DF_X_OVER_C,          EX_X_OVER_C,          'space %<-% time',
+  LINEAR_WAVELENGTH,  LINEAR_PERIOD,      DF_X_OVER_C,          EX_X_OVER_C,          'space %->% time',
+  ANGULAR_FREQUENCY,  ANGULAR_WAVENUMBER, DF_X_OVER_C,          EX_X_OVER_C,          'space %<-% time',
+  ANGULAR_WAVELENGTH, ANGULAR_PERIOD,     DF_X_OVER_C,          EX_X_OVER_C,          'space %->% time',
 
-})
+  # Linear Angular Transforms
 
+  # Linear to Angular
+  LINEAR_FREQUENCY,   ANGULAR_FREQUENCY,  DF_2PI_X,             EX_2PI_X,             'linear %->% angular',
+  LINEAR_PERIOD,      ANGULAR_PERIOD,     DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %->% angular',
+  LINEAR_WAVENUMBER,  ANGULAR_WAVENUMBER, DF_2PI_X,             EX_2PI_X,             'linear %->% angular',
+  LINEAR_WAVELENGTH,  ANGULAR_WAVELENGTH, DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %->% angular',
 
-test_that('expressions', {
-  from = c('linear_frequency')
-  to = c('angular_frequency')
+  # Angular to Linear
+  ANGULAR_FREQUENCY,  LINEAR_FREQUENCY,   DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %<-% angular',
+  ANGULAR_PERIOD,     LINEAR_PERIOD,      DF_2PI_X,             EX_2PI_X,             'linear %<-% angular',
+  ANGULAR_WAVENUMBER, LINEAR_WAVENUMBER,  DF_X_OVER_2PI,        EX_X_OVER_2PI,        'linear %<-% angular',
+  ANGULAR_WAVELENGTH, LINEAR_WAVELENGTH,  DF_2PI_X,             EX_2PI_X,             'linear %<-% angular',
 
-  r = relationship_expression(from, to)
-  expect_equal(r, "linear %->% angular")
+  # Extent Rate Transforms
 
-  f = function_expression(from, to)
-  expect_equal(f, "2 * pi %.% x")
-})
+  LINEAR_WAVENUMBER,  LINEAR_WAVELENGTH,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  LINEAR_FREQUENCY,   LINEAR_PERIOD,      DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  LINEAR_WAVELENGTH,  LINEAR_WAVENUMBER,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
+  LINEAR_PERIOD,      LINEAR_FREQUENCY,   DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
 
-test_that('expressions', {
+  ANGULAR_WAVENUMBER, ANGULAR_WAVELENGTH, DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  ANGULAR_FREQUENCY,  ANGULAR_PERIOD,     DF_1_OVER_X,          EX_1_OVER_X,          'extent %<-% rate',
+  ANGULAR_WAVELENGTH, ANGULAR_WAVENUMBER, DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate',
+  ANGULAR_PERIOD,     ANGULAR_FREQUENCY,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate'
+)
 
-  from = PROPERTY_EDGES$from[3]
-  expect_equal(from, LINEAR_FREQUENCY$class_name)
+# Strip environments from functions
+strip_env <- function(func_list) {
+  lapply(func_list, function(f) {
+    environment(f) <- baseenv()  # Assign a common environment
+    f
+  })
+}
 
-  to = PROPERTY_EDGES$to[3]
-  expect_equal(to, ANGULAR_FREQUENCY$class_name)
+test_that('metadata on edges are good', {
 
-  a = PROPERTY_EDGES$arc_expression[3]
-  expect_equal(a, "linear %->% angular  ~ ~ ( 2 * pi %.% x )")
+  expected_from <- expected_edge_metadata$from %>% dplyr::bind_rows()
+  expected_to <- expected_edge_metadata$to %>% dplyr::bind_rows()
 
+  # Test relationship_expression
+  expected_relationship_expression <- expected_edge_metadata$relationship_expression
+  actual_relationship_expression <- relationship_expression(expected_from, expected_to)
+  expect_equal(
+    actual_relationship_expression,
+    expected_relationship_expression,
+    label = "relationship_expression matches expected values"
+  )
+
+  # Test function_expression
+  expected_function_expression <- expected_edge_metadata$function_expression
+  actual_function_expression <- function_expression(expected_from, expected_to)
+  expect_equal(
+    actual_function_expression,
+    expected_function_expression,
+    label = "function_expression matches expected values"
+  )
+
+  expected_function_definition <- expected_edge_metadata$function_definition
+  actual_function_definition   <- function_definition(expected_from, expected_to)
+
+  stripped_actual   <- strip_env(actual_function_definition)
+  stripped_expected <- strip_env(expected_function_definition)
+
+  expect_equal(
+    stripped_actual,
+    stripped_expected,
+    label = "function_definition matches expected values (ignoring environments)"
+  )
 })
 

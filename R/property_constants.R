@@ -1,11 +1,11 @@
 LINEAR_ANGULAR <- list(linear = "linear", angular = "angular")
-TIME_SPACE     <- list(space  = "space", time = "time")
+SPACE_TIME     <- list(space  = "space", time = "time")
 EXTENT_RATE    <- list(extent = "extent", rate = "rate")
 
 DIMENSIONS <- list(
   linear_angular = LINEAR_ANGULAR,
-  space_time = TIME_SPACE,
-  rate_extent = EXTENT_RATE
+  space_time = SPACE_TIME,
+  extent_rate = EXTENT_RATE
 )
 
 ANGULAR_FREQUENCY <- data.frame(
@@ -16,9 +16,9 @@ ANGULAR_FREQUENCY <- data.frame(
   symbol = "\u03C9",
   symbol_latex = "\\omega",
   symbol_expression = "italic(ω)",
-  space_time = TIME_SPACE$time,
+  space_time = SPACE_TIME$time,
   linear_angular = LINEAR_ANGULAR$angular,
-  rate_extent = EXTENT_RATE$rate
+  extent_rate = EXTENT_RATE$rate
 )
 
 ANGULAR_PERIOD <- data.frame(
@@ -29,9 +29,9 @@ ANGULAR_PERIOD <- data.frame(
   symbol = "T_angular",
   symbol_latex = "\\Tau_\\text{angular}",
   symbol_expression = 'italic(T)["angular"]',
-  space_time = TIME_SPACE$time,
+  space_time = SPACE_TIME$time,
   linear_angular = LINEAR_ANGULAR$angular,
-  rate_extent = EXTENT_RATE$extent
+  extent_rate = EXTENT_RATE$extent
 )
 
 ANGULAR_WAVELENGTH <-data.frame(
@@ -43,16 +43,16 @@ ANGULAR_WAVELENGTH <-data.frame(
   symbol_latex = "\\lambda_\\text{angular}",
   symbol_expression = 'italic(ƛ)["angular"]',
   linear_angular    = LINEAR_ANGULAR$angular,
-  space_time        = TIME_SPACE$space,
-  rate_extent       = EXTENT_RATE$extent
+  space_time        = SPACE_TIME$space,
+  extent_rate       = EXTENT_RATE$extent
 )
 
 ANGULAR_WAVENUMBER <-data.frame(
   name = "angular wavenumber",
   class_name = "angular_wavenumber",
-  space_time = TIME_SPACE$space,
+  space_time = SPACE_TIME$space,
   linear_angular = LINEAR_ANGULAR$angular,
-  rate_extent = EXTENT_RATE$rate,
+  extent_rate = EXTENT_RATE$rate,
   unit = "rad/m",
   unit_latex = "\\frac{\\text{rad}}{\\text{m}}",
   symbol = "k_angular",
@@ -68,9 +68,9 @@ LINEAR_FREQUENCY <- data.frame(
   symbol = "f",
   symbol_latex = "f",
   symbol_expression = "italic(f)",
-  space_time = TIME_SPACE$time,
+  space_time = SPACE_TIME$time,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = EXTENT_RATE$rate
+  extent_rate = EXTENT_RATE$rate
 )
 
 LINEAR_PERIOD <- data.frame(
@@ -81,16 +81,16 @@ LINEAR_PERIOD <- data.frame(
   symbol = "T",
   symbol_latex = "T",
   symbol_expression = "italic(T)",
-  space_time = TIME_SPACE$time,
+  space_time = SPACE_TIME$time,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = EXTENT_RATE$extent
+  extent_rate = EXTENT_RATE$extent
 )
 
 LINEAR_WAVELENGTH <- data.frame(
   class_name = 'linear_wavelength',
-  space_time = TIME_SPACE$space,
+  space_time = SPACE_TIME$space,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = EXTENT_RATE$extent,
+  extent_rate = EXTENT_RATE$extent,
   unit = "m",
   unit_latex = "\\text{m}",
   symbol = "\u03BB",
@@ -101,9 +101,9 @@ LINEAR_WAVELENGTH <- data.frame(
 
 LINEAR_WAVENUMBER <- data.frame(
   class_name = 'linear_wavenumber',
-  space_time = TIME_SPACE$space,
+  space_time = SPACE_TIME$space,
   linear_angular = LINEAR_ANGULAR$linear,
-  rate_extent = EXTENT_RATE$rate,
+  extent_rate = EXTENT_RATE$rate,
   unit = "1/m",
   unit_latex = "\\text{m}^{-1}",
   symbol = "k_linear",
@@ -129,7 +129,7 @@ assemble_label <- function(property) {
     'atop(',
     property$symbol_expression, ', ',
     'atop("', property$name, '", ',
-    '"[', property$linear_angular, ' ', property$space_time, ' ', property$rate_extent, ']"))'
+    '"[', property$linear_angular, ' ', property$space_time, ' ', property$extent_rate, ']"))'
   )
 }
 
@@ -199,15 +199,6 @@ EX_1_OVER_X = '1 / x'
 DF_1_OVER_X = function(x) {1 / x}
 
 
-# TODO:
-# 1. Get existing tests to pass
-# 2. Add this stuff manual stuff below into tests
-# 3. Get rid of this stuff in the code by using PROPERTIES[5,] style code to pass everyhthing into the lookup
-#       * EXTENT_RATE is easy all are 1 / x
-#       * LINEAR_ANGULAR is half as easy: half are x / 2 pi and the other half are 2 pi x depending on direction
-#       * TIME_SPACE is a quarter easy : they depend on direction and whether they are rate or extent. c x or x / c.
-
-
 TRANSFORM_FUNCTIONS <- tibble::tribble(
   ~from,                        ~to,                            ~function_definition, ~function_expression, ~relationship_expression,
 
@@ -250,25 +241,137 @@ TRANSFORM_FUNCTIONS <- tibble::tribble(
   ANGULAR_PERIOD$class_name,     ANGULAR_FREQUENCY$class_name,  DF_1_OVER_X,          EX_1_OVER_X,          'extent %->% rate'
 )
 
+# TODO:
+# 1. [x] Get existing tests to pass
+# 2. [ ] Add this stuff manual stuff below into tests
+# 3. [ ] Get rid of this stuff in the code by using PROPERTIES[5,] style code to pass everyhthing into the lookup
+#       * EXTENT_RATE is easy all are 1 / x
+#       * LINEAR_ANGULAR is half as easy: half are x / 2 pi and the other half are 2 pi x depending on direction
+#       * SPACE_TIME is a quarter easy : they depend on direction and whether they are rate or extent. c x or x / c.
+
+# relationship_expression <- function(from, to) {
+#   browser()
+#   mapply(function(f=from, t=to) {
+#     browser()
+#     match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
+#     match_row$relationship_expression
+#   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+# }
+
 relationship_expression <- function(from, to) {
-  mapply(function(f, t) {
-    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
-    match_row$relationship_expression
-  }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+  stopifnot(nrow(from) == nrow(to))  # Ensure both data frames have the same number of rows
+
+  mapply(function(row_idx) {
+    # Extract rows as one-row data frames
+    f_row <- from[row_idx, , drop = FALSE]
+    t_row <- to[row_idx, , drop = FALSE]
+
+    if (f_row$linear_angular != t_row$linear_angular) {
+      dim = DIMENSIONS$linear_angular
+      from_dim = f_row$linear_angular
+    } else if (f_row$space_time != t_row$space_time) {
+      dim = DIMENSIONS$space_time
+      from_dim = f_row$space_time
+    } else if (f_row$extent_rate != t_row$extent_rate) {
+      dim = DIMENSIONS$extent_rate
+      from_dim = f_row$extent_rate
+    }
+
+    left  = dim[1]
+    right = dim[2]
+    if (from_dim ==left) {
+      arrow = "%->%"
+    } else {
+      arrow = "%<-%"
+    }
+
+    # Return relationship expression
+    paste(left, arrow, right)  # Replace with your logic
+  }, seq_len(nrow(from)), USE.NAMES = FALSE)  # Suppress automatic naming
 }
 
 function_expression <- function(from, to) {
-  mapply(function(f, t) {
-    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
-    match_row$function_expression
-  }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+  stopifnot(nrow(from) == nrow(to))  # Ensure both data frames have the same number of rows
+
+  mapply(function(row_idx) {
+    # Extract rows as one-row data frames
+    f_row <- from[row_idx, , drop = FALSE]
+    t_row <- to[row_idx, , drop = FALSE]
+
+    if (f_row$linear_angular != t_row$linear_angular) {
+      if (f_row$linear_angular == LINEAR_ANGULAR$linear) {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(EX_2PI_X)
+        } else {
+          return(EX_X_OVER_2PI)
+        }
+      } else {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(EX_X_OVER_2PI)
+        } else {
+          return(EX_2PI_X)
+        }
+      }
+    } else if (f_row$space_time != t_row$space_time) {
+      if (f_row$space_time == SPACE_TIME$space) {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(EX_C_X)
+        } else {
+          return(EX_X_OVER_C)
+        }
+      } else {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(EX_X_OVER_C)
+        } else {
+          return(EX_C_X)
+        }
+      }
+    } else if (f_row$extent_rate != t_row$extent_rate) {
+      return(EX_1_OVER_X)
+    }
+  }, seq_len(nrow(from)), USE.NAMES = FALSE)  # Suppress automatic naming
 }
 
 function_definition <- function(from, to) {
-  mapply(function(f, t) {
-    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == f & to == t)
-    match_row$function_definition
-  }, from, to, SIMPLIFY = FALSE, USE.NAMES = FALSE)  # Disable automatic naming
+  stopifnot(nrow(from) == nrow(to))  # Ensure both data frames have the same number of rows
+
+  mapply(function(row_idx) {
+    # Extract rows as one-row data frames
+    f_row <- from[row_idx, , drop = FALSE]
+    t_row <- to[row_idx, , drop = FALSE]
+
+    if (f_row$linear_angular != t_row$linear_angular) {
+      if (f_row$linear_angular == LINEAR_ANGULAR$linear) {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(DF_2PI_X)
+        } else {
+          return(DF_X_OVER_2PI)
+        }
+      } else {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(DF_X_OVER_2PI)
+        } else {
+          return(DF_2PI_X)
+        }
+      }
+    } else if (f_row$space_time != t_row$space_time) {
+      if (f_row$space_time == SPACE_TIME$space) {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(DF_C_X)
+        } else {
+          return(DF_X_OVER_C)
+        }
+      } else {
+        if (f_row$extent_rate == EXTENT_RATE$rate) {
+          return(DF_X_OVER_C)
+        } else {
+          return(DF_C_X)
+        }
+      }
+    } else if (f_row$extent_rate != t_row$extent_rate) {
+      return(DF_1_OVER_X)
+    }
+  }, seq_len(nrow(from)), USE.NAMES = FALSE)  # Suppress automatic naming
 }
 
 # Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
@@ -276,12 +379,12 @@ PROPERTY_EDGES <- data.frame(
   from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
   to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to],
   relationship_expression = relationship_expression(
-    PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
-    PROPERTIES$class_name[EDGE_DIMENSION_IDS$to]
+    PROPERTIES[EDGE_DIMENSION_IDS$from,],
+    PROPERTIES[EDGE_DIMENSION_IDS$to,]
   ),
   function_expression = function_expression(
-    PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
-    PROPERTIES$class_name[EDGE_DIMENSION_IDS$to]
+    PROPERTIES[EDGE_DIMENSION_IDS$from,],
+    PROPERTIES[EDGE_DIMENSION_IDS$to,]
   )
 )
 
@@ -294,8 +397,8 @@ PROPERTY_EDGES$arc_expression <- paste(
 )
 
 PROPERTY_EDGES$function_definition <- function_definition(
-  PROPERTY_EDGES$from,
-  PROPERTY_EDGES$to
+  PROPERTIES[EDGE_DIMENSION_IDS$from,],
+  PROPERTIES[EDGE_DIMENSION_IDS$to,]
 )
 
 # Create the graph as an undirected graph

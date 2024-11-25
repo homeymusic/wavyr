@@ -135,7 +135,7 @@ test_that("path_length 1 for Linear ~ Angular returns nodes directly connected b
 
 # Test for path_length 1 (nodes directly connected by edges)
 test_that("path_length 1 for Time ~ Space returns nodes directly connected by edges", {
-  relationships = c(TIME_SPACE$label)
+  relationships = c(SPACE_TIME$label)
 
   result <- filter_graph_by(path_length = 1, relationships = relationships)
 
