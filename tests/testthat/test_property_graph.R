@@ -250,12 +250,74 @@ test_that('arrows makes sense for edge labels',{
 })
 
 test_that('function expression',{
-  from = c('rate', 'extent', 'angular', 'linear', 'time', 'space')
-  to = c('extent', 'rate', 'linear', 'angular', 'space', 'time')
-  expect_equal(
-    function_expression(from, to),
-    c(rep('1 / x', 2),
-      'x / 2 * pi', '2 * pi %.% x',
-      'x / c','x %.% c')
-  )
+
+  x = 2
+
+  from = c('rate')
+  to = c('extent')
+  expr = function_expression(from, to)
+  expect_equal(expr, '1 / x')
+
+  from = c('extent')
+  to   = c('rate')
+  expr = function_expression(from, to)
+  expect_equal(expr, '1 / x')
+
+  from = c('angular')
+  to   = c('linear')
+  expr = function_expression(from, to)
+  expect_equal(expr, 'x / 2 * pi')
+
+  from = c('linear')
+  to   = c('angular')
+  expr = function_expression(from, to)
+  expect_equal(expr, '2 * pi %.% x')
+
+  from = c('time')
+  to   = c('space')
+  expr = function_expression(from, to)
+  expect_equal(expr, 'c / x')
+
+  from = c('time')
+  to   = c('space')
+  expr = function_expression(from, to)
+  expect_equal(expr, 'c / x')
+
 })
+
+test_that('function definition',{
+
+  x = 2
+
+  from = c('rate')
+  to = c('extent')
+  func = function_definition(from, to)[[1]]
+  expect_equal(func(x), 1 / x)
+
+  from = c('extent')
+  to   = c('rate')
+  func = function_definition(from, to)[[1]]
+  expect_equal(func(x), 1 / x)
+
+  from = c('angular')
+  to   = c('linear')
+  func = function_definition(from, to)[[1]]
+  expect_equal(func(x), x / (2 * pi), tolerance = 0.1)
+
+  from = c('linear')
+  to   = c('angular')
+  func = function_definition(from, to)[[1]]
+  expect_equal(func(x), x * (2 * pi), tolerance = 0.1)
+
+  from = c('time')
+  to   = c('space')
+  func = function_definition(from, to)[[1]]
+  expect_equal(func(x), DEFAULT_SPEED_OF_MEDIUM / x, tolerance = 0.1)
+
+  from = c('time')
+  to   = c('space')
+  func = function_definition(from, to)[[1]]
+  expect_equal(func(x), DEFAULT_SPEED_OF_MEDIUM / x, tolerance = 0.1)
+
+})
+

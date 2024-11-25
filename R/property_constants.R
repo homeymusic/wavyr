@@ -208,15 +208,35 @@ function_expression <- function(from, to) {
         return('2 * pi %.% x')
       }
     } else if (all(c(from, to) %in% unlist(TIME_SPACE))) {
-      if (inverted_direction(from, to)) {
-        return('x / c')
-      } else {
-        return('x %.% c')
-      }
+      return('c / x')
     } else if (all(c(from, to) %in% unlist(EXTENT_RATE))) {
       return('1 / x')
     }
   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+}
+
+function_definition <- function(from, to) {
+  mapply(function(from, to) {
+    if (all(c(from, to) %in% unlist(LINEAR_ANGULAR))) {
+      if (inverted_direction(from,to)) {
+        return(function(x) {
+          x / (2 * pi)
+        })
+      } else {
+        return(function(x) {
+          2 * pi * x
+        })
+      }
+    } else if (all(c(from, to) %in% unlist(TIME_SPACE))) {
+      return(function(x) {
+        DEFAULT_SPEED_OF_MEDIUM / x
+      })
+    } else if (all(c(from, to) %in% unlist(EXTENT_RATE))) {
+      return(function(x) {
+        1 / x
+      })
+    }
+  }, from, to, SIMPLIFY = FALSE, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
 # Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
@@ -241,10 +261,10 @@ PROPERTY_EDGES$arc_expression <- paste(
   ')'
 )
 
-FN_DOUBLE_X <- function(x) {
-  2 * x
-}
-PROPERTY_EDGES$function_definition <- rep(list(FN_DOUBLE_X), times = 12)
+PROPERTY_EDGES$function_definition <- list(function_definition(
+  EDGE_DIMENSION_IDS$from_dimension,
+  EDGE_DIMENSION_IDS$to_dimension
+))
 
 # Create the graph as an undirected graph
 PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
