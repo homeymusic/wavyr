@@ -253,10 +253,10 @@ test_that('function expression',{
 
   x = 2
 
-  from = c('rate')
-  to = c('extent')
+  from = c('linear_wavenumber')
+  to = c('linear_frequency')
   expr = function_expression(from, to)
-  expect_equal(expr, '1 / x')
+  expect_equal(expr, 'c * x')
 
   from = c('extent')
   to   = c('rate')

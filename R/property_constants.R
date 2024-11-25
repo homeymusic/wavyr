@@ -199,43 +199,74 @@ relationship_expression <- function(from, to) {
   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
+
+EX_C_X = 'c %.% x'
+DF_C_X = function(x) {DEFAULT_SPEED_OF_MEDIUM * x}
+
+EX_X_OVER_C = 'x / c'
+DF_X_OVER_C = function(x) {x / DEFAULT_SPEED_OF_MEDIUM}
+
+EX_2PI_X = '2 * pi %.% x'
+DF_2PI_X = function(x) {2 * pi * x}
+
+EX_X_OVER_2PI = 'x / ( 2 * pi )'
+DF_X_OVER_2PI = function(x) {x / (2 * pi)}
+
+EX_1_OVER_X = '1 / x'
+DF_1_OVER_X = function(x) {1 * x}
+
+
+TRANSFORM_FUNCTIONS <- tibble::tribble(
+  ~from,                        ~to,                            ~function_definition, ~function_expression,
+
+  # Space Time Transforms
+
+  LINEAR_WAVENUMBER$class_name,  LINEAR_FREQUENCY$class_name,   DF_C_X,               EX_C_X,
+  LINEAR_PERIOD$class_name,      LINEAR_WAVELENGTH$class_name,  DF_C_X,               EX_C_X,
+  ANGULAR_WAVENUMBER$class_name, ANGULAR_FREQUENCY$class_name,  DF_C_X,               EX_C_X,
+  ANGULAR_PERIOD$class_name,     ANGULAR_WAVELENGTH$class_name, DF_C_X,               EX_C_X,
+
+  LINEAR_FREQUENCY$class_name,   LINEAR_WAVENUMBER$class_name,  DF_X_OVER_C,          EX_X_OVER_C,
+  LINEAR_WAVELENGTH$class_name,  LINEAR_PERIOD$class_name,      DF_X_OVER_C,          EX_X_OVER_C,
+  ANGULAR_FREQUENCY$class_name,  ANGULAR_WAVENUMBER$class_name, DF_X_OVER_C,          EX_X_OVER_C,
+  ANGULAR_WAVELENGTH$class_name, ANGULAR_PERIOD$class_name,     DF_X_OVER_C,          EX_X_OVER_C,
+
+  # Linear Angular Transforms
+
+  LINEAR_FREQUENCY$class_name,   ANGULAR_FREQUENCY$class_name,  DF_2PI_X,             EX_2PI_X,
+  LINEAR_PERIOD$class_name,      ANGULAR_PERIOD$class_name,     DF_2PI_X,             EX_2PI_X,
+  LINEAR_WAVENUMBER$class_name,  ANGULAR_WAVENUMBER$class_name, DF_2PI_X,             EX_2PI_X,
+  LINEAR_WAVELENGTH$class_name,  ANGULAR_WAVELENGTH$class_name, DF_2PI_X,             EX_2PI_X,
+
+  ANGULAR_FREQUENCY$class_name,  LINEAR_FREQUENCY$class_name,   DF_X_OVER_2PI,        EX_X_OVER_2PI,
+  ANGULAR_PERIOD$class_name,     LINEAR_PERIOD$class_name,      DF_X_OVER_2PI,        EX_X_OVER_2PI,
+  ANGULAR_WAVENUMBER$class_name, LINEAR_WAVENUMBER$class_name,  DF_X_OVER_2PI,        EX_X_OVER_2PI,
+  ANGULAR_WAVELENGTH$class_name, LINEAR_WAVELENGTH$class_name,  DF_X_OVER_2PI,        EX_X_OVER_2PI,
+
+  # Extent Rate Transforms
+
+  LINEAR_WAVENUMBER$class_name,  LINEAR_WAVELENGTH$class_name,  DF_1_OVER_X,          EX_1_OVER_X,
+  LINEAR_FREQUENCY$class_name,   LINEAR_PERIOD$class_name,      DF_1_OVER_X,          EX_1_OVER_X,
+  LINEAR_WAVELENGTH$class_name,  LINEAR_WAVENUMBER$class_name,  DF_1_OVER_X,          EX_1_OVER_X,
+  LINEAR_PERIOD$class_name,      LINEAR_FREQUENCY$class_name,   DF_1_OVER_X,          EX_1_OVER_X,
+
+  ANGULAR_WAVENUMBER$class_name, ANGULAR_WAVELENGTH$class_name, DF_1_OVER_X,          EX_1_OVER_X,
+  ANGULAR_FREQUENCY$class_name,  ANGULAR_PERIOD$class_name,     DF_1_OVER_X,          EX_1_OVER_X,
+  ANGULAR_WAVELENGTH$class_name, ANGULAR_WAVENUMBER$class_name, DF_1_OVER_X,          EX_1_OVER_X,
+  ANGULAR_PERIOD$class_name,     ANGULAR_FREQUENCY$class_name,  DF_1_OVER_X,          EX_1_OVER_X
+)
+
 function_expression <- function(from, to) {
   mapply(function(from, to) {
-    if (all(c(from, to) %in% unlist(LINEAR_ANGULAR))) {
-      if (inverted_direction(from,to)) {
-        return('x / 2 * pi')
-      } else {
-        return('2 * pi %.% x')
-      }
-    } else if (all(c(from, to) %in% unlist(TIME_SPACE))) {
-      return('c / x')
-    } else if (all(c(from, to) %in% unlist(EXTENT_RATE))) {
-      return('1 / x')
-    }
+    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == from & to == to)
+    match_row$function_expression
   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
 function_definition <- function(from, to) {
   mapply(function(from, to) {
-    if (all(c(from, to) %in% unlist(LINEAR_ANGULAR))) {
-      if (inverted_direction(from,to)) {
-        return(function(x) {
-          x / (2 * pi)
-        })
-      } else {
-        return(function(x) {
-          2 * pi * x
-        })
-      }
-    } else if (all(c(from, to) %in% unlist(TIME_SPACE))) {
-      return(function(x) {
-        DEFAULT_SPEED_OF_MEDIUM / x
-      })
-    } else if (all(c(from, to) %in% unlist(EXTENT_RATE))) {
-      return(function(x) {
-        1 / x
-      })
-    }
+    match_row <- TRANSFORM_FUNCTIONS %>% subset(from == from & to == to)
+    match_row$function_definition
   }, from, to, SIMPLIFY = FALSE, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
@@ -246,11 +277,12 @@ PROPERTY_EDGES <- data.frame(
   relationship_expression = relationship_expression(
     EDGE_DIMENSION_IDS$from_dimension,
     EDGE_DIMENSION_IDS$to_dimension
-  ),
-  function_expression = function_expression(
-    EDGE_DIMENSION_IDS$from_dimension,
-    EDGE_DIMENSION_IDS$to_dimension
   )
+)
+
+PROPERTY_EDGES$function_expression = function_expression(
+  PROPERTY_EDGES$from,
+  PROPERTY_EDGES$to
 )
 
 # Add arc_label column by pasting two existing columns
@@ -261,10 +293,10 @@ PROPERTY_EDGES$arc_expression <- paste(
   ')'
 )
 
-PROPERTY_EDGES$function_definition <- list(function_definition(
-  EDGE_DIMENSION_IDS$from_dimension,
-  EDGE_DIMENSION_IDS$to_dimension
-))
+PROPERTY_EDGES$function_definition <- function_definition(
+  PROPERTY_EDGES$from,
+  PROPERTY_EDGES$to
+)
 
 # Create the graph as an undirected graph
 PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
@@ -273,7 +305,10 @@ PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
   directed = T
 )
 
-PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
+PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS,
+                                              layout = "manual",
+                                              x = PROPERTY_NODES$x,
+                                              y = PROPERTY_NODES$y) +
   ggraph::geom_edge_link(
     edge_width = 0.8,
     color = "gray20"
@@ -310,4 +345,3 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
   ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
   ggplot2::coord_fixed(ratio = 1)  # Ensure equal aspect ratio for x and y axes
 
-print(PROPERTY_RELATIONSHIPS_PLOT)

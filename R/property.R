@@ -34,48 +34,9 @@ property.property <- function(x, metadata = list()) {
     return(x)
   }
 
-  value <- x$value
+  converted = convert_from_to(x$value, x$class_name, metadata$class_name)
 
-  # Apply rate_extent transformation (if needed)
-  if (x$rate_extent != metadata$rate_extent) {
-    value = 1 / value
-  }
-
-  # Apply space_time transformation (if needed)
-  if (x$space_time != metadata$space_time) {
-    if (x$rate_extent == EXTENT_RATE$rate) {
-      if (x$space_time == TIME_SPACE$space && metadata$space_time == TIME_SPACE$time) {
-        value = value * DEFAULT_SPEED_OF_MEDIUM
-      } else if (x$space_time == TIME_SPACE$time && metadata$space_time == TIME_SPACE$space) {
-        value = value / DEFAULT_SPEED_OF_MEDIUM
-      }
-    } else {
-      if (x$space_time == TIME_SPACE$space && metadata$space_time == TIME_SPACE$time) {
-        value = value / DEFAULT_SPEED_OF_MEDIUM
-      } else if (x$space_time == TIME_SPACE$time && metadata$space_time == TIME_SPACE$space) {
-        value = value * DEFAULT_SPEED_OF_MEDIUM
-      }
-    }
-  }
-
-  # Apply linear_angular transformation (if needed)
-  if (x$linear_angular != metadata$linear_angular) {
-    if (x$rate_extent == EXTENT_RATE$rate) {
-      if (x$linear_angular == LINEAR_ANGULAR$linear && metadata$linear_angular == LINEAR_ANGULAR$angular) {
-        value = 2 * pi * value
-      } else if (x$linear_angular == LINEAR_ANGULAR$angular && metadata$linear_angular == LINEAR_ANGULAR$linear) {
-        value = value / (2 * pi)
-      }
-    } else {
-      if (x$linear_angular == LINEAR_ANGULAR$linear && metadata$linear_angular == LINEAR_ANGULAR$angular) {
-        value = value / (2 * pi)
-      } else if (x$linear_angular == LINEAR_ANGULAR$angular && metadata$linear_angular == LINEAR_ANGULAR$linear) {
-        value = 2 * pi * value
-      }
-    }
-  }
-  # Construct the new property
-  .property(value, metadata = metadata)
+  .property(converted$value, metadata = metadata)
 }
 
 #' @export
@@ -106,7 +67,7 @@ convert_from_to <- function(x, start_node, end_node) {
   for (i in 1:(length(path$epath[[1]]))) {
     edge_id <- path$epath[[1]][i]
     function_definition = PROPERTY_EDGES[edge_id,]$function_definition[[1]]
-    new_x = do.call(function_definition, list(new_x))
+    new_x = function_definition(new_x)
   }
 
   # Return the final transformed value

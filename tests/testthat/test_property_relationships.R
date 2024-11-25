@@ -36,6 +36,13 @@ validate_property_conversions <- function(result, expected_properties) {
   }
 }
 
+test_that('simple frequency conversion works', {
+  f_obj = linear_frequency(expected_properties$linear_frequency)
+  expect_equal(f_obj$value, expected_properties$linear_frequency)
+  l_ang = angular_wavelength(f_obj)
+  expect_equal(l_ang$value, expected_properties$angular_wavelength)
+})
+
 # Test for path_length 0 (nodes paired with themselves)
 test_that("path_length 0 returns nodes paired with themselves", {
   # Get all the node pairs from path_length 0
