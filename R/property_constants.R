@@ -1,5 +1,5 @@
 LINEAR_ANGULAR <- list(linear = "linear", angular = "angular")
-TIME_SPACE     <- list(time = "time", space = "space")
+TIME_SPACE     <- list(space  = "space", time = "time")
 EXTENT_RATE    <- list(extent = "extent", rate = "rate")
 
 DIMENSIONS <- list(
@@ -137,8 +137,8 @@ assemble_label <- function(property) {
 PROPERTY_NODES <- data.frame(
   name = PROPERTIES$class_name,
   label = lapply(1:nrow(PROPERTIES), function(i) assemble_label(as.list(PROPERTIES[i, ]))) %>% unlist(),
-  x = c(0, 0, 1, 1, 2, 2, 3, 3),  # Adjusted x-coordinates for a cube structure
-  y = c(2, 0, 3, 1, 2, 0, 3, 1)   # Adjusted y-coordinates for a cube structure
+  x = c(1, 1, 0, 0, 3, 3, 2, 2),  # Adjusted x-coordinates for a cube structure
+  y = c(3, 1, 2, 0, 3, 1, 2, 0)   # Adjusted y-coordinates for a cube structure
 )
 
 # Function to find mismatches in dimensions
@@ -183,12 +183,15 @@ EDGE_DIMENSION_IDS <- do.call(rbind, lapply(1:nrow(PROPERTY_DIMENSIONS), functio
   }))
 }))
 
-edge_expression <- function(from, to) {
-  mapply(function(f, t) {
-    from_index <- which(unlist(DIMENSIONS) == f)
-    to_index <- which(unlist(DIMENSIONS) == t)
+inverted_direction <- function(from, to) {
+  from_index <- which(unlist(DIMENSIONS) == from)
+  to_index <- which(unlist(DIMENSIONS) == to)
+  from_index > to_index
+}
 
-    if (from_index > to_index) {
+relationship_expression <- function(from, to) {
+  mapply(function(f, t) {
+    if (inverted_direction(f,t)) {
       paste(t, '%<-%', f)
     } else {
       paste(f, '%->%', t)
@@ -196,17 +199,14 @@ edge_expression <- function(from, to) {
   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
+
+
 # Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
 PROPERTY_EDGES <- data.frame(
   from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
   to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to],
-  relationship = paste(
-    EDGE_DIMENSION_IDS$from_dimension,
-    '~',
-    EDGE_DIMENSION_IDS$to_dimension
-  ),
   relationship_expression = c(
-    edge_expression(
+    relationship_expression(
       EDGE_DIMENSION_IDS$from_dimension,
       EDGE_DIMENSION_IDS$to_dimension
     )
@@ -227,7 +227,10 @@ PROPERTY_RELATIONSHIPS <- igraph::graph_from_data_frame(
 )
 
 PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "manual", x = PROPERTY_NODES$x, y = PROPERTY_NODES$y) +
-  # Use arcs for directed edges with varying strengths
+  ggraph::geom_edge_link(
+    edge_width = 0.8,
+    color = "gray20"
+  ) +
   ggraph::geom_edge_arc(
     ggplot2::aes(label = relationship_expression),  # Label as aesthetic
     angle_calc = 'along',
@@ -235,7 +238,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     start_cap = ggraph::circle(2, 'mm'),  # Start offset for arcs
     end_cap = ggraph::circle(2, 'mm'),    # End offset for arcs
     edge_width = 0.8,
-    strength = 0.1,
+    strength = 0.2,
     color = "gray",  # Set arcs to gray
     label_parse = TRUE,
     label_size = 3,
