@@ -249,12 +249,13 @@ test_that('arrows makes sense for edge labels',{
   )
 })
 
-test_that('arrows makes sense for edge labels',{
-  from = c('rate', 'extent')
-  to = c('extent', 'rate')
+test_that('function expression',{
+  from = c('rate', 'extent', 'angular', 'linear', 'time', 'space')
+  to = c('extent', 'rate', 'linear', 'angular', 'space', 'time')
   expect_equal(
-    relationship_expression(from, to),
-    c('extent %<-% rate','extent %->% rate')
+    function_expression(from, to),
+    c(rep('1 / x', 2),
+      'x / 2 * pi', '2 * pi %.% x',
+      'x / c','x %.% c')
   )
 })
-

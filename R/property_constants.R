@@ -190,28 +190,55 @@ inverted_direction <- function(from, to) {
 }
 
 relationship_expression <- function(from, to) {
-  mapply(function(f, t) {
-    if (inverted_direction(f,t)) {
-      paste(t, '%<-%', f)
+  mapply(function(from, to) {
+    if (inverted_direction(from,to)) {
+      return(paste(to, '%<-%', from))
     } else {
-      paste(f, '%->%', t)
+      return(paste(from, '%->%', to))
     }
   }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
 }
 
-
+function_expression <- function(from, to) {
+  mapply(function(from, to) {
+    if (all(c(from, to) %in% unlist(LINEAR_ANGULAR))) {
+      if (inverted_direction(from,to)) {
+        return('x / 2 * pi')
+      } else {
+        return('2 * pi %.% x')
+      }
+    } else if (all(c(from, to) %in% unlist(TIME_SPACE))) {
+      if (inverted_direction(from, to)) {
+        return('x / c')
+      } else {
+        return('x %.% c')
+      }
+    } else if (all(c(from, to) %in% unlist(EXTENT_RATE))) {
+      return('1 / x')
+    }
+  }, from, to, USE.NAMES = FALSE)  # Disable automatic naming
+}
 
 # Create the EDGE_DIMENSIONS table using EDGE_DIMENSION_IDS
 PROPERTY_EDGES <- data.frame(
   from = PROPERTIES$class_name[EDGE_DIMENSION_IDS$from],
   to   = PROPERTIES$class_name[EDGE_DIMENSION_IDS$to],
-  relationship_expression = c(
-    relationship_expression(
-      EDGE_DIMENSION_IDS$from_dimension,
-      EDGE_DIMENSION_IDS$to_dimension
-    )
+  relationship_expression = relationship_expression(
+    EDGE_DIMENSION_IDS$from_dimension,
+    EDGE_DIMENSION_IDS$to_dimension
   ),
-  function_expression = rep('2 %.% x', length(EDGE_DIMENSION_IDS))
+  function_expression = function_expression(
+    EDGE_DIMENSION_IDS$from_dimension,
+    EDGE_DIMENSION_IDS$to_dimension
+  )
+)
+
+# Add arc_label column by pasting two existing columns
+PROPERTY_EDGES$arc_expression <- paste(
+  PROPERTY_EDGES$relationship_expression,
+  ' ~ ~ (',
+  PROPERTY_EDGES$function_expression,
+  ')'
 )
 
 FN_DOUBLE_X <- function(x) {
@@ -232,7 +259,7 @@ PROPERTY_RELATIONSHIPS_PLOT <- ggraph::ggraph(PROPERTY_RELATIONSHIPS, layout = "
     color = "gray20"
   ) +
   ggraph::geom_edge_arc(
-    ggplot2::aes(label = relationship_expression),  # Label as aesthetic
+    ggplot2::aes(label = arc_expression),  # Label as aesthetic
     angle_calc = 'along',
     arrow = ggplot2::arrow(length = ggplot2::unit(4, "mm"), type = "closed"),  # Arrowheads for directed edges
     start_cap = ggraph::circle(2, 'mm'),  # Start offset for arcs
