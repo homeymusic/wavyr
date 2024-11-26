@@ -62,6 +62,31 @@ test_that("spectrum fractions inlcudes original component, ref component and amp
 
 })
 
+test_that('heisen compmonent works as expected', {
+  expected_component = midi_to_freq(c(60,64,67))
+  expected_amplitude = c(1.0, 0.8, 0.5)
+
+  spectrum_obj <- spectrum(
+    component = expected_component,
+    amplitude = expected_amplitude
+  )
+
+  # Test fractions output
+  fractions <- spectrum_obj$fractions
+  expect_equal(fractions$component, expected_component,
+               tolerance=0.1)
+  expect_equal(fractions$amplitude, c(1.0, 0.8, 0.5))
+
+  expect_equal(spectrum_obj$heisen_component,
+               min(expected_component) * c(1/1, 4/3, 3/2),
+               tolerance=0.1)
+
+  expect_equal(spectrum_obj$heisen_component,
+               min(expected_component) * fractions$rational_x,
+               tolerance=0.1)
+
+})
+
 test_that("spectrum can calculate fractions", {
   spectrum_obj <- spectrum(
     component = c(1, 0.5, 0.33),
@@ -321,7 +346,7 @@ test_that("reference is calculated correctly when NULL in the spectrum class", {
 
   # Expect the calculated reference to be min(component)
   expected_reference = min(spectrum_obj$component)
-  expect_equal(spectrum_obj$reference, expected_reference)
+  expect_equal(spectrum_obj$reference_component, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
                expected_reference / spectrum_obj$relative_cycle_length)
 
@@ -334,7 +359,7 @@ test_that("reference is calculated correctly when NULL in the spectrum class", {
 
   # Expect the calculated reference to be max(component)
   expected_reference = max(spectrum_obj_inverted$component)
-  expect_equal(spectrum_obj_inverted$reference, expected_reference)
+  expect_equal(spectrum_obj_inverted$reference_component, expected_reference)
   expect_equal(spectrum_obj_inverted$fundamental_component,
                expected_reference * spectrum_obj_inverted$relative_cycle_length)
 })
@@ -350,7 +375,7 @@ test_that("reference can be explicitly set in the spectrum class", {
   )
 
   # Expect the explicitly set reference to be used
-  expect_equal(spectrum_obj$reference, expected_reference)
+  expect_equal(spectrum_obj$reference_component, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
                expected_reference / spectrum_obj$relative_cycle_length)
 
@@ -364,7 +389,7 @@ test_that("reference can be explicitly set in the spectrum class", {
   )
 
   # Expect the explicitly set reference to be used
-  expect_equal(spectrum_obj_inverted$reference, expected_reference)
+  expect_equal(spectrum_obj_inverted$reference_component, expected_reference)
   expect_equal(spectrum_obj_inverted$fundamental_component,
                expected_reference * spectrum_obj_inverted$relative_cycle_length)
 

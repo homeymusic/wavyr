@@ -7,16 +7,16 @@
 #' @param amplitude A numeric vector of amplitudes, if `component` is a numeric vector.
 #' @param inverted Logical; if `TRUE`, treats the spectrum as an inverted domain (e.g., periods or wavelengths).
 #' If `FALSE`, treats the spectrum as a frequency domain (e.g., frequencies or wavenumbers).
-#' @param reference For computing the fundamental component we take the product of the reference and the relative cycle length.
+#' @param reference_component For computing the fundamental component we take the product of the reference_component and the relative cycle length.
 #'
 #' @return An object of class \code{spectrum}.
 #' @export
-spectrum <- function(component, amplitude = NULL, inverted = FALSE, reference = NULL) {
+spectrum <- function(component, amplitude = NULL, inverted = FALSE, reference_component = NULL) {
   if (is.list(component) && is.null(amplitude)) {
     UseMethod("spectrum", component)
   } else if (is.numeric(component) && is.numeric(amplitude)) {
     spectrum.default(component = component, amplitude = amplitude,
-                     inverted = inverted, reference = reference)
+                     inverted = inverted, reference_component = reference_component)
   } else {
     stop("Invalid input: please provide either numeric `component` and `amplitude` vectors or a list with both.")
   }
@@ -24,13 +24,13 @@ spectrum <- function(component, amplitude = NULL, inverted = FALSE, reference = 
 
 #' @rdname spectrum
 #' @export
-spectrum.default <- function(component, amplitude, inverted = FALSE, reference = NULL) {
+spectrum.default <- function(component, amplitude, inverted = FALSE, reference_component = NULL) {
   .spectrum(component = component, amplitude = amplitude,
-            inverted = inverted, reference = reference)
+            inverted = inverted, reference_component = reference_component)
 }
 
 #' @export
-spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
+spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) {
   stopifnot(
     length(x) == 2L,
     is.numeric(x[[1]]),
@@ -38,12 +38,12 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
     length(x[[1]]) == length(x[[2]])
   )
   .spectrum(component = x[[1]], amplitude = x[[2]],
-            inverted = inverted, reference = reference)
+            inverted = inverted, reference_component = reference_component)
 }
 
 #' Internal spectrum constructor with validation and component combination
 #' @keywords internal
-.spectrum <- function(component, amplitude, inverted, reference) {
+.spectrum <- function(component, amplitude, inverted, reference_component) {
 
   # Validation checks
   if (!is.numeric(component) || !is.numeric(amplitude)) {
@@ -62,9 +62,9 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
-  # Calculate reference if NULL
-  if (is.null(reference)) {
-    reference <- if (inverted) max(component) else min(component)
+  # Calculate reference_component if NULL
+  if (is.null(reference_component)) {
+    reference_component <- if (inverted) max(component) else min(component)
   }
 
   # Extract the reduced components and amplitudes
@@ -85,13 +85,15 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
     metadata    = metadata
   )
 
+  heisen_component <- fractions$denominator_component * fractions$rational_x
+
   relative_cycle_length <- lcm_integers(fractions$den)
 
   # Calculate the fundamental component based on the inversion setting
   fundamental_component <- if (inverted) {
-    reference * relative_cycle_length
+    reference_component * relative_cycle_length
   } else {
-    reference / relative_cycle_length
+    reference_component / relative_cycle_length
   }
 
   # Calculate the fundamental component based on the inversion setting
@@ -103,12 +105,14 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
 
   # Adjust component based on whether the spectrum is inverted
   signal_component <- if (inverted)  1 / component else component
+  signal_heisen_component <- if (inverted)  1 / heisen_component else heisen_component
 
   # Return the spectrum object
   structure(
     list(
       component = component,
-      reference = reference,
+      heisen_component = heisen_component,
+      reference_component = reference_component,
       amplitude = amplitude,
       cycle_length = fractions$den,
       relative_cycle_length = relative_cycle_length,
@@ -140,11 +144,11 @@ print.spectrum <- function(x, ...) {
 #' @param spectrum The spectrum object to combine
 #' @param other_spectrum An additional spectrum object to combine (optional)
 #' @param tolerance The tolerance within which components are considered equal
-#' @param reference The reference component for computing the fundamental
+#' @param reference_component The reference_component component for computing the fundamental
 #' @return A new spectrum object with combined components and amplitudes
 #' @export
 combine_spectra <- function(spectrum, other_spectrum = NULL,
-                            reference = NULL,
+                            reference_component = NULL,
                             tolerance) {
   # Concatenate components and amplitudes if other_spectrum is provided
   if (!is.null(other_spectrum)) {
@@ -165,13 +169,13 @@ combine_spectra <- function(spectrum, other_spectrum = NULL,
   spectrum_class <- class(spectrum)[1]
   if (spectrum_class == "wavelength_spectrum") {
     return(wavelength_spectrum(result$component, result$amplitude,
-                               reference = reference))
+                               reference_component = reference_component))
   } else if (spectrum_class == "frequency_spectrum") {
     return(frequency_spectrum(result$component, result$amplitude,
-                              reference = reference))
+                              reference_component = reference_component))
   } else if (spectrum_class == "spectrum") {
     return(spectrum(result$component, result$amplitude,
-                    reference = reference))
+                    reference_component = reference_component))
   } else {
     stop("Unsupported spectrum type.")
   }

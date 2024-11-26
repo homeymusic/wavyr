@@ -253,7 +253,7 @@ test_that("reference is calculated correctly when NULL in the frequency_spectrum
   )
 
   expected_reference = min(spectrum_obj$frequency)
-  expect_equal(spectrum_obj$reference, expected_reference)
+  expect_equal(spectrum_obj$reference_component, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
                expected_reference / spectrum_obj$relative_cycle_length)
 
@@ -268,7 +268,7 @@ test_that("reference can be explicitly set in the frequency_spectrum class", {
   )
 
   # Expect the explicitly set reference to be used
-  expect_equal(spectrum_obj$reference, expected_reference)
+  expect_equal(spectrum_obj$reference_component, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
                expected_reference / spectrum_obj$relative_cycle_length)
 

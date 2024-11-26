@@ -349,7 +349,7 @@ test_that("reference is calculated correctly when NULL in the wavelength_spectru
 
   # Expect the calculated reference to be min(wavelength)
   expected_reference = max(spectrum_obj$wavelength)
-  expect_equal(spectrum_obj$reference, expected_reference)
+  expect_equal(spectrum_obj$reference_component, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
                expected_reference * spectrum_obj$relative_cycle_length)
 
@@ -364,7 +364,7 @@ test_that("reference can be explicitly set in the wavelength_spectrum class", {
   )
 
   # Expect the explicitly set reference to be used
-  expect_equal(spectrum_obj$reference, expected_reference)
+  expect_equal(spectrum_obj$reference_component, expected_reference)
   expect_equal(spectrum_obj$fundamental_component,
                expected_reference * spectrum_obj$relative_cycle_length)
 

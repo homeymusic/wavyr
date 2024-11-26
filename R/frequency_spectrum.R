@@ -5,10 +5,10 @@
 #'
 #' @param frequency Either a numeric vector of frequencies or a list with named `frequency` and `amplitude` vectors.
 #' @param amplitude A numeric vector of amplitudes, if `frequency` is a numeric vector.
-#' @param reference Used to compute the fundamental frequency from the cycle length
+#' @param reference_component Used to compute the fundamental frequency from the cycle length
 #' @return An object of class \code{frequency_spectrum} that inherits from \code{spectrum}.
 #' @export
-frequency_spectrum <- function(frequency, amplitude = NULL, reference = NULL) {
+frequency_spectrum <- function(frequency, amplitude = NULL, reference_component = NULL) {
   # Check for non-numeric or inconsistent input directly in frequency_spectrum
   if (is.list(frequency) && is.null(amplitude)) {
     if (!is.numeric(frequency$frequency) || !is.numeric(frequency$amplitude)) {
@@ -26,12 +26,12 @@ frequency_spectrum <- function(frequency, amplitude = NULL, reference = NULL) {
     )
     spectrum_obj <- spectrum(component = frequency$frequency,
                              amplitude = frequency$amplitude,
-                             reference = reference)
+                             reference_component = reference_component)
   } else {
     # Direct numeric vectors
     spectrum_obj <- spectrum(component = frequency,
                              amplitude = amplitude,
-                             reference = reference)
+                             reference_component = reference_component)
   }
 
   # Add frequency-specific fields

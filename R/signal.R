@@ -179,7 +179,7 @@ plot_details.signal <- function(x, title = '', coordinate_range = NULL, number_o
     single_spectrum <- spectrum_type(
       x$spectrum$component[i],
       amplitude = x$spectrum$amplitude[i],
-      reference = x$reference
+      reference_component = x$reference_component
     )
 
     # Plot the signal of the single spectrum within the shared coordinate range
