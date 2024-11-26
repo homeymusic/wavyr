@@ -35,22 +35,32 @@ test_that("spectrum can calculate relative_cycle_length", {
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Test relative_cycle_length (result might vary with fractions implementation)
   expect_true(is.numeric(spectrum_obj$relative_cycle_length))
 })
 
-test_that("spectrum can calculate fractions", {
+test_that("spectrum fractions inlcudes original component, ref component and amplitude", {
+  expected_component = c(1, 0.5, 0.33)
+  expected_amplitude = c(1.0, 0.8, 0.5)
+
   spectrum_obj <- spectrum(
-    component = c(1, 0.5, 0.33),
-    amplitude = c(1.0, 0.8, 0.5)
+    component = expected_component,
+    amplitude = expected_amplitude
   )
 
   # Test fractions output
   fractions <- spectrum_obj$fractions
-  expect_equal(sort(fractions$num), sort(c(3, 1, 3)))
-  expect_equal(sort(fractions$den), sort(c(1, 1, 2)))
-})
+  expect_equal(names(fractions), c("x","rational_x","pseudo_x","pseudo_octave",
+                                   "num","den","error","uncertainty",
+                                   "component","denominator_component","amplitude"))
+  expect_equal(fractions$x, c(1.000000, 1.515152, 3.030303),
+               tolerance=0.1)
+  expect_equal(fractions$component, c(0.33, 0.50, 1.00),
+               tolerance=0.1)
+  expect_equal(fractions$amplitude, c(0.5, 0.8, 1.0))
+  expect_equal(fractions$denominator_component,
+               rep(min(expected_component), length(expected_component)))
 
+})
 
 test_that("spectrum can calculate fractions", {
   spectrum_obj <- spectrum(

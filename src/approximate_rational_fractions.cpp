@@ -123,7 +123,6 @@ using namespace Rcpp;
      stop("Deviation must be greater than uncertainty.");
    }
 
-   x = unique(x);
    const int n = x.size();
 
    // Handle optional metadata and perform early validation

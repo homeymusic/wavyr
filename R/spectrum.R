@@ -71,11 +71,18 @@ spectrum.list <- function(x, inverted = FALSE, reference = NULL, ...) {
   component <- combined_result$component
   amplitude <- combined_result$amplitude
 
+  metadata = data.frame(
+    component = component,
+    denominator_component = min(component),
+    amplitude = amplitude
+  ) %>% dplyr::arrange(component)
+
   # Calculate additional properties
   fractions <- approximate_rational_fractions_cpp(
-    component / min(component),
+    metadata$component / metadata$denominator_component[1],
     uncertainty = 1 / (4 * pi),
-    deviation   = 0.11
+    deviation   = 0.11,
+    metadata    = metadata
   )
 
   relative_cycle_length <- lcm_integers(fractions$den)

@@ -173,7 +173,7 @@ test_that("indexed_spectra includes beat wavelength with sum amplitude and NA fo
     frequency_cycle_length = c(NA,1,1),
     wavelength = c(beat_wavelength, SPEED_OF_SOUND / 100, SPEED_OF_SOUND / 107),
     wavelength_amplitude = c(expected_amplitude_sum, 1.0, 0.8),
-    wavelength_cycle_length = c(1,3,1)
+    wavelength_cycle_length = c(3,1,1)
   )
 
   # Check that indexed_spectra matches expected values
@@ -205,7 +205,7 @@ test_that("indexed_spectra treats frequencies within tolerance as the same and s
     frequency_cycle_length = c(NA,1,1),
     wavelength = c(beat_wavelength, SPEED_OF_SOUND / 100, SPEED_OF_SOUND / 107),
     wavelength_amplitude = c(2.6,1,1.6),
-    wavelength_cycle_length = c(1,3,1)
+    wavelength_cycle_length = c(3,1,1)
   )
 
     # Check that indexed_spectra matches expected values
@@ -254,7 +254,7 @@ test_that("superposed_wave correctly calculates composite_amplitude for given x 
   # Call the composite_amplitude function on the superposed_wave object
   a <- superposed_wave_obj$composite_amplitude(x, t)
 
-  expect_equal(a, -7.2, tolerance = 0.1)
+  expect_equal(a, -3, tolerance = 0.1)
 })
 
 test_that("plot.superposed_wave renders without errors for basic superposed_wave", {

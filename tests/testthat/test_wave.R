@@ -147,7 +147,7 @@ test_that("wave's indexed_spectra variable allows iteration to access all values
     frequency_cycle_length = c(1,1,1),
     wavelength = c(3.49,1.75,1.16),
     wavelength_amplitude = c(0.9,0.7,0.4),
-    wavelength_cycle_length = c(1,1,2)
+    wavelength_cycle_length = c(1,2,1)
   )
 
   expect_equal(indexed_spectrum,expected_values, tolerance=0.1)

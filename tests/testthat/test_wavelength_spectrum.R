@@ -64,8 +64,8 @@ test_that("wavelength_spectrum calculates fractions accurately", {
 
   # Test fractions output
   fractions <- wavelength_spectrum_obj$fractions
-  expect_equal(fractions$num, c(3, 1, 3))
-  expect_equal(fractions$den, c(1, 1, 2))
+  expect_equal(fractions$num, c(1, 3, 3))
+  expect_equal(fractions$den, c(1, 2, 1))
 })
 
 test_that("wavelength_spectrum relative_cycle_length for single component returns 1", {

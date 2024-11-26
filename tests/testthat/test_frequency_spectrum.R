@@ -62,7 +62,7 @@ test_that("frequency_spectrum calculates fractions accurately", {
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  expect_equal(frequency_spectrum_obj$fractions$num, c(2, 3, 1))
+  expect_equal(frequency_spectrum_obj$fractions$num, c(1,2,3))
   expect_equal(frequency_spectrum_obj$fractions$den, c(1, 1, 1))
 })
 
@@ -74,7 +74,7 @@ test_that("frequency_spectrum calculates fractions for simple ratios", {
 
   # Test fractions output for simple ratio
   fractions <- frequency_spectrum_obj$fractions
-  expect_equal(fractions$num, c(2, 1))
+  expect_equal(fractions$num, c(1,2))
   expect_equal(fractions$den, c(1, 1))
 })
 
