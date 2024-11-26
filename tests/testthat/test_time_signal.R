@@ -253,9 +253,22 @@ test_that("test that framed dyads look interesting as heisen signal", {
   expect_equal(signal_obj$plot_color, colors_homey$major)
 
   # Define label and coordinate range
-  label <- "Heisen Major 3rd Time Signal"
+  label <- "Major 3rd Heisen Time Signal"
 
-  plot_details.signal(signal_obj, resolution = 2000)
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
+})
+
+test_that("test that framed dyads look interesting as heisen signal", {
+  f_spectrum <- framed_intervals$Major3 %>% frequency_spectrum_for(num_harmonics = 2)
+
+  # Create the signal object from the spectrum
+  signal_obj <- time_signal(f_spectrum)
+
+  expect_equal(signal_obj$plot_color, colors_homey$major)
+
+  # Define label and coordinate range
+  label <- "Major 3rd False Certainty Time Signal"
 
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
