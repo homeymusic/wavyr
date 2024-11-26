@@ -77,10 +77,9 @@ using namespace Rcpp;
    } else {
      return DataFrame::create(
        _("harmonic_number") = harmonic_number[Rcpp::Range(0, num_matches-1)],
-                                             _("evaluation_freq") = evaluation_freq[Rcpp::Range(0, num_matches-1)],
-                                                                                   _("reference_freq")  = reference_freq[Rcpp::Range(0, num_matches-1)],
-                                                                                                                        _("pseudo_octave")   = pseudo_octave[Rcpp::Range(0, num_matches-1)],
-                                                                                                                                                            _("highest_freq")    = highest_freq[Rcpp::Range(0, num_matches-1)]
+       _("evaluation_freq") = evaluation_freq[Rcpp::Range(0, num_matches-1)],
+       _("reference_freq")  = reference_freq[Rcpp::Range(0, num_matches-1)],
+       _("pseudo_octave")   = pseudo_octave[Rcpp::Range(0, num_matches-1)],                                                                                                                                                            _("highest_freq")    = highest_freq[Rcpp::Range(0, num_matches-1)]
      );
    }
  }
@@ -101,6 +100,15 @@ using namespace Rcpp;
    return std::stod(std::string(names_of_count[0]));
  }
 
+ inline bool is_close(double a, double b, double tol = 1e-9) {
+   return std::abs(a - b) <= tol;
+ }
+
+ inline double round_to_precision(double value, int precision = 12) {
+   double scale = std::pow(10.0, precision);
+   return std::round(value * scale) / scale;
+ }
+
  //' _approximate_rational_fractions_cpp
  //'
  //' Approximates floating-point numbers to arbitrary uncertainty.
@@ -118,12 +126,18 @@ using namespace Rcpp;
                                               const double uncertainty,
                                               const double deviation,
                                               Rcpp::Nullable<DataFrame> metadata = R_NilValue) {
-
    if (deviation <= uncertainty) {
      stop("Deviation must be greater than uncertainty.");
    }
 
    const int n = x.size();
+
+   // Validate input values for x
+   for (int i = 0; i < n; ++i) {
+     if (x[i] <= 0.0) {
+       stop("Input vector x contains non-positive values, which are invalid for logarithms.");
+     }
+   }
 
    // Handle optional metadata and perform early validation
    DataFrame meta;
@@ -144,6 +158,11 @@ using namespace Rcpp;
      stop("Pseudo octave must be greater than 1. The deviation value is likely too large.");
    }
 
+   double log_pseudo_octave = log(pseudo_octave_double);
+   if (std::abs(log_pseudo_octave) < 1e-12) {
+     stop("Pseudo octave is too close to 1, causing instability.");
+   }
+
    // Vectors to store the results
    NumericVector pseudo_x(n);
    NumericVector approximations(n);
@@ -152,7 +171,7 @@ using namespace Rcpp;
    NumericVector dens(n);
 
    for (int i = 0; i < n; ++i) {
-     pseudo_x[i] = pow(2.0, log(x[i]) / log(pseudo_octave_double));
+     pseudo_x[i] = pow(2.0, log(x[i]) / log_pseudo_octave);
 
      // Call updated stern_brocot_cpp to get DataFrame output
      DataFrame sb_result = stern_brocot_cpp(pseudo_x[i], uncertainty);
@@ -161,8 +180,12 @@ using namespace Rcpp;
      nums[i] = sb_result["num"];
      dens[i] = sb_result["den"];
 
+     if (dens[i] == 0) {
+       stop("Denominator cannot be zero in rational fraction approximation.");
+     }
+
      approximations[i] = nums[i] / dens[i];
-     errors[i] = approximations[i] - pseudo_x[i];
+     errors[i] = round_to_precision(approximations[i] - pseudo_x[i]);
    }
 
    // Create the main result DataFrame

@@ -85,7 +85,7 @@ test_that("approximate_rational_fractions_cpp handles edge cases with zero input
   # Check for the error message thrown by the C++ function
   expect_error(
     approximate_rational_fractions_cpp(x, uncertainty, deviation),
-    "x must be greater than 0"
+    "Input vector x contains non-positive values, which are invalid for logarithms"
   )
 })
 
@@ -212,4 +212,12 @@ test_that("approximate_rational_fractions_cpp handles mismatched metadata rows g
     approximate_rational_fractions_cpp(x, uncertainty, deviation, metadata = metadata),
     "Metadata must have the same number of rows as the input vector x."
   )
+})
+
+test_that("error should never be less than floating point tolerance.", {
+  f = c(100, 200, 300)
+  fractions = approximate_rational_fractions_cpp(f/min(f),
+                                                 uncertainty = 1 / (4 * pi),
+                                                 deviation   = 0.11)
+  expect_true(all(fractions$error == 0))
 })
