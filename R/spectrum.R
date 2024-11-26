@@ -119,6 +119,7 @@ spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) 
       fundamental_component = fundamental_component,
       fundamental_cycle_length = fundamental_cycle_length,
       signal_component = signal_component,
+      signal_heisen_component = signal_heisen_component,
       fractions = fractions,
       inverted = inverted
     ),
