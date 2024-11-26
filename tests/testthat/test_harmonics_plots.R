@@ -6,7 +6,7 @@ test_that('time harmonics plot',{
   f = 1:num_harmonics * 60 %>% midi_to_freq()
   a = 1 / (1:num_harmonics)
   w = frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = a
   ) %>% superposed_wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
@@ -17,7 +17,7 @@ test_that('time harmonics plot',{
   f = 1:num_harmonics * 60 %>% midi_to_freq()
   a = 1/1:num_harmonics
   w = frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = a
   ) %>% wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
@@ -28,7 +28,7 @@ test_that('space harmonics plot',{
   f = SPEED_OF_SOUND / 1:num_harmonics
   a = 1/1:num_harmonics
   w = frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = a
   ) %>% superposed_wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))
@@ -39,7 +39,7 @@ test_that('space harmonics plot',{
   f = SPEED_OF_SOUND / 1:num_harmonics
   a = 1/1:num_harmonics
   w = frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = a
   ) %>% wave()
   vdiffr::expect_doppelganger(label, function() plot(w, label = label))

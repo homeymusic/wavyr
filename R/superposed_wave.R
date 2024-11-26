@@ -17,7 +17,7 @@ superposed_wave <- function(
     stop("frequency_spectrum must be of class 'frequency_spectrum'")
   }
 
-  if (any(is.na(frequency_spectrum$component)) || any(frequency_spectrum$component <= 0)) {
+  if (any(is.na(frequency_spectrum$idealized_component)) || any(frequency_spectrum$idealized_component <= 0)) {
     stop("All frequency components must be positive and non-NA.")
   }
 
@@ -30,7 +30,7 @@ superposed_wave <- function(
   if (is.null(wavelength_spectrum)) {
     # Calculate base wavelength spectrum if not provided
     base_wavelength_spectrum <- wavelength_spectrum(
-      wavelength = SPEED_OF_SOUND / frequency_spectrum$component,
+      idealized_wavelength = SPEED_OF_SOUND / frequency_spectrum$idealized_frequency,
       amplitude = frequency_spectrum$amplitude
     )
   } else {
@@ -38,7 +38,7 @@ superposed_wave <- function(
       stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
     }
     # Ensure that the size of wavelength_spectrum is greater than or equal to frequency_spectrum
-    if (length(wavelength_spectrum$idealized_wavelength) < length(frequency_spectrum$frequency)) {
+    if (length(wavelength_spectrum$idealized_wavelength) < length(frequency_spectrum$idealized_frequency)) {
       stop("wavelength_spectrum must have a size greater than or equal to frequency_spectrum")
     }
     base_wavelength_spectrum <- wavelength_spectrum
@@ -46,9 +46,12 @@ superposed_wave <- function(
 
   # Calculate beat spectrum based on base wavelength spectrum
   beat_wavelength_spectrum <- compute_beats_cpp(
-    wavelength = base_wavelength_spectrum$component,
-    amplitude = base_wavelength_spectrum$amplitude
-  ) %>% wavelength_spectrum()
+    component = base_wavelength_spectrum$idealized_wavelength,
+    amplitude = base_wavelength_spectrum$amplitude,
+    extent_rate = EXTENT_RATE$extent
+  ) %>%
+    dplyr::rename(idealized_wavelength = component) %>%
+    wavelength_spectrum()
 
   if (is.null(beat_wavelength_spectrum)) {
     stop("Failed to create beat spectrum.")
@@ -96,7 +99,7 @@ plot.superposed_wave <- function(x, label = '',
   # Customize the wavelength spectrum plot to include beat_wavelength_spectrum overlay
   wavelength_spectrum_grob <- grid::grid.grabExpr(
     x$base_wavelength_spectrum %>% plot(
-      rectangles = c(SPEED_OF_SOUND / (x$frequency_spectrum$frequency %>% min())),
+      rectangles = c(SPEED_OF_SOUND / (x$frequency_spectrum$idealized_frequency %>% min())),
       title = paste(label, "~ Wavelength Spectrum"),
       beat_wavelength_spectrum = x$beat_wavelength_spectrum,
       beat_wavelength_spectrum_color = beat_wavelength_spectrum_color

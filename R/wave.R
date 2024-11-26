@@ -8,7 +8,7 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
   # Automatically generate wavelength_spectrum if not provided
   if (is.null(wavelength_spectrum)) {
     wavelength_spectrum <- wavelength_spectrum(
-      wavelength = SPEED_OF_SOUND / frequency_spectrum$frequency,
+      idealized_wavelength = SPEED_OF_SOUND / frequency_spectrum$idealized_frequency,
       amplitude = frequency_spectrum$amplitude
     )
   }
@@ -29,24 +29,24 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
 
   indexed_spectra <- purrr::pmap_dfr(
     list(
-      wavelength = wavelength_spectrum$idealized_wavelength,
+      idealized_wavelength = wavelength_spectrum$idealized_wavelength,
       wavelength_amplitude = wavelength_spectrum$amplitude,
-      wavelength_cycle_length = wavelength_spectrum$cycle_length
+      wavelength_cycle_length = wavelength_spectrum$fractions$den
     ),
-    function(wavelength, wavelength_amplitude, wavelength_cycle_length) {
-      equivalent_frequency <- SPEED_OF_SOUND / wavelength
-      matched_indices <- which(abs(frequency_spectrum$frequency - equivalent_frequency) < 1e-6)
+    function(idealized_wavelength, wavelength_amplitude, wavelength_cycle_length) {
+      equivalent_frequency <- SPEED_OF_SOUND / idealized_wavelength
+      matched_indices <- which(abs(frequency_spectrum$idealized_frequency - equivalent_frequency) < 1e-6)
 
       tibble::tibble(
-        frequency = if (length(matched_indices) > 0) frequency_spectrum$frequency[matched_indices][1] else NA,
+        idealized_frequency = if (length(matched_indices) > 0) frequency_spectrum$idealized_frequency[matched_indices][1] else NA,
         frequency_amplitude = if (length(matched_indices) > 0) sum(frequency_spectrum$amplitude[matched_indices]) else NA,
-        frequency_cycle_length = if (length(matched_indices) > 0) frequency_spectrum$cycle_length[matched_indices][1] else NA,
-        wavelength = wavelength,
+        frequency_cycle_length = if (length(matched_indices) > 0) frequency_spectrum$fractions$den[matched_indices][1] else NA,
+        idealized_wavelength = idealized_wavelength,
         wavelength_amplitude = wavelength_amplitude,
         wavelength_cycle_length = wavelength_cycle_length
       )
     }
-  ) %>% dplyr::arrange(dplyr::desc(wavelength))
+  ) %>% dplyr::arrange(dplyr::desc(idealized_wavelength))
 
   # Calculate the maximum amplitude for both fundamental and composite
   maximum_amplitude <- max(frequency_spectrum$amplitude) + max(wavelength_spectrum$amplitude)
@@ -61,10 +61,10 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
 
     # Calculate the composite amplitude as the sum of contributions
     sum(
-      purrr::pmap_dbl(indexed_spectra, function(frequency,
+      purrr::pmap_dbl(indexed_spectra, function(idealized_frequency,
                                                 frequency_amplitude,
                                                 frequency_cycle_length,
-                                                wavelength,
+                                                idealized_wavelength,
                                                 wavelength_amplitude,
                                                 wavelength_cycle_length) {
         An <- ifelse(is.na(frequency_amplitude), 0, frequency_amplitude) +
@@ -94,13 +94,13 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
     A0 * cos(2 * pi * relative_f0 * t - 2 * pi * relative_k0 * x + phase)
   }
 
-  rationalized_fundamental_spectrum  = frequency_spectrum(
-    frequency = frequency_spectrum$rationalized_fundamental,
+  rationalized_fundamental_frequency_spectrum  = frequency_spectrum(
+    idealized_frequency = frequency_spectrum$rationalized_fundamental_frequency,
     amplitude = maximum_fundamental_amplitude
   )
 
-  fundamental_wavelength_spectrum = wavelength_spectrum(
-    wavelength = wavelength_spectrum$fundamental_wavelength,
+  rationalized_fundamental_wavelength_spectrum = wavelength_spectrum(
+    idealized_wavelength = wavelength_spectrum$rationalized_fundamental_wavelength,
     amplitude = maximum_fundamental_amplitude
   )
 
@@ -109,8 +109,8 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
     list(
       frequency_spectrum = frequency_spectrum,
       wavelength_spectrum = wavelength_spectrum,
-      rationalized_fundamental_spectrum = rationalized_fundamental_spectrum,
-      fundamental_wavelength_spectrum = fundamental_wavelength_spectrum,
+      rationalized_fundamental_frequency_spectrum = rationalized_fundamental_frequency_spectrum,
+      rationalized_fundamental_wavelength_spectrum = rationalized_fundamental_wavelength_spectrum,
       phase = phase,
       indexed_spectra = indexed_spectra,
       fundamental_amplitude = fundamental_amplitude,
@@ -135,8 +135,8 @@ wave <- function(frequency_spectrum, wavelength_spectrum = NULL, phase = 0) {
 
   # Combine wavelength spectra, summing amplitudes for identical components
   combined_wavelength_spectrum <- combine_spectra(
-    wave1$idealized_wavelength_spectrum,
-    wave2$idealized_wavelength_spectrum,
+    wave1$wavelength_spectrum,
+    wave2$wavelength_spectrum,
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
@@ -160,13 +160,13 @@ plot.wave <- function(x, label = '',
                           line_plot_resolution = 99,
                           wavelength_spectrum_grob = NULL, ...) {
 
-  f0 <- x$frequency_spectrum$rationalized_fundamental
-  T0 <- 1 / x$frequency_spectrum$rationalized_fundamental
-  l0 <- x$idealized_wavelength_spectrum$fundamental_wavelength
-  k0 <- 1 / x$idealized_wavelength_spectrum$fundamental_wavelength
+  f0 <- x$frequency_spectrum$rationalized_fundamental_frequency
+  T0 <- 1 / f0
+  l0 <- x$wavelength_spectrum$rationalized_fundamental_wavelength
+  k0 <- 1 / l0
 
   time_rationalized_cycles_per_reference <- x$frequency_spectrum$rationalized_cycles_per_reference
-  space_rationalized_cycles_per_reference <- x$idealized_wavelength_spectrum$rationalized_cycles_per_reference
+  space_rationalized_cycles_per_reference <- x$wavelength_spectrum$rationalized_cycles_per_reference
 
   tonality <- if (time_rationalized_cycles_per_reference > space_rationalized_cycles_per_reference) {
     'minor'
@@ -201,8 +201,8 @@ plot.wave <- function(x, label = '',
     ggplot2::labs(
       title = bquote(.(label) ~ "Composite"),
       subtitle = bquote(
-        "Wavelengths:" ~ .(length(x$idealized_wavelength_spectrum$idealized_wavelength)) ~
-          "~ Frequencies:" ~ .(length(x$frequency_spectrum$frequency))
+        "Wavelengths:" ~ .(length(x$wavelength_spectrum$idealized_wavelength)) ~
+          "~ Frequencies:" ~ .(length(x$frequency_spectrum$idealized_frequency))
       )
     ) +
     ggplot2::coord_fixed(ratio = 1) +
@@ -285,18 +285,18 @@ plot.wave <- function(x, label = '',
     theme_homey()
 
   frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$frequency_spectrum,
-                                                      rectangles = c(x$frequency_spectrum$frequency %>% min()),
+                                                      rectangles = c(x$frequency_spectrum$idealized_frequency %>% min()),
                                                       title = paste(label, "~ Frequency Spectrum")))
   if (is.null(wavelength_spectrum_grob)) {
     wavelength_spectrum_grob <- grid::grid.grabExpr(
-      plot(x$idealized_wavelength_spectrum,
-           rectangles = c(SPEED_OF_SOUND / (x$frequency_spectrum$frequency %>% min())),
+      plot(x$wavelength_spectrum,
+           rectangles = c(SPEED_OF_SOUND / (x$frequency_spectrum$idealized_frequency %>% min())),
            title = paste(label, "~ Wavelength Spectrum"))
     )
   }
 
-  rationalized_fundamental_spectrum_grob <- grid::grid.grabExpr(plot(x$rationalized_fundamental_spectrum, title = paste(label, "~ Fundamental Frequency Spectrum")))
-  fundamental_wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$fundamental_wavelength_spectrum, title = paste(label, "~ Fundamental Wavelength Spectrum")))
+  rationalized_fundamental_frequency_spectrum_grob <- grid::grid.grabExpr(plot(x$rationalized_fundamental_frequency_spectrum, title = paste(label, "~ Fundamental Frequency Spectrum")))
+  rationalized_fundamental_wavelength_spectrum_grob <- grid::grid.grabExpr(plot(x$rationalized_fundamental_wavelength_spectrum, title = paste(label, "~ Fundamental Wavelength Spectrum")))
 
   # Define the main title and subtitle as two separate labels
   main_title <- paste(label)
@@ -337,7 +337,7 @@ plot.wave <- function(x, label = '',
       cowplot::plot_grid(
 
         # Nested column 1: composite_space stacked above wavelength_spectrum_grob
-        cowplot::plot_grid(x$idealized_wavelength_spectrum %>% space_signal() %>% plot(
+        cowplot::plot_grid(x$wavelength_spectrum %>% space_signal() %>% plot(
           title='Space Series'
         ),
                            wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
@@ -358,10 +358,10 @@ plot.wave <- function(x, label = '',
       # Row 3 and 4: Rectangular plots with fundamental_2d spanning two rows in the third column
       cowplot::plot_grid(
         # Nested column 1: fundamental_space stacked above fundamental_wavelength_spectrum_grob
-        cowplot::plot_grid(fundamental_space, fundamental_wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+        cowplot::plot_grid(fundamental_space, rationalized_fundamental_wavelength_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
 
         # Nested column 2: fundamental_time stacked above rationalized_fundamental_spectrum_grob
-        cowplot::plot_grid(fundamental_time, rationalized_fundamental_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
+        cowplot::plot_grid(fundamental_time, rationalized_fundamental_frequency_spectrum_grob, ncol = 1, rel_heights = c(1, 1)),
 
         # Column 3: fundamental_2d spanning two rows
         fundamental_2d,

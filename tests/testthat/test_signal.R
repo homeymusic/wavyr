@@ -1,9 +1,7 @@
-# test_signal.R
-
 test_that("signal constructor creates a valid signal object", {
   # Create a spectrum object
   spectrum_obj <- spectrum(
-    component = c(100, 200, 300),
+    idealized_component = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -23,21 +21,21 @@ test_that("signal stores the spectrum components and amplitudes correctly", {
   f = c(100, 125, 150)
   a = c(1, 0.75, 0.5)
   spectrum_obj <- spectrum(
-    component = f,
+    idealized_component = f,
     amplitude = a
   )
 
   # Create the signal object
   signal_obj <- signal(spectrum_obj)
   # Verify that the stored spectrum has correct components and amplitudes
-  expect_equal(signal_obj$spectrum$component, f)
+  expect_equal(signal_obj$spectrum$idealized_component, f)
   expect_equal(signal_obj$spectrum$amplitude, a)
 })
 
 test_that("signal has correct metadata", {
   # Create a spectrum object with known components and amplitudes
   spectrum_obj <- spectrum(
-    component = 1,
+    idealized_component = 1,
     amplitude = 1
   )
 
@@ -65,7 +63,7 @@ test_that("signal constructor fails with non-spectrum input", {
 test_that("amplitude function in signal class works for a single-component spectrum", {
   # Create a spectrum object with a single frequency component (1 Hz) and amplitude (1)
   spectrum_obj <- spectrum(
-    component = c(1),  # 1 Hz frequency
+    idealized_component = c(1),  # 1 Hz frequency
     amplitude = c(1)   # Amplitude of 1
   )
 
@@ -83,7 +81,7 @@ test_that("amplitude function in signal class works for a single-component spect
 test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expected beating and original components", {
   # Create a spectrum with Feynman's example components
   spectrum_obj <- spectrum(
-    component = c(4, 5),  # Frequency components in Hz
+    idealized_component = c(4, 5),  # Frequency components in Hz
     amplitude = c(1.0, 1.0)  # Equal amplitudes for simplicity
   )
 
@@ -109,16 +107,16 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
 test_that("signal plot matches expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
-    component = c(4, 5),      # Frequencies in Hz
+    idealized_component = c(4, 5),      # Frequencies in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
   # Create the signal object from the spectrum
   signal_obj <- signal(spectrum_obj)
-  expect_equal(spectrum_obj$inverted, F)
+  expect_equal(spectrum_obj$extent_rate, EXTENT_RATE$rate)
   expect_equal(spectrum_obj$rationalized_cycles_per_reference, 4)
-  expect_equal(spectrum_obj$rationalized_fundamental, 1)
-  expect_equal(spectrum_obj$fundamental_cycle_length, 1)
+  expect_equal(spectrum_obj$rationalized_fundamental_component, 1)
+  expect_equal(spectrum_obj$rationalized_extent, 1)
 
   # Define label and coordinate range
   label <- "Feynman's Beats (4 Hz and 5 Hz)"
@@ -131,7 +129,7 @@ test_that("signal plot matches expected output for specified coordinate range", 
 test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
-    component = c(4, 5),      # Frequencies in Hz
+    idealized_component = c(4, 5),      # Frequencies in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -141,22 +139,14 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # Define label
   label <- "Feynman's Beats (4 Hz and 5 Hz) with 3 Full Cycles"
 
-  # Define the expected coordinate range for 3 full cycles
-  # Here, the fundamental_cycle_length is based on the minimum of the components (4 Hz, 5 Hz).
-  # Let's assume it's 1/4 Hz (i.e., 0.25 seconds) for simplicity. Thus, 3 cycles = 3 * 0.25 = 0.75 seconds.
-  coordinate_range_expected <- c(0, 0.75)
-
   # Capture the plot with vdiffr and check the default behavior
   vdiffr::expect_doppelganger(label, function() plot(signal_obj))
-
-  # Alternatively, check that the plot range indeed covers 3 full cycles
-  # You could inspect the axis limits or other aspects of the plot here.
 })
 
 test_that("detailed signal plots match expected output", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
-    component = c(4, 5),      # Frequencies in Hz
+    idealized_component = c(4, 5),      # Frequencies in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -168,15 +158,13 @@ test_that("detailed signal plots match expected output", {
   # Define label and coordinate range
   label <- "Feynman's Beats Details"
 
-  plot_details.signal(signal_obj, resolution = 1111)
-
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })
 test_that("10 random frequencies looks intersting", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
-    component = c(60,64,67,79,72) %>% midi_to_freq(),
+    idealized_component = c(60,64,67,79,72) %>% midi_to_freq(),
     amplitude =1 / (1:5)
   )
 
@@ -190,21 +178,4 @@ test_that("10 random frequencies looks intersting", {
 
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
-})
-
-test_that("detailed signal plot matches expected output for specified coordinate range", {
-  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
-  spectrum_obj <- wavelength_spectrum(
-    idealized_wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
-    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
-  )
-
-  # Create the signal object from the spectrum
-  signal_obj <- space_signal(spectrum_obj)
-
-  # Define label and coordinate range
-  label <- "Feynman's Beats Details"
-
-  # Use vdiffr to capture and test the plot output
-  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })

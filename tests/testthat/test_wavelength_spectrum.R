@@ -164,7 +164,7 @@ test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum
   expected_fundamental_wavelength <- wavelength_spectrum_obj$rationalized_cycles_per_reference * max(wavelength_components)
 
   # Test that fundamental_wavelength is correctly assigned
-  expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)
+  expect_equal(wavelength_spectrum_obj$rationalized_fundamental_wavelength, expected_fundamental_wavelength)
 })
 test_that("fundamental wavelength of tritone is longer than P1", {
   # Define wavelength components and amplitudes
@@ -177,7 +177,7 @@ test_that("fundamental wavelength of tritone is longer than P1", {
     amplitude = tt_amplitudes
   )
 
-  expect_equal(tt_wavelength_spectrum_obj$fundamental_wavelength,
+  expect_equal(tt_wavelength_spectrum_obj$rationalized_fundamental_wavelength,
                tt_wavelength_spectrum_obj$rationalized_cycles_per_reference * max(tt_wavelength_spectrum_obj$idealized_wavelength),
                tolerance = 0.1)
 
@@ -191,12 +191,12 @@ test_that("fundamental wavelength of tritone is longer than P1", {
     amplitude = P1_amplitudes
   )
 
-  expect_equal(P1_wavelength_spectrum_obj$fundamental_wavelength,
+  expect_equal(P1_wavelength_spectrum_obj$rationalized_fundamental_wavelength,
                P1_wavelength_spectrum_obj$rationalized_cycles_per_reference * max(P1_wavelength_spectrum_obj$idealized_wavelength),
                tolerance = 0.1)
 
 
-  expect_true(tt_wavelength_spectrum_obj$fundamental_wavelength > P1_wavelength_spectrum_obj$fundamental_wavelength)
+  expect_true(tt_wavelength_spectrum_obj$rationalized_fundamental_wavelength > P1_wavelength_spectrum_obj$rationalized_fundamental_wavelength)
 })
 
 test_that("wavelength_spectrum plot works with beat spectrum", {
@@ -282,17 +282,15 @@ test_that("wavelength spectrum with Feynman's 4 Hz and 5 Hz", {
   expect_equal(spectrum_obj$idealized_wavelength, c(69.84565, 87.30706), tolerance = 0.1)
   expect_equal(spectrum_obj$extent_rate, EXTENT_RATE$extent)
   expect_equal(spectrum_obj$rationalized_cycles_per_reference, 4)
-  expect_equal(spectrum_obj$rationalized_fundamental, 349.22, tolerance = 0.1)
-  expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$rationalized_fundamental_component, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$rationalized_fundamental_wavelength, 349.22, tolerance = 0.1)
   expect_equal(spectrum_obj$rationalized_extent, 349.22, tolerance = 0.1)
 
   beat_idealized_wavelength = spectrum_obj$idealized_wavelength[1] * spectrum_obj$idealized_wavelength[2] /
     abs(spectrum_obj$idealized_wavelength[1] - spectrum_obj$idealized_wavelength[2])
 
-  expect_equal(beat_idealized_wavelength, spectrum_obj$fundamental_wavelength,
+  expect_equal(beat_idealized_wavelength, spectrum_obj$rationalized_fundamental_wavelength,
                tolerance = 0.1)
-
-
 })
 
 test_that("reference is calculated correctly when NULL in the wavelength_spectrum class", {
@@ -305,7 +303,7 @@ test_that("reference is calculated correctly when NULL in the wavelength_spectru
   # Expect the calculated reference to be min(wavelength)
   expected_reference = max(spectrum_obj$idealized_wavelength)
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$rationalized_fundamental,
+  expect_equal(spectrum_obj$rationalized_fundamental_wavelength,
                expected_reference * spectrum_obj$rationalized_cycles_per_reference)
 
 })
@@ -320,7 +318,7 @@ test_that("reference can be explicitly set in the wavelength_spectrum class", {
 
   # Expect the explicitly set reference to be used
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$rationalized_fundamental,
+  expect_equal(spectrum_obj$rationalized_fundamental_wavelength,
                expected_reference * spectrum_obj$rationalized_cycles_per_reference)
 
 })

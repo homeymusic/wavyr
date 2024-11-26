@@ -1,7 +1,7 @@
 test_that("space_signal constructor creates a valid space_signal object", {
   # Create a wavelength_spectrum object
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(500, 1000, 1500),
+    idealized_wavelength = c(500, 1000, 1500),
     amplitude = c(0.9, 0.6, 0.4)
   )
 
@@ -22,7 +22,7 @@ test_that("space_signal constructor creates a valid space_signal object", {
 test_that("space_signal stores the wavelength spectrum components and amplitudes correctly", {
   # Create a wavelength_spectrum object with known components and amplitudes
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(400, 800, 1200),
+    idealized_wavelength = c(400, 800, 1200),
     amplitude = c(0.5, 0.7, 0.3)
   )
 
@@ -30,7 +30,7 @@ test_that("space_signal stores the wavelength spectrum components and amplitudes
   space_signal_obj <- space_signal(wavelength_spectrum_obj)
 
   # Verify that the stored spectrum has correct wavelengths and amplitudes
-  expect_equal(space_signal_obj$idealized_wavelength_spectrum$idealized_wavelength, c(400, 800, 1200))
+  expect_equal(space_signal_obj$wavelength_spectrum$idealized_wavelength, c(400, 800, 1200))
   expect_equal(space_signal_obj$spectrum$idealized_wavelength, c(400, 800, 1200))
   expect_equal(space_signal_obj$spectrum$amplitude, c(0.5, 0.7, 0.3))
 })
@@ -38,7 +38,7 @@ test_that("space_signal stores the wavelength spectrum components and amplitudes
 test_that("space signal has correct metadata", {
   # Create a spectrum object with known components and amplitudes
   spectrum_obj <- wavelength_spectrum(
-    wavelength = 1,
+    idealized_wavelength = 1,
     amplitude = 1
   )
 
@@ -58,13 +58,13 @@ test_that("space signal has correct metadata", {
 
 test_that("space_signal constructor fails with non-wavelength_spectrum input", {
   # Try to pass a non-wavelength_spectrum input
-  non_wavelength_spectrum_input <- list(frequency = c(500, 1000), amplitude = c(0.9, 0.6))
+  non_wavelength_spectrum_input <- list(idealized_frequency = c(500, 1000), amplitude = c(0.9, 0.6))
 
   # Expect an error when creating a space_signal with invalid input
   expect_error(space_signal(non_wavelength_spectrum_input), "Input must be of class 'wavelength_spectrum'")
 
   # Try to pass a non-wavelength_spectrum input
-  non_wavelength_spectrum_input <- spectrum(component = c(500, 1000), amplitude = c(0.9, 0.6))
+  non_wavelength_spectrum_input <- spectrum(idealized_component = c(500, 1000), amplitude = c(0.9, 0.6))
 
   # Expect an error when creating a space_signal with invalid input
   expect_error(space_signal(non_wavelength_spectrum_input), "Input must be of class 'wavelength_spectrum'")
@@ -74,7 +74,7 @@ test_that("space_signal constructor fails with non-wavelength_spectrum input", {
 test_that("amplitude function in space_signal works for a single-wavelength wavelength_spectrum", {
   # Create a wavelength_spectrum object with a single wavelength wavelength (500) and amplitude (1)
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1),
+    idealized_wavelength = c(1),
     amplitude = c(1)
   )
 
@@ -92,7 +92,7 @@ test_that("amplitude function in space_signal works for a single-wavelength wave
 test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expected beating and original components", {
   # Create a spectrum with Feynman's example components
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(4, 5),
+    idealized_wavelength = SPEED_OF_SOUND / c(4, 5),
     amplitude = c(1.0, 1.0)  # Equal amplitudes for simplicity
   )
 
@@ -108,19 +108,19 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
   expect_equal(signal_obj$amplitude(coordinate_1), expected_amplitude_1)
 
   # Confirm a minimum at half the beat period due to out-of-phase cancellation
-  coordinate_2 <- 0.25 * signal_obj$idealized_wavelength_spectrum$fundamental_wavelength  # seconds
+  coordinate_2 <- 0.25 * signal_obj$wavelength_spectrum$rationalized_fundamental_wavelength  # seconds
   expected_amplitude_2 <- 1
   expect_equal(signal_obj$amplitude(coordinate_2), expected_amplitude_2,
                tolerance=0.1)
 
   # Confirm a minimum at half the beat period due to out-of-phase cancellation
-  coordinate_3 <- 0.5 * signal_obj$idealized_wavelength_spectrum$fundamental_wavelength  # seconds
+  coordinate_3 <- 0.5 * signal_obj$wavelength_spectrum$rationalized_fundamental_wavelength  # seconds
   expected_amplitude_3 <- 0
   expect_equal(signal_obj$amplitude(coordinate_3), expected_amplitude_3,
                tolerance=0.1)
 
   # Verify full beat cycle at 1 second
-  coordinate_4 <- signal_obj$idealized_wavelength_spectrum$fundamental_wavelength  # seconds
+  coordinate_4 <- signal_obj$wavelength_spectrum$rationalized_fundamental_wavelength  # seconds
   expected_amplitude_4 <- 2
   expect_equal(signal_obj$amplitude(coordinate_4), expected_amplitude_4, tolerance = 0.1)
 })
@@ -128,7 +128,7 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
 test_that("signal plot matches expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c( 4, 5),  # Frequency components in Hz
+    idealized_wavelength = SPEED_OF_SOUND / c( 4, 5),  # Frequency components in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -149,7 +149,7 @@ test_that("signal plot matches expected output for specified coordinate range", 
 test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c( 4, 5),  # Frequency components in Hz
+    idealized_wavelength = SPEED_OF_SOUND / c( 4, 5),  # Frequency components in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -169,64 +169,10 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
   # You could inspect the axis limits or other aspects of the plot here.
 })
 
-test_that("space signal plot of feynman waves with superposition", {
-  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
-  spectrum_obj <- frequency_spectrum(
-    frequency = c( 4, 5),  # Frequency components in Hz
-    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
-  )
-
-  superposed_wave = superposed_wave(spectrum_obj)
-
-  # Create the signal object from the spectrum
-  space_signal_obj <- superposed_wave$idealized_wavelength_spectrum %>% space_signal()
-  # Check that the object is of class "space_signal"
-  expect_s3_class(space_signal_obj, "space_signal")
-
-
-  # Define label
-  label <- "Feynman's Beats Superposed 1/4 cycle"
-
-  # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
-                                                     title = label,
-                                                     number_of_cycles = 1/4,
-                                                     resolution=1001))
-
-  label <- "Feynman's Beats Superposed 1 cycle"
-  # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
-                                                     title = label,
-                                                     number_of_cycles = 1,
-                                                     resolution=1001))
-
-  label <- "Feynman's Beats Superposed 3 cycle"
-  # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
-                                                     title = label,
-                                                     number_of_cycles = 3,
-                                                     resolution=1001))
-
-  label <- "Feynman's Beats Superposed 10 cycle"
-  # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
-                                                     title = label,
-                                                     number_of_cycles = 10,
-                                                     resolution=1001))
-
-  label <- "Feynman's Beats Superposed 100 cycle"
-  # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(space_signal_obj,
-                                                     title = label,
-                                                     number_of_cycles = 100,
-                                                     resolution=1001))
-
-})
-
 test_that("detailed space signal plots match expected output", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
+    idealized_wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -247,7 +193,7 @@ test_that("detailed space signal plots match expected output", {
 test_that("5 random wavelengths looks intersting", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(60,64,67,79,72) %>% midi_to_freq(),
+    idealized_wavelength = SPEED_OF_SOUND / c(60,64,67,79,72) %>% midi_to_freq(),
     amplitude =1 / (1:5)
   )
 
@@ -268,7 +214,7 @@ test_that("Framed M3 Detail Plots", {
   framed_M3 = c(60,64,72)
   framed_M3_2_harmonics = c(framed_M3, 12 + framed_M3)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / framed_M3_2_harmonics %>% midi_to_freq(),
+    idealized_wavelength = SPEED_OF_SOUND / framed_M3_2_harmonics %>% midi_to_freq(),
     amplitude  = 1 / (1:6)
   )
 

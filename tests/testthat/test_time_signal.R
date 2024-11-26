@@ -1,7 +1,7 @@
 test_that("time_signal constructor creates a valid time_signal object", {
   # Create a frequency_spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(2, 4, 8),
+    idealized_frequency = c(2, 4, 8),
     amplitude = c(0.9, 0.6, 0.4)
   )
 
@@ -22,7 +22,7 @@ test_that("time_signal constructor creates a valid time_signal object", {
 test_that("time_signal stores the frequency spectrum components and amplitudes correctly", {
   # Create a frequency_spectrum object with known components and amplitudes
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(2, 4, 8),
+    idealized_frequency = c(2, 4, 8),
     amplitude = c(0.5, 0.7, 0.3)
   )
 
@@ -30,15 +30,15 @@ test_that("time_signal stores the frequency spectrum components and amplitudes c
   time_signal_obj <- time_signal(frequency_spectrum_obj)
 
   # Verify that the stored spectrum has correct frequencies and amplitudes
-  expect_equal(time_signal_obj$frequency_spectrum$frequency, c(2, 4, 8))
-  expect_equal(time_signal_obj$spectrum$frequency, c(2, 4, 8))
+  expect_equal(time_signal_obj$frequency_spectrum$idealized_frequency, c(2, 4, 8))
+  expect_equal(time_signal_obj$spectrum$idealized_frequency, c(2, 4, 8))
   expect_equal(time_signal_obj$spectrum$amplitude, c(0.5, 0.7, 0.3))
 })
 
 test_that("time signal has correct metadata", {
   # Create a spectrum object with known components and amplitudes
   spectrum_obj <- frequency_spectrum(
-    frequency = 1,
+    idealized_frequency = 1,
     amplitude = 1
   )
 
@@ -56,7 +56,7 @@ test_that("time signal has correct metadata", {
 
 test_that("time_signal constructor fails with non-frequency_spectrum input", {
   # Try to pass a non-frequency_spectrum input
-  non_frequency_spectrum_input <- list(frequency = c(4, 8), amplitude = c(0.9, 0.6))
+  non_frequency_spectrum_input <- list(idealized_frequency = c(4, 8), amplitude = c(0.9, 0.6))
 
   # Expect an error when creating a time_signal with invalid input
   expect_error(time_signal(non_frequency_spectrum_input), "Input must be of class 'frequency_spectrum'")
@@ -65,7 +65,7 @@ test_that("time_signal constructor fails with non-frequency_spectrum input", {
 test_that("amplitude function in time_signal works for a single-frequency frequency_spectrum", {
   # Create a frequency_spectrum object with a single frequency (1 Hz) and amplitude (1)
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(1),
+    idealized_frequency = c(1),
     amplitude = c(1)
   )
 
@@ -83,7 +83,7 @@ test_that("amplitude function in time_signal works for a single-frequency freque
 test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expected beating and original components", {
   # Create a spectrum with Feynman's example components
   spectrum_obj <- frequency_spectrum(
-    frequency = c(4, 5),
+    idealized_frequency = c(4, 5),
     amplitude = c(1.0, 1.0)  # Equal amplitudes for simplicity
   )
 
@@ -112,7 +112,7 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
 test_that("signal plot matches expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- frequency_spectrum(
-    frequency = c(4, 5),
+    idealized_frequency = c(4, 5),
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -130,7 +130,7 @@ test_that("signal plot matches expected output for specified coordinate range", 
 test_that("signal plot defaults to 3 full cycles when coordinate_range is not provided", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- frequency_spectrum(
-    frequency = c(4, 5),
+    idealized_frequency = c(4, 5),
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -149,7 +149,7 @@ test_that("signal plot defaults to 3 full cycles when coordinate_range is not pr
 test_that("time signal plot of feynman waves with superposition", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- frequency_spectrum(
-    frequency = c( 4, 5),  # Frequency components in Hz
+    idealized_frequency = c( 4, 5),  # Frequency components in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -204,12 +204,12 @@ test_that("time signal plot of feynman waves with superposition", {
                                                      number_of_cycles = 100,
                                                      resolution=1001))
 
-  })
+})
 
 test_that("detailed time signal plots match expected output for specified coordinate range", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- frequency_spectrum(
-    frequency = c(4, 5),      # Frequencies in Hz
+    idealized_frequency = c(4, 5),      # Frequencies in Hz
     amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
   )
 
@@ -228,7 +228,7 @@ test_that("detailed time signal plots match expected output for specified coordi
 test_that("5 random frequencies looks intersting", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- frequency_spectrum(
-    frequency = c(60,64,67,79,72) %>% midi_to_freq(),
+    idealized_frequency = c(60,64,67,79,72) %>% midi_to_freq(),
     amplitude =1 / (1:5)
   )
 

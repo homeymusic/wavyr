@@ -4,12 +4,16 @@
 \alias{wavelength_spectrum}
 \title{Create a Wavelength Spectrum}
 \usage{
-wavelength_spectrum(wavelength, amplitude = NULL, reference_component = NULL)
+wavelength_spectrum(
+  idealized_wavelength,
+  amplitude = NULL,
+  reference_component = NULL
+)
 }
 \arguments{
-\item{wavelength}{Either a numeric vector of wavelengths or a list with named \code{wavelength} and \code{amplitude} vectors.}
+\item{idealized_wavelength}{Either a numeric vector of idealized_wavelengths or a list with named \code{idealized_wavelength} and \code{amplitude} vectors.}
 
-\item{amplitude}{A numeric vector of amplitudes, if \code{wavelength} is a numeric vector.}
+\item{amplitude}{A numeric vector of amplitudes, if \code{idealized_wavelength} is a numeric vector.}
 
 \item{reference_component}{To compute the fundamental wavelength}
 }
@@ -18,5 +22,5 @@ An object of class \code{wavelength_spectrum} that inherits from \code{spectrum}
 }
 \description{
 Extends the \code{spectrum} class specifically for wavelength spectra.
-Accepts either direct numeric vectors or a list containing \code{wavelength} and \code{amplitude}.
+Accepts either direct numeric vectors or a list containing \code{idealized_wavelength} and \code{amplitude}.
 }

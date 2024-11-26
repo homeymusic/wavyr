@@ -38,8 +38,7 @@ wavelength_spectrum <- function(idealized_wavelength, amplitude = NULL, referenc
 
   # Add wavelength-specific fields
   spectrum_obj$idealized_wavelength <- spectrum_obj$idealized_component
-  spectrum_obj$fundamental_wavelength <- spectrum_obj$rationalized_fundamental
-  spectrum_obj$reference_component <- spectrum_obj$reference_component
+  spectrum_obj$rationalized_fundamental_wavelength <- spectrum_obj$rationalized_fundamental
 
   # Set class to wavelength_spectrum
   class(spectrum_obj) <- c("wavelength_spectrum", class(spectrum_obj))

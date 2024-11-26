@@ -3,7 +3,7 @@
 
 using namespace Rcpp;
 
-//' Calculate Beats from Components
+ //' Calculate Beats from Components
  //'
  //' Generate beats from two sets of components (extent or rate) and return their results.
  //'

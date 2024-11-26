@@ -38,7 +38,7 @@ frequency_spectrum <- function(idealized_frequency, amplitude = NULL, reference_
 
   # Add frequency-specific fields
   spectrum_obj$idealized_frequency <- spectrum_obj$idealized_component
-  spectrum_obj$rationalized_rationalized_fundamental <- spectrum_obj$rationalized_fundamental
+  spectrum_obj$rationalized_fundamental_frequency <- spectrum_obj$rationalized_fundamental
 
   # Set class to frequency_spectrum
   class(spectrum_obj) <- c("frequency_spectrum", class(spectrum_obj))

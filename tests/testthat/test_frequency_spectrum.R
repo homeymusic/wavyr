@@ -184,7 +184,7 @@ test_that("rationalized_fundamental is correctly calculated in frequency_spectru
   expected_rationalized_fundamental <- min(freq_components) * frequency_spectrum_obj$rationalized_cycles_per_reference
 
   # Test that rationalized_fundamental is correctly assigned
-  expect_equal(frequency_spectrum_obj$rationalized_fundamental, expected_rationalized_fundamental)
+  expect_equal(frequency_spectrum_obj$rationalized_fundamental_frequency, expected_rationalized_fundamental)
 })
 
 test_that("rationalized_fundamental or tritone is lower than P1", {
@@ -198,7 +198,7 @@ test_that("rationalized_fundamental or tritone is lower than P1", {
     amplitude = tt_amplitudes
   )
 
-  expect_equal(tt_frequency_spectrum_obj$rationalized_fundamental, 13.08,
+  expect_equal(tt_frequency_spectrum_obj$rationalized_fundamental_frequency, 13.08,
                tolerance = 0.1)
 
   # Define frequency components and amplitudes
@@ -211,10 +211,10 @@ test_that("rationalized_fundamental or tritone is lower than P1", {
     amplitude = P1_amplitudes
   )
 
-  expect_equal(P1_frequency_spectrum_obj$rationalized_fundamental, 261.63,
+  expect_equal(P1_frequency_spectrum_obj$rationalized_fundamental_frequency, 261.63,
                tolerance = 0.1)
 
-  expect_true(tt_frequency_spectrum_obj$rationalized_fundamental < P1_frequency_spectrum_obj$rationalized_fundamental)
+  expect_true(tt_frequency_spectrum_obj$rationalized_fundamental_frequency < P1_frequency_spectrum_obj$rationalized_fundamental_frequency)
 })
 
 test_that("cycle lengths vary correctly for JI major triad in frequency_spectrum", {
@@ -230,8 +230,8 @@ test_that("cycle lengths vary correctly for JI major triad in frequency_spectrum
 
   expect_equal(frequency_spectrum_obj$extent_rate, EXTENT_RATE$rate)
   expect_equal(frequency_spectrum_obj$rationalized_cycles_per_reference, 4)
-  expect_equal(frequency_spectrum_obj$rationalized_fundamental, 25)
-  expect_equal(frequency_spectrum_obj$rationalized_extent, 1/frequency_spectrum_obj$rationalized_fundamental)
+  expect_equal(frequency_spectrum_obj$rationalized_fundamental_frequency, 25)
+  expect_equal(frequency_spectrum_obj$rationalized_extent, 1/frequency_spectrum_obj$rationalized_fundamental_frequency)
 
   # Define the expected cycle lengths based on the JI ratios (1, 4, and 2)
   expected_cycle_lengths <- c(1, 4, 2)
@@ -250,7 +250,7 @@ test_that("reference is calculated correctly when NULL in the frequency_spectrum
 
   expected_reference = min(spectrum_obj$idealized_frequency)
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$rationalized_fundamental,
+  expect_equal(spectrum_obj$rationalized_fundamental_frequency,
                expected_reference / spectrum_obj$rationalized_cycles_per_reference)
 
 })
@@ -265,7 +265,7 @@ test_that("reference can be explicitly set in the frequency_spectrum class", {
 
   # Expect the explicitly set reference to be used
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$rationalized_fundamental,
+  expect_equal(spectrum_obj$rationalized_fundamental_frequency,
                expected_reference / spectrum_obj$rationalized_cycles_per_reference)
 
 })

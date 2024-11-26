@@ -4,12 +4,16 @@
 \alias{frequency_spectrum}
 \title{Create a Frequency Spectrum}
 \usage{
-frequency_spectrum(frequency, amplitude = NULL, reference_component = NULL)
+frequency_spectrum(
+  idealized_frequency,
+  amplitude = NULL,
+  reference_component = NULL
+)
 }
 \arguments{
-\item{frequency}{Either a numeric vector of frequencies or a list with named \code{frequency} and \code{amplitude} vectors.}
+\item{idealized_frequency}{Either a numeric vector of frequencies or a list with named \code{idealized_frequency} and \code{amplitude} vectors.}
 
-\item{amplitude}{A numeric vector of amplitudes, if \code{frequency} is a numeric vector.}
+\item{amplitude}{A numeric vector of amplitudes, if \code{idealized_frequency} is a numeric vector.}
 
 \item{reference_component}{Used to compute the fundamental frequency from the cycle length}
 }

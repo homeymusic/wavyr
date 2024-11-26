@@ -3,13 +3,13 @@ source(testthat::test_path("helper.R"))
 test_that("we can create a new wave with a frequency spectrum, wavelength spectrum, and phase", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a wavelength spectrum
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -26,16 +26,16 @@ test_that("we can create a new wave with a frequency spectrum, wavelength spectr
   # Expectations to check wave creation
   expect_s3_class(wave_obj, "wave")
   expect_equal(wave_obj$phase, phase)
-  expect_equal(wave_obj$frequency_spectrum$component, c(100, 200, 300))
+  expect_equal(wave_obj$frequency_spectrum$idealized_component, c(100, 200, 300))
   expect_equal(wave_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_equal(sort(wave_obj$idealized_wavelength_spectrum$component), sort(c(1, 0.5, 0.33)))
-  expect_equal(sort(wave_obj$idealized_wavelength_spectrum$amplitude), sort(c(1.0, 0.8, 0.5)))
+  expect_equal(sort(wave_obj$wavelength_spectrum$idealized_component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(wave_obj$wavelength_spectrum$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
 test_that("we can create a new wave with just a frequency spectrum and it generates the wavelength spectrum automatically", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -53,23 +53,23 @@ test_that("we can create a new wave with just a frequency spectrum and it genera
   expect_equal(wave_obj$phase, phase)
 
   # Verify that frequency spectrum was set correctly
-  expect_equal(wave_obj$frequency_spectrum$component %>% sort(), c(100, 200, 300) %>% sort())
+  expect_equal(wave_obj$frequency_spectrum$idealized_component %>% sort(), c(100, 200, 300) %>% sort())
   expect_equal(wave_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 
   # Verify that wavelength spectrum was generated correctly
   expected_wavelengths <- SPEED_OF_SOUND / c(100, 200, 300)
-  expect_equal(wave_obj$idealized_wavelength_spectrum$component %>% sort(), expected_wavelengths %>% sort())
-  expect_equal(wave_obj$idealized_wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(wave_obj$wavelength_spectrum$idealized_component %>% sort(), expected_wavelengths %>% sort())
+  expect_equal(wave_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("we can create a general wave with only a frequency spectrum and no wavelength spectrum or phase", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(100, 200, 300),
+    idealized_wavelength = SPEED_OF_SOUND / c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -81,25 +81,25 @@ test_that("we can create a general wave with only a frequency spectrum and no wa
 
   # Expectations to check wave creation
   expect_s3_class(wave_obj, "wave")
-  expect_equal(wave_obj$frequency_spectrum$frequency %>% sort(), c(100, 200, 300) %>% sort())
+  expect_equal(wave_obj$frequency_spectrum$idealized_frequency %>% sort(), c(100, 200, 300) %>% sort())
   expect_equal(wave_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(
-    wave_obj$idealized_wavelength_spectrum$idealized_wavelength %>% sort(),
+    wave_obj$wavelength_spectrum$idealized_wavelength %>% sort(),
     (SPEED_OF_SOUND / c(100, 200, 300)) %>% sort())
-  expect_equal(wave_obj$idealized_wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(wave_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(wave_obj$phase,0)
 })
 
 test_that("wave with wavelength spectrum and frequency spectrum but no phase works as expected", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a wavelength spectrum
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -111,23 +111,23 @@ test_that("wave with wavelength spectrum and frequency spectrum but no phase wor
 
   # Expectations to check wave creation
   expect_s3_class(wave_obj, "wave")
-  expect_equal(wave_obj$frequency_spectrum$component %>% sort(), c(100, 200, 300) %>% sort())
+  expect_equal(wave_obj$frequency_spectrum$idealized_component %>% sort(), c(100, 200, 300) %>% sort())
   expect_equal(wave_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
-  expect_equal(wave_obj$idealized_wavelength_spectrum$component %>% sort(), c(1, 0.5, 0.33) %>% sort())
-  expect_equal(wave_obj$idealized_wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(wave_obj$wavelength_spectrum$idealized_component %>% sort(), c(1, 0.5, 0.33) %>% sort())
+  expect_equal(wave_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(wave_obj$phase,0)
 })
 
 test_that("wave's indexed_spectra variable allows iteration to access all values at once, accounting for different amplitudes", {
   # Create a frequency spectrum
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a wavelength spectrum with different amplitudes
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND  / c(100, 200, 300),
+    idealized_wavelength = SPEED_OF_SOUND  / c(100, 200, 300),
     amplitude = c(0.9, 0.7, 0.4)
   )
 
@@ -142,10 +142,10 @@ test_that("wave's indexed_spectra variable allows iteration to access all values
 
   # Expected values accounting for different amplitudes
   expected_values <-tibble::tibble(
-    frequency = c(100,200,300),
+    idealized_frequency = c(100,200,300),
     frequency_amplitude = c(1,0.8,0.5),
     frequency_cycle_length = c(1,1,1),
-    wavelength = c(3.49,1.75,1.16),
+    idealized_wavelength = c(3.49,1.75,1.16),
     wavelength_amplitude = c(0.9,0.7,0.4),
     wavelength_cycle_length = c(1,2,1)
   )
@@ -160,8 +160,8 @@ test_that("fundamental_amplitude correctly computes amplitude for the fundamenta
   amplitudes <- c(1.0, 0.8, 0.5)
 
   # Create frequency_spectrum and wavelength_spectrum objects
-  frequency_spectrum_obj <- frequency_spectrum(frequency = freq_components, amplitude = amplitudes)
-  wavelength_spectrum_obj <- wavelength_spectrum(wavelength = SPEED_OF_SOUND / freq_components, amplitude = amplitudes)
+  frequency_spectrum_obj <- frequency_spectrum(idealized_frequency = freq_components, amplitude = amplitudes)
+  wavelength_spectrum_obj <- wavelength_spectrum(idealized_wavelength = SPEED_OF_SOUND / freq_components, amplitude = amplitudes)
 
   # Create wave object with phase = 0 for simplicity
   wave_obj <- wave(frequency_spectrum = frequency_spectrum_obj, wavelength_spectrum = wavelength_spectrum_obj, phase = 0)
@@ -177,13 +177,13 @@ test_that("fundamental_amplitude correctly computes amplitude for the fundamenta
 test_that("composite_amplitude calculates correct values for given x and t", {
   # Create frequency_spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(1.0, 0.8)
   )
 
   # Create wavelength_spectrum object
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(3.43, 1.72),  # Corresponding wavelengths to 100 Hz and 200 Hz
+    idealized_wavelength = c(3.43, 1.72),  # Corresponding wavelengths to 100 Hz and 200 Hz
     amplitude = c(1.0, 0.8)
   )
 
@@ -207,13 +207,13 @@ test_that("composite_amplitude calculates correct values for given x and t", {
 test_that("composite_amplitude only accepts scalar values for x and t", {
   # Create frequency_spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(1.0, 0.8)
   )
 
   # Create wavelength_spectrum object
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(3.43, 1.72),  # Corresponding wavelengths to 100 Hz and 200 Hz
+    idealized_wavelength = c(3.43, 1.72),  # Corresponding wavelengths to 100 Hz and 200 Hz
     amplitude = c(1.0, 0.8)
   )
 
@@ -250,11 +250,11 @@ test_that("composite_amplitude only accepts scalar values for x and t", {
 test_that("fundamental_amplitude throws an error for non-scalar x or t values", {
   # Create frequency_spectrum and wavelength_spectrum objects
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -277,7 +277,7 @@ test_that('frequency_spectrum is correct for M3', {
   f_spectrum = frequency_spectrum_for(interval_midi, num_harmonics=2)
 
   l_spectrum <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / f_spectrum$frequency,
+    idealized_wavelength = SPEED_OF_SOUND / f_spectrum$idealized_frequency,
     amplitude  = f_spectrum$amplitude
   )
 
@@ -287,7 +287,7 @@ test_that('frequency_spectrum is correct for M3', {
     wavelength_spectrum = l_spectrum
   )
 
-  expect_equal(wave$indexed_spectra$frequency, f_spectrum$frequency, tolerance=0.1)
+  expect_equal(wave$indexed_spectra$idealized_frequency, f_spectrum$idealized_frequency, tolerance=0.1)
   expect_equal(wave$indexed_spectra$frequency_cycle_length, c(1,3,1,2,1), tolerance=0.1)
 
 })
@@ -296,13 +296,13 @@ test_that("wave plot generates correctly with time and space grid", {
   # Create a frequency_spectrum object
   f <- c(100, 200, 300)
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a wavelength_spectrum object with independent wavelengths
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / f,
+    idealized_wavelength = SPEED_OF_SOUND / f,
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -337,7 +337,7 @@ test_that("cohenerce and modulation metrics for ionian and phrygian triads", {
 test_that("wave computes fundamental frequency spectrum correctly", {
   # Create a frequency spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -348,21 +348,21 @@ test_that("wave computes fundamental frequency spectrum correctly", {
   )
 
   # Check that the fundamental frequency spectrum is generated correctly
-  expect_s3_class(wave_obj$rationalized_fundamental_spectrum, "frequency_spectrum")
+  expect_s3_class(wave_obj$rationalized_fundamental_frequency_spectrum, "frequency_spectrum")
   expect_equal(
-    wave_obj$rationalized_fundamental_spectrum$frequency,
-    frequency_spectrum_obj$rationalized_fundamental
+    wave_obj$rationalized_fundamental_frequency_spectrum$idealized_frequency,
+    frequency_spectrum_obj$rationalized_fundamental_frequency
   )
   expect_equal(
-    wave_obj$rationalized_fundamental_spectrum$amplitude,
-    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$idealized_wavelength_spectrum$amplitude)
+    wave_obj$rationalized_fundamental_frequency_spectrum$amplitude,
+    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$wavelength_spectrum$amplitude)
   )
 })
 
 test_that("wave computes fundamental wavelength spectrum correctly", {
   # Create a frequency spectrum object
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -373,14 +373,14 @@ test_that("wave computes fundamental wavelength spectrum correctly", {
   )
 
   # Check that the fundamental wavelength spectrum is generated correctly
-  expect_s3_class(wave_obj$fundamental_wavelength_spectrum, "wavelength_spectrum")
+  expect_s3_class(wave_obj$rationalized_fundamental_wavelength_spectrum, "wavelength_spectrum")
   expect_equal(
-    wave_obj$fundamental_wavelength_spectrum$idealized_wavelength,
-    wave_obj$idealized_wavelength_spectrum$fundamental_wavelength
+    wave_obj$rationalized_fundamental_wavelength_spectrum$idealized_wavelength,
+    wave_obj$wavelength_spectrum$rationalized_fundamental_wavelength
   )
   expect_equal(
-    wave_obj$fundamental_wavelength_spectrum$amplitude,
-    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$idealized_wavelength_spectrum$amplitude)
+    wave_obj$rationalized_fundamental_wavelength_spectrum$amplitude,
+    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$wavelength_spectrum$amplitude)
   )
 })
 
@@ -388,11 +388,11 @@ test_that("wave computes fundamental wavelength spectrum correctly", {
 test_that("Adding two waves with different components combines components and amplitudes", {
   # Define frequency spectra with distinct components
   frequency_spectrum_1 <- frequency_spectrum(
-    frequency = c(100, 150, 300),
+    idealized_frequency = c(100, 150, 300),
     amplitude = c(1.0, 0.8, 0.6)
   )
   frequency_spectrum_2 <- frequency_spectrum(
-    frequency = c(300, 375, 900),
+    idealized_frequency = c(300, 375, 900),
     amplitude = c(0.6, 0.4, 0.2)
   )
 
@@ -412,7 +412,7 @@ test_that("Adding two waves with different components combines components and am
 
   # Expectations for combined frequency spectrum
   expect_equal(
-    sort(combined_wave$frequency_spectrum$frequency),
+    sort(combined_wave$frequency_spectrum$idealized_frequency),
     sort(c(100, 150, 300, 375, 900))
   )
   expect_equal(
@@ -425,11 +425,11 @@ test_that("Adding two waves with different components combines components and am
 test_that("Adding two waves with identical components sums their amplitudes", {
   # Define frequency spectra with identical components
   frequency_spectrum_1 <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(1.0, 0.8)
   )
   frequency_spectrum_2 <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(0.5, 0.3)
   )
 
@@ -442,7 +442,7 @@ test_that("Adding two waves with identical components sums their amplitudes", {
 
   # Expectations for combined frequency spectrum
   expect_equal(
-    combined_wave$frequency_spectrum$frequency,
+    combined_wave$frequency_spectrum$idealized_frequency,
     c(100, 200)
   )
 
@@ -458,11 +458,11 @@ test_that("Adding two waves with identical components sums their amplitudes", {
 test_that("Adding two waves with some overlapping components correctly sums and combines", {
   # Define frequency spectra with some overlapping and some distinct components
   frequency_spectrum_1 <- frequency_spectrum(
-    frequency = c(100, 200, 300),
+    idealized_frequency = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.6)
   )
   frequency_spectrum_2 <- frequency_spectrum(
-    frequency = c(200, 300, 400),
+    idealized_frequency = c(200, 300, 400),
     amplitude = c(0.5, 0.3, 0.4)
   )
 
@@ -475,7 +475,7 @@ test_that("Adding two waves with some overlapping components correctly sums and 
 
   # Expectations for combined frequency spectrum
   expect_equal(
-    sort(combined_wave$frequency_spectrum$frequency),
+    sort(combined_wave$frequency_spectrum$idealized_frequency),
     sort(c(100, 200, 300, 400))
   )
 
@@ -491,15 +491,15 @@ test_that("Adding two waves with some overlapping components correctly sums and 
 test_that("Adding multiple waves combines components and amplitudes correctly", {
   # Define frequency spectra for three waves
   frequency_spectrum_1 <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(1.0, 0.8)
   )
   frequency_spectrum_2 <- frequency_spectrum(
-    frequency = c(300, 400),
+    idealized_frequency = c(300, 400),
     amplitude = c(0.6, 0.4)
   )
   frequency_spectrum_3 <- frequency_spectrum(
-    frequency = c(200, 500),
+    idealized_frequency = c(200, 500),
     amplitude = c(0.3, 0.7)
   )
 
@@ -515,7 +515,7 @@ test_that("Adding multiple waves combines components and amplitudes correctly", 
   expected_frequencies <- sort(c(100, 200, 300, 400, 500))
   expected_amplitudes <- c(1.0, 1.1, 0.6, 0.4, 0.7)  # Amplitudes for each frequency after summing
 
-  expect_equal(sort(combined_wave$frequency_spectrum$frequency), expected_frequencies)
+  expect_equal(sort(combined_wave$frequency_spectrum$idealized_frequency), expected_frequencies)
   expect_equal(combined_wave$frequency_spectrum$amplitude, expected_amplitudes)
 })
 
@@ -523,15 +523,15 @@ test_that("Adding multiple waves combines components and amplitudes correctly", 
 test_that("Summing a vector of waves combines components and amplitudes correctly, including wavelength values", {
   # Define frequency spectra for multiple waves
   frequency_spectrum_1 <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(1.0, 0.8)
   )
   frequency_spectrum_2 <- frequency_spectrum(
-    frequency = c(300, 200),
+    idealized_frequency = c(300, 200),
     amplitude = c(0.6, 0.4)
   )
   frequency_spectrum_3 <- frequency_spectrum(
-    frequency = c(500, 100),
+    idealized_frequency = c(500, 100),
     amplitude = c(0.5, 0.3)
   )
 
@@ -553,27 +553,27 @@ test_that("Summing a vector of waves combines components and amplitudes correctl
   expected_wavelengths <- sort(SPEED_OF_SOUND / expected_frequencies)
 
   # Check that the combined wave has the correct frequencies and amplitudes
-  expect_equal(sort(combined_wave$frequency_spectrum$frequency), expected_frequencies)
+  expect_equal(sort(combined_wave$frequency_spectrum$idealized_frequency), expected_frequencies)
   expect_equal(sort(combined_wave$frequency_spectrum$amplitude), expected_amplitudes)
 
   # Check that the combined wave has the correct wavelengths and corresponding amplitudes
-  expect_equal(sort(combined_wave$idealized_wavelength_spectrum$idealized_wavelength), expected_wavelengths)
-  expect_equal(combined_wave$idealized_wavelength_spectrum$amplitude, expected_amplitudes)
+  expect_equal(sort(combined_wave$wavelength_spectrum$idealized_wavelength), expected_wavelengths)
+  expect_equal(combined_wave$wavelength_spectrum$amplitude, expected_amplitudes)
 })
 
 # Test for summing a vector of waves, including a superposed_wave, combines components and amplitudes correctly
 test_that("Summing a vector of waves, including a superposed_wave, combines components and amplitudes correctly, including wavelength values", {
   # Define frequency spectra for multiple waves
   frequency_spectrum_1 <- frequency_spectrum(
-    frequency = c(100, 200),
+    idealized_frequency = c(100, 200),
     amplitude = c(1.0, 0.8)
   )
   frequency_spectrum_2 <- frequency_spectrum(
-    frequency = c(300, 200),
+    idealized_frequency = c(300, 200),
     amplitude = c(0.6, 0.4)
   )
   frequency_spectrum_3 <- frequency_spectrum(
-    frequency = c(500, 100),
+    idealized_frequency = c(500, 100),
     amplitude = c(0.5, 0.3)
   )
 
@@ -596,11 +596,11 @@ test_that("Summing a vector of waves, including a superposed_wave, combines comp
   expected_wavelength_amplitudes <- c(0.5, 0.8, 0.6, 1.2 ,1.3)
 
   # Check that the combined wave has the correct frequencies and amplitudes
-  expect_equal(sort(combined_wave$frequency_spectrum$frequency), expected_frequencies)
+  expect_equal(sort(combined_wave$frequency_spectrum$idealized_frequency), expected_frequencies)
   expect_equal(sort(combined_wave$frequency_spectrum$amplitude), expected_amplitudes)
 
   # Check that the combined wave has the correct wavelengths and corresponding amplitudes
-  expect_equal(sort(combined_wave$idealized_wavelength_spectrum$idealized_wavelength), expected_wavelengths,
+  expect_equal(sort(combined_wave$wavelength_spectrum$idealized_wavelength), expected_wavelengths,
                tolerance = FLOATING_POINT_TOLERANCE)
-  expect_equal(combined_wave$idealized_wavelength_spectrum$amplitude, expected_wavelength_amplitudes)
+  expect_equal(combined_wave$wavelength_spectrum$amplitude, expected_wavelength_amplitudes)
 })

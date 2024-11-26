@@ -14,7 +14,7 @@ signal <- function(spectrum) {
 
   amplitude_fn <- function(coordinate) {
     # Calculate the sum of cosine components with the adjusted component
-    sum(spectrum$amplitude * cos(2 * pi * spectrum$signal_component * coordinate))
+    sum(spectrum$amplitude * cos(2 * pi * spectrum$idealized_signal_component * coordinate))
   }
 
   plot_color = colors_homey$neutral
@@ -86,7 +86,7 @@ plot.signal <- function(x, title = '', coordinate_range = NULL, number_of_cycles
   # Calculate the coordinate range based on number_of_cycles
   if (is.null(coordinate_range)) {
     # If coordinate_range is not provided, calculate it based on the fundamental cycle length
-    coordinate_range <- c(0, number_of_cycles * x$spectrum$fundamental_cycle_length)
+    coordinate_range <- c(0, number_of_cycles * x$spectrum$rationalized_extent)
   }
 
   # Validate coordinate_range
@@ -153,7 +153,7 @@ plot_details.signal <- function(x, title = '', coordinate_range = NULL, number_o
   # Calculate the coordinate range based on number_of_cycles
   if (is.null(coordinate_range)) {
     # If coordinate_range is not provided, calculate it based on the fundamental cycle length
-    coordinate_range <- c(0, number_of_cycles * x$spectrum$fundamental_cycle_length)
+    coordinate_range <- c(0, number_of_cycles * x$spectrum$rationalized_extent)
   }
 
   # Validate coordinate_range
@@ -161,23 +161,22 @@ plot_details.signal <- function(x, title = '', coordinate_range = NULL, number_o
     stop("coordinate_range must be a numeric vector of length 2.")
   }
 
-
   # Create the composite wave plot
   composite_plot <- x %>%
     plot(title = paste(title,
                        'Fundamental',
                        paste0(x$spectral_label, ':'),
-                       sprintf("%.2f", x$spectrum$rationalized_fundamental),
+                       sprintf("%.2f", x$spectrum$rationalized_fundamental_component),
                        paste0('(',x$spectral_units,')')),
          coordinate_range = coordinate_range,
          resolution = resolution)
 
   # Generate individual plots for each component in the spectrum
   spectrum_type = get(class(x$spectrum)[1])
-  individual_plots <- lapply(seq_along(x$spectrum$component), function(i) {
+  individual_plots <- lapply(seq_along(x$spectrum$idealized_component), function(i) {
     # Create a single spectrum for the current component
     single_spectrum <- spectrum_type(
-      x$spectrum$component[i],
+      x$spectrum$idealized_component[i],
       amplitude = x$spectrum$amplitude[i],
       reference_component = x$reference_component
     )
@@ -188,7 +187,7 @@ plot_details.signal <- function(x, title = '', coordinate_range = NULL, number_o
       signal_type() %>%
       plot(title = paste(
         paste0(x$spectral_label, ':'),
-        sprintf("%.2f", x$spectrum$component[i]), paste0('(',x$spectral_units,')')),
+        sprintf("%.2f", x$spectrum$idealized_component[i]), paste0('(',x$spectral_units,')')),
         coordinate_range = coordinate_range,
         resolution = resolution)
   })

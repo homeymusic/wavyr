@@ -4,7 +4,7 @@ test_that("feynman freqs without superposition", {
   f = c(4,5)
   a = c(1,1)
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = a
   )
 
@@ -23,7 +23,7 @@ test_that("feynman freqs with superposition", {
   f = c(4,5)
   a = c(1,1)
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = f,
+    idealized_frequency = f,
     amplitude = a
   )
 

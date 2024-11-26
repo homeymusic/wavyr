@@ -1,4 +1,4 @@
-test_that("veryifry what happen with 11 harmonics", {
+test_that("verify what happen with 11 harmonics", {
   # Define the fundamental frequency and create harmonics excluding the fundamental
   fundamental_freq <- 100
   harmonics <- 1:11  # Harmonics from 2nd to 11th
@@ -6,7 +6,7 @@ test_that("veryifry what happen with 11 harmonics", {
   amplitudes <- 1 / harmonics  # Amplitudes decrease with each harmonic for realism
 
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = frequencies,
+    idealized_frequency = frequencies,
     amplitude = amplitudes
   )
 
@@ -16,14 +16,14 @@ test_that("veryifry what happen with 11 harmonics", {
   )
 
   # Confirm that the fundamental frequency (100 Hz) is not in superposed_wave_obj$frequency_spectrum
-  expect_true(any(superposed_wave_obj$frequency_spectrum$frequency == fundamental_freq))
+  expect_true(any(superposed_wave_obj$frequency_spectrum$idealized_frequency == fundamental_freq))
 
   # Calculate the fundamental wavelength
   fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- superposed_wave_obj$idealized_wavelength_spectrum
+  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance))
 
   sub_t = 'All Harmonics'
@@ -41,7 +41,6 @@ test_that("veryifry what happen with 11 harmonics", {
          beat_wavelength_spectrum_color = colors_homey$beat)
   })
 
-
 })
 
 test_that("superposed_wave recovers missing fundamental in wavelength spectrum with summed amplitude", {
@@ -52,7 +51,7 @@ test_that("superposed_wave recovers missing fundamental in wavelength spectrum w
   amplitudes <- 1 / harmonics  # Amplitudes decrease with each harmonic for realism
 
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = frequencies,
+    idealized_frequency = frequencies,
     amplitude = amplitudes
   )
 
@@ -62,14 +61,14 @@ test_that("superposed_wave recovers missing fundamental in wavelength spectrum w
   )
 
   # Confirm that the fundamental frequency (100 Hz) is not in superposed_wave_obj$frequency_spectrum
-  expect_false(any(superposed_wave_obj$frequency_spectrum$frequency == fundamental_freq))
+  expect_false(any(superposed_wave_obj$frequency_spectrum$idealized_frequency == fundamental_freq))
 
   # Calculate the fundamental wavelength
   fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- superposed_wave_obj$idealized_wavelength_spectrum
+  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance))
 
   # Check that the amplitude for this fundamental wavelength is the sum of all frequency amplitudes
@@ -102,7 +101,7 @@ test_that("superposed_wave recovers missing fundamental in wavelength spectrum w
   amplitudes <- 1 / harmonics  # Amplitudes decrease with each harmonic for realism
 
   frequency_spectrum_obj <- frequency_spectrum(
-    frequency = frequencies,
+    idealized_frequency = frequencies,
     amplitude = amplitudes
   )
 
@@ -112,17 +111,17 @@ test_that("superposed_wave recovers missing fundamental in wavelength spectrum w
   )
 
   # Confirm that the fundamental frequency (100 Hz) is not in superposed_wave_obj$frequency_spectrum
-  expect_false(any(superposed_wave_obj$frequency_spectrum$frequency == fundamental_freq))
+  expect_false(any(superposed_wave_obj$frequency_spectrum$idealized_frequency == fundamental_freq))
   # confirm that only the expected harmonics are in the freq spectrum:
   expect_equal(harmonics, c(4,5,7,8,11))
-  expect_equal(harmonics, round(superposed_wave_obj$frequency_spectrum$frequency / fundamental_freq))
+  expect_equal(harmonics, round(superposed_wave_obj$frequency_spectrum$idealized_frequency / fundamental_freq))
 
   # Calculate the fundamental wavelength
   fundamental_wavelength <- SPEED_OF_SOUND / fundamental_freq
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- superposed_wave_obj$idealized_wavelength_spectrum
+  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
   expect_true(any(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance))
 
   # Check that the amplitude for this fundamental wavelength is the sum of all frequency amplitudes

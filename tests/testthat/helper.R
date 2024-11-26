@@ -31,7 +31,7 @@ spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
               function(freq, amp) {
                 n  <- seq_len(num_harmonics)
                 df <- data.frame(
-                  frequency = freq * n,
+                  idealized_frequency = freq * n,
                   amplitude = 1 * 10 ^ ( -roll_off_dB * log2(n) / 20)
                 )
                 df
@@ -44,7 +44,9 @@ frequency_spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
 }
 
 wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
-    frequency_spectrum_for(x, num_harmonics = 1, roll_off_dB = 1) %>%
+    frequency_spectrum_for(x,
+                           num_harmonics = num_harmonics,
+                           roll_off_dB = roll_off_dB) %>%
     wave()
 }
 

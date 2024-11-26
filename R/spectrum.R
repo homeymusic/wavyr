@@ -86,14 +86,14 @@ spectrum.list <- function(x, extent_rate = EXTENT_RATE$rate, reference_component
   # Calculate the rationalized fundamental whether the representation is a rate or an extent
   if (extent_rate == EXTENT_RATE$rate) {
     if (is.null(reference_component)) reference_component <- min(idealized_component)
-    rationalized_fundamental <- reference_component / rationalized_cycles_per_reference
-    rationalized_extent <- 1 / rationalized_fundamental
+    rationalized_fundamental_component <- reference_component / rationalized_cycles_per_reference
+    rationalized_extent <- 1 / rationalized_fundamental_component
     idealized_signal_component <- idealized_component
     rationalized_signal_component <- rationalized_component
   } else if (extent_rate == EXTENT_RATE$extent) {
     if (is.null(reference_component)) reference_component <- max(idealized_component)
-    rationalized_fundamental <- reference_component * rationalized_cycles_per_reference
-    rationalized_extent <- rationalized_fundamental
+    rationalized_fundamental_component <- reference_component * rationalized_cycles_per_reference
+    rationalized_extent <- rationalized_fundamental_component
     idealized_signal_component <- 1 / idealized_component
     rationalized_signal_component <- 1 / rationalized_component
   }
@@ -107,7 +107,7 @@ spectrum.list <- function(x, extent_rate = EXTENT_RATE$rate, reference_component
       amplitude = amplitude,
 
       rationalized_cycles_per_reference = rationalized_cycles_per_reference,
-      rationalized_fundamental = rationalized_fundamental,
+      rationalized_fundamental_component = rationalized_fundamental_component,
       rationalized_extent = rationalized_extent,
 
       idealized_signal_component = idealized_signal_component,
@@ -127,9 +127,9 @@ print.spectrum <- function(x, ...) {
   cat("Idealized Components:", x$idealized_component, "\n")
   cat("Rationalized Components:", x$irationalized_component, "\n")
   cat("Amplitudes:", x$amplitude, "\n")
-  cat("Relative Cycle Length:", x$rationalized_cycle_length, "\n")
-  cat("Rationalized Fundamental:", x$rationalized_fundamental, "\n")
-  cat("Rationalized Cycle Length:", x$rationalized_cycle_length, "\n")
+  cat("Rationalized Extent:", x$rationalized_extent, "\n")
+  cat("Rationalized Fundamental Component:", x$rationalized_fundamental_component, "\n")
+  cat("Rationalized Cycles per Reference:", x$rationalized_cycles_per_reference, "\n")
   cat("Extent or Rate:", x$extent_rate, "\n")
 }
 
