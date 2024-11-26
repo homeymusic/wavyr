@@ -3,13 +3,13 @@
 test_that("we can create a new spectrum with separate component and amplitude vectors", {
   # Create a spectrum object with separate vectors
   spectrum_obj <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Expectations to check spectrum creation
   expect_s3_class(spectrum_obj, "spectrum")
-  expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(spectrum_obj$idealized_component), sort(c(1, 0.5, 0.33)))
   expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
@@ -21,7 +21,7 @@ test_that("we can create a new spectrum with a list containing component and amp
 
   # Expectations to check spectrum creation
   expect_s3_class(spectrum_obj, "spectrum")
-  expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(spectrum_obj$idealized_component), sort(c(1, 0.5, 0.33)))
   expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
@@ -29,13 +29,16 @@ test_that("only  a component can create spectrum", {
   expect_error(spectrum(frequency = c(500, 1000), amplitude = c(0.9, 0.6)))
 })
 
-test_that("spectrum can calculate relative_cycle_length", {
+test_that("spectrum can calculate rationalized cycle metrics", {
   spectrum_obj <- spectrum(
-    component = c(1, 0.5, 0.33),
+    idealized_component = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  expect_true(is.numeric(spectrum_obj$relative_cycle_length))
+  expect_true(is.numeric(spectrum_obj$rationalized_cycles_per_reference))
+  expect_true(is.numeric(spectrum_obj$rationalized_fundamental))
+  expect_true(is.numeric(spectrum_obj$rationalized_extent))
+
 })
 
 test_that("spectrum fractions inlcudes original component, ref component and amplitude", {
@@ -43,18 +46,16 @@ test_that("spectrum fractions inlcudes original component, ref component and amp
   expected_amplitude = c(1.0, 0.8, 0.5)
 
   spectrum_obj <- spectrum(
-    component = expected_component,
+    idealized_component = expected_component,
     amplitude = expected_amplitude
   )
 
   # Test fractions output
   fractions <- spectrum_obj$fractions
-  expect_equal(names(fractions), c("x","rationalized_x","pseudo_x","pseudo_octave",
+  expect_equal(names(fractions), c("idealized_x","rationalized_x","pseudo_x","pseudo_octave",
                                    "num","den","error","uncertainty",
-                                   "component","denominator_component","amplitude"))
-  expect_equal(fractions$x, c(1.000000, 1.515152, 3.030303),
-               tolerance=0.1)
-  expect_equal(fractions$component, c(0.33, 0.50, 1.00),
+                                   "denominator_component","amplitude"))
+  expect_equal(fractions$idealized_x, c(1.000000, 1.515152, 3.030303),
                tolerance=0.1)
   expect_equal(fractions$amplitude, c(0.5, 0.8, 1.0))
   expect_equal(fractions$denominator_component,
@@ -62,19 +63,17 @@ test_that("spectrum fractions inlcudes original component, ref component and amp
 
 })
 
-test_that('heisen compmonent works as expected', {
+test_that('rationalized compmonent works as expected', {
   expected_component = midi_to_freq(c(60,64,67))
   expected_amplitude = c(1.0, 0.8, 0.5)
 
   spectrum_obj <- spectrum(
-    component = expected_component,
+    idealized_component = expected_component,
     amplitude = expected_amplitude
   )
 
   # Test fractions output
   fractions <- spectrum_obj$fractions
-  expect_equal(fractions$component, expected_component,
-               tolerance=0.1)
   expect_equal(fractions$amplitude, c(1.0, 0.8, 0.5))
 
   expect_equal(spectrum_obj$rationalized_component,
@@ -89,7 +88,7 @@ test_that('heisen compmonent works as expected', {
 
 test_that("spectrum can calculate fractions", {
   spectrum_obj <- spectrum(
-    component = c(1, 0.5, 0.33),
+    idealized_component = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -102,11 +101,11 @@ test_that("spectrum can calculate fractions", {
 test_that("spectrum can combine with another spectrum within tolerance", {
   # Create two spectrum objects
   spectrum1 <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
   spectrum2 <- spectrum(
-    component = c(1.0, 0.5001, 0.33),  # Close values to test tolerance
+    idealized_component = c(1.0, 0.5001, 0.33),  # Close values to test tolerance
     amplitude = c(0.5, 0.4, 0.3)
   )
 
@@ -123,23 +122,23 @@ test_that("spectrum can combine with another spectrum within tolerance", {
 
   # Test the combined spectrum
   expect_s3_class(combined_spectrum, "spectrum")
-  expect_equal(sort(combined_spectrum$component), sort(expected_components), tolerance = 0.01)
+  expect_equal(sort(combined_spectrum$idealized_component), sort(expected_components), tolerance = 0.01)
   expect_equal(sort(combined_spectrum$amplitude), sort(expected_amplitudes), tolerance = 0.01)
 })
 
 test_that("cycle length per component", {
   # Create a spectrum object with separate vectors
   spectrum_obj <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Expectations to check spectrum creation
   expect_s3_class(spectrum_obj, "spectrum")
-  expect_equal(sort(spectrum_obj$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(spectrum_obj$idealized_component), sort(c(1, 0.5, 0.33)))
   expect_equal(sort(spectrum_obj$amplitude), sort(c(1.0, 0.8, 0.5)))
-  expect_equal(sort(spectrum_obj$cycle_length), sort(c(1, 1, 2)))
-  expect_equal(spectrum_obj$relative_cycle_length, 2)
+  expect_equal(sort(spectrum_obj$fractions$den), sort(c(1, 1, 2)))
+  expect_equal(spectrum_obj$rationalized_cycles_per_reference, 2)
 })
 
 test_that("spectrum reduces closely spaced components within tolerance to a single component", {
@@ -154,7 +153,7 @@ test_that("spectrum reduces closely spaced components within tolerance to a sing
 
   # Create a spectrum object with the close components and amplitudes
   spectrum_obj <- spectrum(
-    component = close_components,
+    idealized_component = close_components,
     amplitude = amplitudes
   )
 
@@ -163,15 +162,15 @@ test_that("spectrum reduces closely spaced components within tolerance to a sing
   expected_amplitude <- sum(amplitudes)  # Sum of amplitudes
 
   # Check that the resulting spectrum has only one component
-  expect_equal(length(spectrum_obj$component), 1)
-  expect_equal(spectrum_obj$component, expected_component, tolerance = FLOATING_POINT_TOLERANCE)
+  expect_equal(length(spectrum_obj$idealized_component), 1)
+  expect_equal(spectrum_obj$idealized_component, expected_component, tolerance = FLOATING_POINT_TOLERANCE)
   expect_equal(spectrum_obj$amplitude, expected_amplitude)
 })
 
 test_that("spectrum plot works without overlay spectrum", {
   # Create a spectrum object without an overlay
   spectrum_obj <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -184,13 +183,13 @@ test_that("spectrum plot works without overlay spectrum", {
 test_that("spectrum plot works with overlay spectrum", {
   # Create a main spectrum object
   main_spectrum <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create an overlay spectrum object
   overlay_spectrum <- spectrum(
-    component = c(0.8, 0.4, 0.25),
+    idealized_component = c(0.8, 0.4, 0.25),
     amplitude = c(0.6, 0.4, 0.3)
   )
 
@@ -209,13 +208,13 @@ test_that("spectrum plot works with overlay spectrum", {
 test_that("spectrum plot raises error without overlay color", {
   # Create a main spectrum object
   main_spectrum <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create an overlay spectrum object
   overlay_spectrum <- spectrum(
-    component = c(0.8, 0.4, 0.25),
+    idealized_component = c(0.8, 0.4, 0.25),
     amplitude = c(0.6, 0.4, 0.3)
   )
 
@@ -234,91 +233,91 @@ test_that("spectrum plot raises error without overlay color", {
 test_that("fundamental_component is calculated correctly without inversion", {
   # Create a spectrum object without inversion
   spectrum_obj <- spectrum(
-    component = c(2, 4, 8),
+    idealized_component = c(2, 4, 8),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = FALSE
+    extent_rate = EXTENT_RATE$rate
   )
 
-  # Expected fundamental component: min(component) / relative_cycle_length
-  expected_fundamental_component <- min(spectrum_obj$component) / spectrum_obj$relative_cycle_length
+  # Expected fundamental component: min(component) / rationalized_cycle_length
+  expected_fundamental_component <- min(spectrum_obj$idealized_component) / spectrum_obj$rationalized_cycles_per_reference
 
   # Test fundamental_component calculation
-  expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
+  expect_equal(spectrum_obj$rationalized_fundamental, expected_fundamental_component)
 })
 
 test_that("fundamental_component is calculated correctly with inversion", {
   # Create a spectrum object with inversion
   spectrum_obj <- spectrum(
-    component = c(2, 4, 8),
+    idealized_component = c(2, 4, 8),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = TRUE
+    extent_rate = EXTENT_RATE$extent
   )
 
-  # Expected fundamental component: relative_cycle_length / max(component)
-  expected_fundamental_component <- spectrum_obj$relative_cycle_length * max(spectrum_obj$component)
+  # Expected fundamental component: rationalized_cycle_length / max(component)
+  expected_fundamental_component <- spectrum_obj$rationalized_cycles_per_reference * max(spectrum_obj$idealized_component)
 
   # Test fundamental_component calculation
-  expect_equal(spectrum_obj$fundamental_component, expected_fundamental_component)
+  expect_equal(spectrum_obj$rationalized_fundamental, expected_fundamental_component)
 })
 
 test_that("fundamental_cycle_length is calculated correctly for non-inverted spectrum", {
   # Create a non-inverted spectrum (e.g., frequency spectrum)
   spectrum_obj <- spectrum(
-    component = c(100, 200, 300),
+    idealized_component = c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = FALSE
+    extent_rate = EXTENT_RATE$rate
   )
 
   # Expected cycle length for non-inverted spectrum: 1 / fundamental_component
-  expected_cycle_length <- 1 / spectrum_obj$fundamental_component
+  expected_cycle_length <- 1 / spectrum_obj$rationalized_fundamental
 
   # Test if fundamental_cycle_length matches the expected value
-  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+  expect_equal(spectrum_obj$rationalized_extent, expected_cycle_length, tolerance = 1e-6)
 })
 
 test_that("fundamental_cycle_length is calculated correctly for inverted spectrum", {
   # Create an inverted spectrum (e.g., wavelength spectrum)
   spectrum_obj <- spectrum(
-    component = c(1.0, 0.5, 0.25),
+    idealized_component = c(1.0, 0.5, 0.25),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = TRUE
+    extent_rate = EXTENT_RATE$extent
   )
 
   # Expected cycle length for inverted spectrum is fundamental_component itself
-  expected_cycle_length <- spectrum_obj$fundamental_component
+  expected_cycle_length <- spectrum_obj$rationalized_fundamental
 
   # Test if fundamental_cycle_length matches the expected value
-  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+  expect_equal(spectrum_obj$rationalized_extent, expected_cycle_length, tolerance = 1e-6)
 })
 
 test_that("fundamental_cycle_length handles small components correctly", {
   # Test with small component values for non-inverted spectrum
   spectrum_obj <- spectrum(
-    component = c(0.1, 0.2, 0.3),
+    idealized_component = c(0.1, 0.2, 0.3),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = FALSE
+    extent_rate = EXTENT_RATE$rate
   )
 
   # Expected cycle length for non-inverted spectrum
-  expected_cycle_length <- 1 / spectrum_obj$fundamental_component
+  expected_cycle_length <- 1 / spectrum_obj$rationalized_fundamental
 
   # Check calculation
-  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+  expect_equal(spectrum_obj$rationalized_extent, expected_cycle_length, tolerance = 1e-6)
 })
 
 test_that("fundamental_cycle_length handles large components correctly", {
   # Test with large component values for inverted spectrum
   spectrum_obj <- spectrum(
-    component = c(1000, 2000, 3000),
+    idealized_component = c(1000, 2000, 3000),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = TRUE
+    extent_rate = EXTENT_RATE$extent
   )
 
   # Expected cycle length for inverted spectrum
-  expected_cycle_length <- spectrum_obj$fundamental_component
+  expected_cycle_length <- spectrum_obj$rationalized_cycles_per_reference
 
   # Check calculation
-  expect_equal(spectrum_obj$fundamental_cycle_length, expected_cycle_length, tolerance = 1e-6)
+  expect_equal(spectrum_obj$rationalized_extent, expected_cycle_length * max(spectrum_obj$idealized_component), tolerance = 1e-6)
 })
 
 test_that("signal stores the spectrum components and amplitudes correctly", {
@@ -326,71 +325,72 @@ test_that("signal stores the spectrum components and amplitudes correctly", {
   f = c(100, 125, 150)
   a = c(1, 0.75, 0.5)
   spectrum_obj <- spectrum(
-    component = f,
+    idealized_component = f,
     amplitude = a
   )
-  expect_equal(spectrum_obj$inverted, F)
-  expect_equal(spectrum_obj$relative_cycle_length, 4)
-  expect_equal(spectrum_obj$fundamental_component, 25)
-  expect_equal(spectrum_obj$fundamental_cycle_length, 1/spectrum_obj$fundamental_component)
+  expect_equal(spectrum_obj$extent_rate, EXTENT_RATE$rate)
+  expect_equal(spectrum_obj$rationalized_cycles_per_reference, 4)
+  expect_equal(spectrum_obj$rationalized_fundamental, 25)
+  expect_equal(spectrum_obj$rationalized_extent, 1/spectrum_obj$rationalized_fundamental)
 
 })
 
 test_that("reference is calculated correctly when NULL in the spectrum class", {
-  # Create a spectrum object with inverted = FALSE (default)
+  # Create a spectrum object with extent_rate = EXTENT_RATE$space
   spectrum_obj <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = FALSE
+    extent_rate = EXTENT_RATE$rate
   )
 
   # Expect the calculated reference to be min(component)
-  expected_reference = min(spectrum_obj$component)
+  expected_reference = min(spectrum_obj$idealized_component)
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$fundamental_component,
-               expected_reference / spectrum_obj$relative_cycle_length)
+  expect_equal(spectrum_obj$rationalized_fundamental,
+               expected_reference / spectrum_obj$rationalized_cycles_per_reference)
 
-  # Create a spectrum object with inverted = TRUE
+  # Create a spectrum object with extent_rate = EXTENT_RATE$extent
   spectrum_obj_inverted <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = TRUE
+    extent_rate = EXTENT_RATE$extent
   )
 
   # Expect the calculated reference to be max(component)
-  expected_reference = max(spectrum_obj_inverted$component)
+  expected_reference = max(spectrum_obj_inverted$idealized_component)
   expect_equal(spectrum_obj_inverted$reference_component, expected_reference)
-  expect_equal(spectrum_obj_inverted$fundamental_component,
-               expected_reference * spectrum_obj_inverted$relative_cycle_length)
+  expect_equal(spectrum_obj_inverted$rationalized_fundamental,
+               expected_reference * spectrum_obj_inverted$rationalized_cycles_per_reference)
 })
 
 test_that("reference can be explicitly set in the spectrum class", {
   expected_reference = 0.5
-  # Explicitly set reference with inverted = FALSE
+  # Explicitly set reference with extent_rate = EXTENT_RATE$extent
   spectrum_obj <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = FALSE,
+    extent_rate = EXTENT_RATE$extent,
     reference = expected_reference
   )
 
   # Expect the explicitly set reference to be used
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$fundamental_component,
-               expected_reference / spectrum_obj$relative_cycle_length)
+  expect_equal(spectrum_obj$rationalized_fundamental,
+               expected_reference * spectrum_obj$rationalized_cycles_per_reference)
 
-  # Explicitly set reference with inverted = TRUE
+  # Explicitly set reference with extent_rate = EXTENT_RATE$rate
   expected_reference = 0.33
   spectrum_obj_inverted <- spectrum(
-    component = c(1.0, 0.5, 0.33),
+    idealized_component = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
-    inverted = TRUE,
+    extent_rate = EXTENT_RATE$rate,
     reference = expected_reference
   )
 
   # Expect the explicitly set reference to be used
   expect_equal(spectrum_obj_inverted$reference_component, expected_reference)
-  expect_equal(spectrum_obj_inverted$fundamental_component,
-               expected_reference * spectrum_obj_inverted$relative_cycle_length)
+  expect_equal(spectrum_obj_inverted$rationalized_fundamental,
+               expected_reference / spectrum_obj_inverted$rationalized_cycles_per_reference)
 
 })
+

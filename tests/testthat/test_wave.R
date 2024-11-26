@@ -28,8 +28,8 @@ test_that("we can create a new wave with a frequency spectrum, wavelength spectr
   expect_equal(wave_obj$phase, phase)
   expect_equal(wave_obj$frequency_spectrum$component, c(100, 200, 300))
   expect_equal(wave_obj$frequency_spectrum$amplitude, c(1.0, 0.8, 0.5))
-  expect_equal(sort(wave_obj$wavelength_spectrum$component), sort(c(1, 0.5, 0.33)))
-  expect_equal(sort(wave_obj$wavelength_spectrum$amplitude), sort(c(1.0, 0.8, 0.5)))
+  expect_equal(sort(wave_obj$idealized_wavelength_spectrum$component), sort(c(1, 0.5, 0.33)))
+  expect_equal(sort(wave_obj$idealized_wavelength_spectrum$amplitude), sort(c(1.0, 0.8, 0.5)))
 })
 
 test_that("we can create a new wave with just a frequency spectrum and it generates the wavelength spectrum automatically", {
@@ -58,8 +58,8 @@ test_that("we can create a new wave with just a frequency spectrum and it genera
 
   # Verify that wavelength spectrum was generated correctly
   expected_wavelengths <- SPEED_OF_SOUND / c(100, 200, 300)
-  expect_equal(wave_obj$wavelength_spectrum$component %>% sort(), expected_wavelengths %>% sort())
-  expect_equal(wave_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(wave_obj$idealized_wavelength_spectrum$component %>% sort(), expected_wavelengths %>% sort())
+  expect_equal(wave_obj$idealized_wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("we can create a general wave with only a frequency spectrum and no wavelength spectrum or phase", {
@@ -84,9 +84,9 @@ test_that("we can create a general wave with only a frequency spectrum and no wa
   expect_equal(wave_obj$frequency_spectrum$frequency %>% sort(), c(100, 200, 300) %>% sort())
   expect_equal(wave_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(
-    wave_obj$wavelength_spectrum$wavelength %>% sort(),
+    wave_obj$idealized_wavelength_spectrum$idealized_wavelength %>% sort(),
     (SPEED_OF_SOUND / c(100, 200, 300)) %>% sort())
-  expect_equal(wave_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(wave_obj$idealized_wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(wave_obj$phase,0)
 })
 
@@ -113,8 +113,8 @@ test_that("wave with wavelength spectrum and frequency spectrum but no phase wor
   expect_s3_class(wave_obj, "wave")
   expect_equal(wave_obj$frequency_spectrum$component %>% sort(), c(100, 200, 300) %>% sort())
   expect_equal(wave_obj$frequency_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
-  expect_equal(wave_obj$wavelength_spectrum$component %>% sort(), c(1, 0.5, 0.33) %>% sort())
-  expect_equal(wave_obj$wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
+  expect_equal(wave_obj$idealized_wavelength_spectrum$component %>% sort(), c(1, 0.5, 0.33) %>% sort())
+  expect_equal(wave_obj$idealized_wavelength_spectrum$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
   expect_equal(wave_obj$phase,0)
 })
 
@@ -348,14 +348,14 @@ test_that("wave computes fundamental frequency spectrum correctly", {
   )
 
   # Check that the fundamental frequency spectrum is generated correctly
-  expect_s3_class(wave_obj$fundamental_frequency_spectrum, "frequency_spectrum")
+  expect_s3_class(wave_obj$rationalized_fundamental_spectrum, "frequency_spectrum")
   expect_equal(
-    wave_obj$fundamental_frequency_spectrum$frequency,
-    frequency_spectrum_obj$fundamental_frequency
+    wave_obj$rationalized_fundamental_spectrum$frequency,
+    frequency_spectrum_obj$rationalized_fundamental
   )
   expect_equal(
-    wave_obj$fundamental_frequency_spectrum$amplitude,
-    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$wavelength_spectrum$amplitude)
+    wave_obj$rationalized_fundamental_spectrum$amplitude,
+    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$idealized_wavelength_spectrum$amplitude)
   )
 })
 
@@ -375,12 +375,12 @@ test_that("wave computes fundamental wavelength spectrum correctly", {
   # Check that the fundamental wavelength spectrum is generated correctly
   expect_s3_class(wave_obj$fundamental_wavelength_spectrum, "wavelength_spectrum")
   expect_equal(
-    wave_obj$fundamental_wavelength_spectrum$wavelength,
-    wave_obj$wavelength_spectrum$fundamental_wavelength
+    wave_obj$fundamental_wavelength_spectrum$idealized_wavelength,
+    wave_obj$idealized_wavelength_spectrum$fundamental_wavelength
   )
   expect_equal(
     wave_obj$fundamental_wavelength_spectrum$amplitude,
-    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$wavelength_spectrum$amplitude)
+    sum(frequency_spectrum_obj$amplitude) + sum(wave_obj$idealized_wavelength_spectrum$amplitude)
   )
 })
 
@@ -557,8 +557,8 @@ test_that("Summing a vector of waves combines components and amplitudes correctl
   expect_equal(sort(combined_wave$frequency_spectrum$amplitude), expected_amplitudes)
 
   # Check that the combined wave has the correct wavelengths and corresponding amplitudes
-  expect_equal(sort(combined_wave$wavelength_spectrum$wavelength), expected_wavelengths)
-  expect_equal(combined_wave$wavelength_spectrum$amplitude, expected_amplitudes)
+  expect_equal(sort(combined_wave$idealized_wavelength_spectrum$idealized_wavelength), expected_wavelengths)
+  expect_equal(combined_wave$idealized_wavelength_spectrum$amplitude, expected_amplitudes)
 })
 
 # Test for summing a vector of waves, including a superposed_wave, combines components and amplitudes correctly
@@ -600,7 +600,7 @@ test_that("Summing a vector of waves, including a superposed_wave, combines comp
   expect_equal(sort(combined_wave$frequency_spectrum$amplitude), expected_amplitudes)
 
   # Check that the combined wave has the correct wavelengths and corresponding amplitudes
-  expect_equal(sort(combined_wave$wavelength_spectrum$wavelength), expected_wavelengths,
+  expect_equal(sort(combined_wave$idealized_wavelength_spectrum$idealized_wavelength), expected_wavelengths,
                tolerance = FLOATING_POINT_TOLERANCE)
-  expect_equal(combined_wave$wavelength_spectrum$amplitude, expected_wavelength_amplitudes)
+  expect_equal(combined_wave$idealized_wavelength_spectrum$amplitude, expected_wavelength_amplitudes)
 })

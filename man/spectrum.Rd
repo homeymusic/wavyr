@@ -6,20 +6,25 @@
 \title{Spectrum Constructor}
 \usage{
 spectrum(
-  component,
+  idealized_component,
   amplitude = NULL,
-  inverted = FALSE,
+  extent_rate = EXTENT_RATE$rate,
   reference_component = NULL
 )
 
-\method{spectrum}{default}(component, amplitude, inverted = FALSE, reference_component = NULL)
+\method{spectrum}{default}(
+  idealized_component,
+  amplitude,
+  extent_rate = EXTENT_RATE$rate,
+  reference_component = NULL
+)
 }
 \arguments{
-\item{component}{Either a numeric vector for component values or a list with named \code{component} and \code{amplitude} vectors.}
+\item{idealized_component}{Either a numeric vector for component values or a list with named \code{idealized_component} and \code{amplitude} vectors.}
 
-\item{amplitude}{A numeric vector of amplitudes, if \code{component} is a numeric vector.}
+\item{amplitude}{A numeric vector of amplitudes, if \code{idealized_component} is a numeric vector.}
 
-\item{inverted}{Logical; if \code{TRUE}, treats the spectrum as an inverted domain (e.g., periods or wavelengths).
+\item{extent_rate}{indictaes whether the wave represnetation is a rate (like frequency or wavenumber) or an extent (like period or wavelength)
 If \code{FALSE}, treats the spectrum as a frequency domain (e.g., frequencies or wavenumbers).}
 
 \item{reference_component}{For computing the fundamental component we take the product of the reference_component and the relative cycle length.}
@@ -29,5 +34,5 @@ An object of class \code{spectrum}.
 }
 \description{
 Creates a spectrum object with components and amplitudes.
-Handles both direct vector inputs or a list containing named \code{component} and \code{amplitude}.
+Handles both direct vector inputs or a list containing named \code{idealized_component} and \code{amplitude}.
 }

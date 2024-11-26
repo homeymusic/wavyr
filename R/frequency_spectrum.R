@@ -3,40 +3,42 @@
 #' Extends the `spectrum` class specifically for frequency spectra.
 #' Accepts either direct numeric vectors or a list containing `frequency` and `amplitude`.
 #'
-#' @param frequency Either a numeric vector of frequencies or a list with named `frequency` and `amplitude` vectors.
-#' @param amplitude A numeric vector of amplitudes, if `frequency` is a numeric vector.
+#' @param idealized_frequency Either a numeric vector of frequencies or a list with named `idealized_frequency` and `amplitude` vectors.
+#' @param amplitude A numeric vector of amplitudes, if `idealized_frequency` is a numeric vector.
 #' @param reference_component Used to compute the fundamental frequency from the cycle length
 #' @return An object of class \code{frequency_spectrum} that inherits from \code{spectrum}.
 #' @export
-frequency_spectrum <- function(frequency, amplitude = NULL, reference_component = NULL) {
+frequency_spectrum <- function(idealized_frequency, amplitude = NULL, reference_component = NULL) {
   # Check for non-numeric or inconsistent input directly in frequency_spectrum
-  if (is.list(frequency) && is.null(amplitude)) {
-    if (!is.numeric(frequency$frequency) || !is.numeric(frequency$amplitude)) {
-      stop("Both `frequency` and `amplitude` in the list must be numeric.")
+  if (is.list(idealized_frequency) && is.null(amplitude)) {
+    if (!is.numeric(idealized_frequency$idealized_frequency) || !is.numeric(idealized_frequency$amplitude)) {
+      stop("Both `idealized_frequency` and `amplitude` in the list must be numeric.")
     }
-  } else if (!is.numeric(frequency) || (!is.null(amplitude) && !is.numeric(amplitude))) {
-    stop("Both `frequency` and `amplitude` must be numeric vectors.")
+  } else if (!is.numeric(idealized_frequency) || (!is.null(amplitude) && !is.numeric(amplitude))) {
+    stop("Both `idealized_frequency` and `amplitude` must be numeric vectors.")
   }
 
   # Delegate to `spectrum()` for main functionality
-  if (is.list(frequency) && is.null(amplitude)) {
+  if (is.list(idealized_frequency) && is.null(amplitude)) {
     # Handle list input
     stopifnot(
-      length(frequency$frequency) == length(frequency$amplitude)
+      length(idealized_frequency$idealized_frequency) == length(idealized_frequency$amplitude)
     )
-    spectrum_obj <- spectrum(component = frequency$frequency,
-                             amplitude = frequency$amplitude,
-                             reference_component = reference_component)
+    spectrum_obj <- spectrum(idealized_component = idealized_frequency$idealized_frequency,
+                             amplitude = idealized_frequency$amplitude,
+                             reference_component = reference_component,
+                             extent_rate = EXTENT_RATE$rate)
   } else {
     # Direct numeric vectors
-    spectrum_obj <- spectrum(component = frequency,
+    spectrum_obj <- spectrum(idealized_component = idealized_frequency,
                              amplitude = amplitude,
-                             reference_component = reference_component)
+                             reference_component = reference_component,
+                             extent_rate = EXTENT_RATE$rate)
   }
 
   # Add frequency-specific fields
-  spectrum_obj$frequency <- spectrum_obj$component
-  spectrum_obj$fundamental_frequency <- spectrum_obj$fundamental_component
+  spectrum_obj$idealized_frequency <- spectrum_obj$idealized_component
+  spectrum_obj$rationalized_rationalized_fundamental <- spectrum_obj$rationalized_fundamental
 
   # Set class to frequency_spectrum
   class(spectrum_obj) <- c("frequency_spectrum", class(spectrum_obj))

@@ -24,7 +24,7 @@ test_that("compute_beats_cpp handles basic beat calculation", {
   expected_amplitudes <- c(1.8, 1.5, 1.3)
 
   # Compare calculated values to expected values
-  expect_equal(result$wavelength, expected_wavelengths, tolerance = 1e-6)
+  expect_equal(result$idealized_wavelength, expected_wavelengths, tolerance = 1e-6)
   expect_equal(result$amplitude, expected_amplitudes, tolerance = 1e-6)
 })
 

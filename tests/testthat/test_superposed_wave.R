@@ -14,7 +14,7 @@ test_that("we can create a LinearWaveform with a frequency spectrum and speed of
   expect_s3_class(superposed_wave_obj, "superposed_wave")
   expect_s3_class(superposed_wave_obj, "wave")
   expect_s3_class(superposed_wave_obj$frequency_spectrum, "frequency_spectrum")
-  expect_s3_class(superposed_wave_obj$wavelength_spectrum, "wavelength_spectrum")
+  expect_s3_class(superposed_wave_obj$idealized_wavelength_spectrum, "wavelength_spectrum")
 })
 
 test_that("LinearWaveform calculates correct wavelengths for given frequencies", {
@@ -33,7 +33,7 @@ test_that("LinearWaveform calculates correct wavelengths for given frequencies",
 
   # Check if the first three components of the wavelength spectrum match expected values
   expect_equal(
-    superposed_wave_obj$wavelength_spectrum$wavelength %>% sort(),
+    superposed_wave_obj$idealized_wavelength_spectrum$idealized_wavelength %>% sort(),
     expected_wavelengths %>% sort()
   )
 })
@@ -69,7 +69,7 @@ test_that("LinearWaveform assigns correct classes and structure", {
   expect_s3_class(superposed_wave_obj, "superposed_wave")
   expect_s3_class(superposed_wave_obj, "wave")
   expect_s3_class(superposed_wave_obj$frequency_spectrum, "frequency_spectrum")
-  expect_s3_class(superposed_wave_obj$wavelength_spectrum, "wavelength_spectrum")
+  expect_s3_class(superposed_wave_obj$idealized_wavelength_spectrum, "wavelength_spectrum")
 })
 
 test_that("LinearWaveform includes base_wavelength_spectrum as a separate attribute", {
@@ -107,7 +107,7 @@ test_that("LinearWaveform correctly computes combined spectra", {
   )
 
   # Check if the combined wavelength spectrum correctly aggregates with the beat spectrum
-  expect_equal(length(superposed_wave_obj$wavelength_spectrum$wavelength),
+  expect_equal(length(superposed_wave_obj$idealized_wavelength_spectrum$idealized_wavelength),
                4)
 })
 
@@ -327,4 +327,48 @@ test_that("plot.superposed_wave displays base and beat wavelength spectra as dis
   vdiffr::expect_doppelganger("superposed_wave with distinct base and beat overlays", function() {
     plot(superposed_wave_obj, label = "Test with Base and Beat Overlays")
   })
+})
+test_that("wavelength spectrum with beats makes sense", {
+  l = SPEED_OF_SOUND / c(4,5, abs(4-5))
+  a = c(1,1,1)
+
+  wavelength_spectrum_with_beats = wavelength_spectrum(
+    idealized_wavelength = l,
+    amplitude  = a
+  )
+
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    idealized_frequency = c( 4, 5),  # Frequency components in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+  superposed_wave = superposed_wave(spectrum_obj)
+  expected_wavelength_spectrum = superposed_wave$idealized_wavelength_spectrum
+  expect_equal(wavelength_spectrum_with_beats$idealized_wavelength, expected_wavelength_spectrum$idealized_wavelength)
+
+  spectrum_obj = superposed_wave$idealized_wavelength_spectrum
+
+  beat_idealized_wavelength = spectrum_obj$idealized_wavelength[1] * spectrum_obj$idealized_wavelength[2] /
+    abs(spectrum_obj$idealized_wavelength[1] - spectrum_obj$idealized_wavelength[2])
+
+  expect_equal(spectrum_obj$idealized_wavelength, c(69.84565, 87.30706, beat_wavelength), tolerance = 0.1)
+  expect_equal(spectrum_obj$inverted, T)
+  expect_equal(spectrum_obj$rationalized_cycles_per_reference, 4)
+  expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$fundamental_cycle_length, 349.22, tolerance = 0.1)
+})
+test_that("wavelength plot of feynman waves with superposition", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- frequency_spectrum(
+    idealized_frequency = c( 4, 5),  # Frequency components in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  superposed_wave = superposed_wave(spectrum_obj)
+
+  label <- "Feynman's Beats Superposed 3 cycle"
+  # Capture the plot with vdiffr and check the default behavior
+  vdiffr::expect_doppelganger(label, function() plot(superposed_wave$idealized_wavelength_spectrum,
+                                                     title = label))
+
 })

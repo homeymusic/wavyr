@@ -1,85 +1,79 @@
 #' Spectrum Constructor
 #'
 #' Creates a spectrum object with components and amplitudes.
-#' Handles both direct vector inputs or a list containing named `component` and `amplitude`.
+#' Handles both direct vector inputs or a list containing named `idealized_component` and `amplitude`.
 #'
-#' @param component Either a numeric vector for component values or a list with named `component` and `amplitude` vectors.
-#' @param amplitude A numeric vector of amplitudes, if `component` is a numeric vector.
-#' @param inverted Logical; if `TRUE`, treats the spectrum as an inverted domain (e.g., periods or wavelengths).
+#' @param idealized_component Either a numeric vector for component values or a list with named `idealized_component` and `amplitude` vectors.
+#' @param amplitude A numeric vector of amplitudes, if `idealized_component` is a numeric vector.
+#' @param extent_rate indictaes whether the wave represnetation is a rate (like frequency or wavenumber) or an extent (like period or wavelength)
 #' If `FALSE`, treats the spectrum as a frequency domain (e.g., frequencies or wavenumbers).
 #' @param reference_component For computing the fundamental component we take the product of the reference_component and the relative cycle length.
 #'
 #' @return An object of class \code{spectrum}.
 #' @export
-spectrum <- function(component, amplitude = NULL, inverted = FALSE, reference_component = NULL) {
-  if (is.list(component) && is.null(amplitude)) {
-    UseMethod("spectrum", component)
-  } else if (is.numeric(component) && is.numeric(amplitude)) {
-    spectrum.default(component = component, amplitude = amplitude,
-                     inverted = inverted, reference_component = reference_component)
+spectrum <- function(idealized_component, amplitude = NULL, extent_rate = EXTENT_RATE$rate, reference_component = NULL) {
+  if (is.list(idealized_component) && is.null(amplitude)) {
+    UseMethod("spectrum", idealized_component)
+  } else if (is.numeric(idealized_component) && is.numeric(amplitude)) {
+    spectrum.default(idealized_component = idealized_component, amplitude = amplitude,
+                     extent_rate = extent_rate, reference_component = reference_component)
   } else {
-    stop("Invalid input: please provide either numeric `component` and `amplitude` vectors or a list with both.")
+    stop("Invalid input: please provide either numeric `idealized_component` and `amplitude` vectors or a list with both.")
   }
 }
 
 #' @rdname spectrum
 #' @export
-spectrum.default <- function(component, amplitude, inverted = FALSE, reference_component = NULL) {
-  .spectrum(component = component, amplitude = amplitude,
-            inverted = inverted, reference_component = reference_component)
+spectrum.default <- function(idealized_component, amplitude, extent_rate = EXTENT_RATE$rate, reference_component = NULL) {
+  .spectrum(idealized_component = idealized_component, amplitude = amplitude,
+            extent_rate = extent_rate, reference_component = reference_component)
 }
 
 #' @export
-spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) {
+spectrum.list <- function(x, extent_rate = EXTENT_RATE$rate, reference_component = NULL, ...) {
   stopifnot(
     length(x) == 2L,
     is.numeric(x[[1]]),
     is.numeric(x[[2]]),
     length(x[[1]]) == length(x[[2]])
   )
-  .spectrum(component = x[[1]], amplitude = x[[2]],
-            inverted = inverted, reference_component = reference_component)
+  .spectrum(idealized_component = x[[1]], amplitude = x[[2]],
+            extent_rate = extent_rate, reference_component = reference_component)
 }
 
 #' Internal spectrum constructor with validation and component combination
 #' @keywords internal
-.spectrum <- function(component, amplitude, inverted, reference_component) {
+.spectrum <- function(idealized_component, amplitude, extent_rate, reference_component) {
 
   # Validation checks
-  if (!is.numeric(component) || !is.numeric(amplitude)) {
-    stop("Both component and amplitude must be numeric.")
+  if (!is.numeric(idealized_component) || !is.numeric(amplitude)) {
+    stop("Both idealized_component and amplitude must be numeric.")
   }
-  if (length(component) != length(amplitude)) {
+  if (length(idealized_component) != length(amplitude)) {
     stop("Component and amplitude must be the same length.")
   }
-  if (any(component <= 0)) {
+  if (any(idealized_component <= 0)) {
     stop("All component values must be positive.")
   }
 
   # Combine close components within the specified tolerance directly using combine_spectra_cpp
   combined_result <- combine_spectra_cpp(
-    component, amplitude,
+    idealized_component, amplitude,
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
-  # Calculate reference_component if NULL
-  if (is.null(reference_component)) {
-    reference_component <- if (inverted) max(component) else min(component)
-  }
-
   # Extract the reduced components and amplitudes
-  component <- combined_result$component
+  idealized_component <- combined_result$component
   amplitude <- combined_result$amplitude
 
   metadata = data.frame(
-    component = component,
-    denominator_component = min(component),
+    denominator_component = min(idealized_component),
     amplitude = amplitude
-  ) %>% dplyr::arrange(component)
+  ) %>% dplyr::arrange(idealized_component)
 
   # Calculate additional properties
   fractions <- approximate_rational_fractions_cpp(
-    metadata$component / metadata$denominator_component[1],
+    idealized_component / metadata$denominator_component[1],
     uncertainty = 1 / (4 * pi),
     deviation   = 0.11,
     metadata    = metadata
@@ -87,55 +81,56 @@ spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) 
 
   rationalized_component <- fractions$denominator_component * fractions$rationalized_x
 
-  relative_cycle_length <- lcm_integers(fractions$den)
+  rationalized_cycles_per_reference <- lcm_integers(fractions$den)
 
-  # Calculate the fundamental component based on the inversion setting
-  fundamental_component <- if (inverted) {
-    reference_component * relative_cycle_length
-  } else {
-    reference_component / relative_cycle_length
+  # Calculate the rationalized fundamental whether the representation is a rate or an extent
+  if (extent_rate == EXTENT_RATE$rate) {
+    if (is.null(reference_component)) reference_component <- min(idealized_component)
+    rationalized_fundamental <- reference_component / rationalized_cycles_per_reference
+    rationalized_extent <- 1 / rationalized_fundamental
+    idealized_signal_component <- idealized_component
+    rationalized_signal_component <- rationalized_component
+  } else if (extent_rate == EXTENT_RATE$extent) {
+    if (is.null(reference_component)) reference_component <- max(idealized_component)
+    rationalized_fundamental <- reference_component * rationalized_cycles_per_reference
+    rationalized_extent <- rationalized_fundamental
+    idealized_signal_component <- 1 / idealized_component
+    rationalized_signal_component <- 1 / rationalized_component
   }
-
-  # Calculate the fundamental component based on the inversion setting
-  fundamental_cycle_length <- if (inverted) {
-    fundamental_component
-  } else {
-    1 / fundamental_component
-  }
-
-  # Adjust component based on whether the spectrum is inverted
-  signal_component <- if (inverted)  1 / component else component
-  signal_rationalized_component <- if (inverted)  1 / rationalized_component else rationalized_component
 
   # Return the spectrum object
   structure(
     list(
-      component = component,
+      idealized_component = idealized_component,
       rationalized_component = rationalized_component,
       reference_component = reference_component,
       amplitude = amplitude,
-      cycle_length = fractions$den,
-      relative_cycle_length = relative_cycle_length,
-      fundamental_component = fundamental_component,
-      fundamental_cycle_length = fundamental_cycle_length,
-      signal_component = signal_component,
-      signal_rationalized_component = signal_rationalized_component,
+
+      rationalized_cycles_per_reference = rationalized_cycles_per_reference,
+      rationalized_fundamental = rationalized_fundamental,
+      rationalized_extent = rationalized_extent,
+
+      idealized_signal_component = idealized_signal_component,
+      rationalized_signal_component = rationalized_signal_component,
+
       fractions = fractions,
-      inverted = inverted
+      extent_rate = extent_rate
     ),
     class = "spectrum"
   )
+
 }
 
 #' @export
 print.spectrum <- function(x, ...) {
   cat("Spectrum Object\n")
-  cat("Components:", x$component, "\n")
+  cat("Idealized Components:", x$idealized_component, "\n")
+  cat("Rationalized Components:", x$irationalized_component, "\n")
   cat("Amplitudes:", x$amplitude, "\n")
-  cat("Relative Cycle Length:", x$relative_cycle_length, "\n")
-  cat("Fundamental Component:", x$fundamental_component, "\n")
-  cat("Fundamental Cycle Length:", x$relative_cycle_length, "\n")
-  cat("Inverted:", x$inverted, "\n")
+  cat("Relative Cycle Length:", x$rationalized_cycle_length, "\n")
+  cat("Rationalized Fundamental:", x$rationalized_fundamental, "\n")
+  cat("Rationalized Cycle Length:", x$rationalized_cycle_length, "\n")
+  cat("Extent or Rate:", x$extent_rate, "\n")
 }
 
 #' Combine two spectrum objects within a specified tolerance
@@ -153,10 +148,10 @@ combine_spectra <- function(spectrum, other_spectrum = NULL,
                             tolerance) {
   # Concatenate components and amplitudes if other_spectrum is provided
   if (!is.null(other_spectrum)) {
-    combined_components <- c(spectrum$component, other_spectrum$component)
+    combined_components <- c(spectrum$idealized_component, other_spectrum$idealized_component)
     combined_amplitudes <- c(spectrum$amplitude, other_spectrum$amplitude)
   } else {
-    combined_components <- spectrum$component
+    combined_components <- spectrum$idealized_component
     combined_amplitudes <- spectrum$amplitude
   }
 
@@ -209,10 +204,10 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   }
 
   # Create a data frame for the main spectrum plot
-  spectrum_data <- data.frame(component = x$component, amplitude = x$amplitude)
+  spectrum_data <- data.frame(component = x$idealized_component, amplitude = x$amplitude)
 
-  max_component = max(x$component)
-  min_component = min(x$component)
+  max_component = max(x$idealized_component)
+  min_component = min(x$idealized_component)
 
   get_matching_amplitude <- function(component_value) {
     match <- subset(spectrum_data, abs(component - component_value) <= FLOATING_POINT_TOLERANCE)
@@ -224,13 +219,13 @@ plot.spectrum <- function(x, x_label, segment_color, rectangles = numeric(0), ti
   }
 
   if (!is.null(overlay_spectrum)) {
-    max_component = max(overlay_spectrum$component)
-    min_component = min(overlay_spectrum$component)
+    max_component = max(overlay_spectrum$idealized_component)
+    min_component = min(overlay_spectrum$idealized_component)
     # Apply the function to each component in overlay_spectrum
     overlay_data <- tibble::tibble(
-      component = overlay_spectrum$component,
+      component = overlay_spectrum$idealized_component,
       amplitude = overlay_spectrum$amplitude,
-      spectrum_amplitude = sapply(overlay_spectrum$component, get_matching_amplitude),
+      spectrum_amplitude = sapply(overlay_spectrum$idealized_component, get_matching_amplitude),
       total_amplitude = .data$amplitude + .data$spectrum_amplitude
     )
   }

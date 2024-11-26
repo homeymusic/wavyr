@@ -15,7 +15,7 @@ space_signal <- function(wavelength_spectrum) {
   # Use the signal constructor to create a base signal object
   signal_obj <- signal(wavelength_spectrum)
 
-  signal_obj$wavelength_spectrum = signal_obj$spectrum
+  signal_obj$idealized_wavelength_spectrum = signal_obj$spectrum
 
   signal_obj$plot_color = colors_homey$minor
   signal_obj$physical_label = 'Space'

@@ -116,8 +116,8 @@ test_that("signal plot matches expected output for specified coordinate range", 
   # Create the signal object from the spectrum
   signal_obj <- signal(spectrum_obj)
   expect_equal(spectrum_obj$inverted, F)
-  expect_equal(spectrum_obj$relative_cycle_length, 4)
-  expect_equal(spectrum_obj$fundamental_component, 1)
+  expect_equal(spectrum_obj$rationalized_cycles_per_reference, 4)
+  expect_equal(spectrum_obj$rationalized_fundamental, 1)
   expect_equal(spectrum_obj$fundamental_cycle_length, 1)
 
   # Define label and coordinate range
@@ -192,3 +192,19 @@ test_that("10 random frequencies looks intersting", {
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
 })
 
+test_that("detailed signal plot matches expected output for specified coordinate range", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  spectrum_obj <- wavelength_spectrum(
+    idealized_wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
+    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- space_signal(spectrum_obj)
+
+  # Define label and coordinate range
+  label <- "Feynman's Beats Details"
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
+})

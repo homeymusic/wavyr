@@ -167,7 +167,7 @@ plot_details.signal <- function(x, title = '', coordinate_range = NULL, number_o
     plot(title = paste(title,
                        'Fundamental',
                        paste0(x$spectral_label, ':'),
-                       sprintf("%.2f", x$spectrum$fundamental_component),
+                       sprintf("%.2f", x$spectrum$rationalized_fundamental),
                        paste0('(',x$spectral_units,')')),
          coordinate_range = coordinate_range,
          resolution = resolution)

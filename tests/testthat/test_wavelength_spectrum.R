@@ -1,64 +1,63 @@
-# tests/testthat/test_wavelength_spectrum.R
-
 test_that("we can create a new wavelength spectrum with separate wavelength and amplitude vectors", {
   # Create a wavelength_spectrum object with separate vectors
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Expectations to check wavelength_spectrum creation
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
-  expect_equal(wavelength_spectrum_obj$component %>% sort(), c(1, 0.5, 0.33) %>% sort())
+  expect_equal(wavelength_spectrum_obj$idealized_component %>% sort(), c(1, 0.5, 0.33) %>% sort())
   expect_equal(wavelength_spectrum_obj$amplitude %>% sort(), c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("we can create a new wavelength spectrum with a list containing wavelength and amplitude", {
   # Create a wavelength_spectrum object with a list input
-  wavelength_spectrum_obj <- wavelength_spectrum(
-    list(wavelength = c(1, 0.5, 0.33), amplitude = c(1.0, 0.8, 0.5))
-  )
+  wavelength_spectrum_obj <- wavelength_spectrum(list(
+    idealized_wavelength = c(1, 0.5, 0.33),
+    amplitude = c(1.0, 0.8, 0.5)
+  ))
 
   # Expectations to check wavelength_spectrum creation
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
-  expect_equal(wavelength_spectrum_obj$component, c(1, 0.5, 0.33) %>% sort())
+  expect_equal(wavelength_spectrum_obj$idealized_component, c(1, 0.5, 0.33) %>% sort())
   expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5) %>% sort())
 })
 
 test_that("wavelength_spectrum handles mismatched input lengths gracefully", {
   expect_error(
-    wavelength_spectrum(wavelength = c(1, 0.5), amplitude = c(1.0, 0.8, 0.5)),
+    wavelength_spectrum(idealized_wavelength = c(1, 0.5), amplitude = c(1.0, 0.8, 0.5)),
     "must be the same length"
   )
 })
 
 test_that("wavelength_spectrum validates numeric input", {
   expect_error(
-    wavelength_spectrum(wavelength = c("a", "b"), amplitude = c(1.0, 0.8)),
+    wavelength_spectrum(idealized_wavelength = c("a", "b"), amplitude = c(1.0, 0.8)),
     "must be numeric"
   )
   expect_error(
-    wavelength_spectrum(wavelength = c(1, 0.5), amplitude = c("x", "y")),
+    wavelength_spectrum(idealized_wavelength = c(1, 0.5), amplitude = c("x", "y")),
     "must be numeric"
   )
 })
 
-test_that("wavelength_spectrum calculates relative_cycle_length correctly", {
+test_that("wavelength_spectrum calculates rationalized_cycles_per_reference correctly", {
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
-  # Test relative_cycle_length
-  expect_true(is.numeric(wavelength_spectrum_obj$relative_cycle_length))
-  expect_gt(wavelength_spectrum_obj$relative_cycle_length, 0)
+  # Test rationalized_cycles_per_reference
+  expect_true(is.numeric(wavelength_spectrum_obj$rationalized_cycles_per_reference))
+  expect_gt(wavelength_spectrum_obj$rationalized_cycles_per_reference, 0)
 })
 
 test_that("wavelength_spectrum calculates fractions accurately", {
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -68,23 +67,23 @@ test_that("wavelength_spectrum calculates fractions accurately", {
   expect_equal(fractions$den, c(1, 2, 1))
 })
 
-test_that("wavelength_spectrum relative_cycle_length for single component returns 1", {
+test_that("wavelength_spectrum rationalized_cycles_per_reference for single component returns 1", {
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1),
+    idealized_wavelength = c(1),
     amplitude = c(1.0)
   )
 
   # Expect the fundamental cycle length for a single component to be 1
-  expect_equal(wavelength_spectrum_obj$relative_cycle_length, 1)
+  expect_equal(wavelength_spectrum_obj$rationalized_cycles_per_reference, 1)
 })
 
 test_that("wavelength_spectrum edge cases: zero or negative wavelengths", {
   expect_error(
-    wavelength_spectrum(wavelength = c(1, 0), amplitude = c(1.0, 0.5)),
+    wavelength_spectrum(idealized_wavelength = c(1, 0), amplitude = c(1.0, 0.5)),
     "All component values must be positive."
   )
   expect_error(
-    wavelength_spectrum(wavelength = c(-1, 0.5), amplitude = c(1.0, 0.8)),
+    wavelength_spectrum(idealized_wavelength = c(-1, 0.5), amplitude = c(1.0, 0.8)),
     "All component values must be positive."
   )
 })
@@ -92,11 +91,11 @@ test_that("wavelength_spectrum edge cases: zero or negative wavelengths", {
 test_that("wavelength_spectrum can combine with another wavelength_spectrum within tolerance", {
   # Create two wavelength_spectrum objects
   wavelength_spectrum1 <- wavelength_spectrum(
-    wavelength = c(2.0, 1.0, 0.67),
+    idealized_wavelength = c(2.0, 1.0, 0.67),
     amplitude = c(1.0, 0.8, 0.5)
   )
   wavelength_spectrum2 <- wavelength_spectrum(
-    wavelength = c(2.0, 1.01, 0.67),  # Close values to test tolerance
+    idealized_wavelength = c(2.0, 1.01, 0.67),  # Close values to test tolerance
     amplitude = c(0.5, 0.4, 0.3)
   )
 
@@ -113,7 +112,7 @@ test_that("wavelength_spectrum can combine with another wavelength_spectrum with
 
   # Test the combined wavelength_spectrum
   expect_s3_class(combined_wavelength_spectrum, "wavelength_spectrum")
-  expect_equal(combined_wavelength_spectrum$component %>% sort(),
+  expect_equal(combined_wavelength_spectrum$idealized_component %>% sort(),
                expected_wavelengths %>% sort(),
                tolerance = 0.1)
   expect_equal(combined_wavelength_spectrum$amplitude %>% sort(),
@@ -126,12 +125,12 @@ test_that("wavelength_spectrum can combine with another wavelength_spectrum with
 test_that("wavelength_spectrum has accessible wavelength field", {
   # Create a wavelength_spectrum object
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = c(2.0, 1.0, 0.67),
+    idealized_wavelength = c(2.0, 1.0, 0.67),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Check that `wavelength` field is accessible and correct
-  expect_equal(wavelength_spectrum_obj$wavelength, c(2.0, 1.0, 0.67) %>% sort())
+  expect_equal(wavelength_spectrum_obj$idealized_wavelength, c(2.0, 1.0, 0.67) %>% sort())
   expect_equal(wavelength_spectrum_obj$amplitude, c(1.0, 0.8, 0.5) %>% sort())
   expect_s3_class(wavelength_spectrum_obj, "wavelength_spectrum")
   expect_s3_class(wavelength_spectrum_obj, "spectrum")
@@ -140,7 +139,7 @@ test_that("wavelength_spectrum has accessible wavelength field", {
 test_that("wavelength_spectrum plot works as expected", {
   # Create a frequency_spectrum object
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(100, 200, 300),
+    idealized_wavelength = SPEED_OF_SOUND / c(100, 200, 300),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
@@ -157,12 +156,12 @@ test_that("fundamental_wavelength is correctly calculated in wavelength_spectrum
 
   # Create wavelength_spectrum object
   wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = wavelength_components,
+    idealized_wavelength = wavelength_components,
     amplitude = amplitudes
   )
 
   # Calculate expected fundamental wavelength
-  expected_fundamental_wavelength <- wavelength_spectrum_obj$relative_cycle_length * max(wavelength_components)
+  expected_fundamental_wavelength <- wavelength_spectrum_obj$rationalized_cycles_per_reference * max(wavelength_components)
 
   # Test that fundamental_wavelength is correctly assigned
   expect_equal(wavelength_spectrum_obj$fundamental_wavelength, expected_fundamental_wavelength)
@@ -174,12 +173,12 @@ test_that("fundamental wavelength of tritone is longer than P1", {
 
   # Create wavelength_spectrum object
   tt_wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = tt_wavelength_components,
+    idealized_wavelength = tt_wavelength_components,
     amplitude = tt_amplitudes
   )
 
   expect_equal(tt_wavelength_spectrum_obj$fundamental_wavelength,
-               tt_wavelength_spectrum_obj$relative_cycle_length * max(tt_wavelength_spectrum_obj$wavelength),
+               tt_wavelength_spectrum_obj$rationalized_cycles_per_reference * max(tt_wavelength_spectrum_obj$idealized_wavelength),
                tolerance = 0.1)
 
   # Define wavelength components and amplitudes
@@ -188,12 +187,12 @@ test_that("fundamental wavelength of tritone is longer than P1", {
 
   # Create wavelength_spectrum object
   P1_wavelength_spectrum_obj <- wavelength_spectrum(
-    wavelength = P1_wavelength_components,
+    idealized_wavelength = P1_wavelength_components,
     amplitude = P1_amplitudes
   )
 
   expect_equal(P1_wavelength_spectrum_obj$fundamental_wavelength,
-               P1_wavelength_spectrum_obj$relative_cycle_length * max(P1_wavelength_spectrum_obj$wavelength),
+               P1_wavelength_spectrum_obj$rationalized_cycles_per_reference * max(P1_wavelength_spectrum_obj$idealized_wavelength),
                tolerance = 0.1)
 
 
@@ -203,13 +202,13 @@ test_that("fundamental wavelength of tritone is longer than P1", {
 test_that("wavelength_spectrum plot works with beat spectrum", {
   # Create the main wavelength spectrum
   main_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a beat spectrum
   beat_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(1.2, 0.6, 0.4),
+    idealized_wavelength = c(1.2, 0.6, 0.4),
     amplitude = c(0.7, 0.5, 0.3)
   )
 
@@ -226,13 +225,13 @@ test_that("wavelength_spectrum plot works with beat spectrum", {
 test_that("wavelength_spectrum plot raises error if beat spectrum provided without color", {
   # Create the main wavelength spectrum
   main_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(1, 0.5, 0.33),
+    idealized_wavelength = c(1, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a beat spectrum
   beat_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(1.2, 0.6, 0.4),
+    idealized_wavelength = c(1.2, 0.6, 0.4),
     amplitude = c(0.7, 0.5, 0.3)
   )
 
@@ -250,13 +249,13 @@ test_that("wavelength_spectrum plot raises error if beat spectrum provided witho
 test_that("wavelength_spectrum plot shows primary spectrum under overlapping beat spectrum segment", {
   # Create the main wavelength spectrum with an overlapping wavelength component
   main_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(1.0, 0.5, 0.33),  # Main wavelengths
+    idealized_wavelength = c(1.0, 0.5, 0.33),  # Main wavelengths
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Create a beat spectrum with one overlapping wavelength
   beat_wavelength_spectrum <- wavelength_spectrum(
-    wavelength = c(1.0, 0.6, 0.4),  # 1.0 overlaps with main spectrum
+    idealized_wavelength = c(1.0, 0.6, 0.4),  # 1.0 overlaps with main spectrum
     amplitude = c(0.7, 0.5, 0.3)
   )
 
@@ -274,117 +273,54 @@ test_that("wavelength spectrum with Feynman's 4 Hz and 5 Hz", {
 
   # Create a spectrum with Feynman's example components
   spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(4, 5),
+    idealized_wavelength = SPEED_OF_SOUND / c(4, 5),
     amplitude = c(1.0, 1.0)  # Equal amplitudes for simplicity
   )
 
   # Check that spectrum_obj is of class "wavelength_spectrum"
   expect_s3_class(spectrum_obj, "wavelength_spectrum")
-  expect_equal(spectrum_obj$wavelength, c(69.84565, 87.30706), tolerance = 0.1)
-  expect_equal(spectrum_obj$inverted, T)
-  expect_equal(spectrum_obj$relative_cycle_length, 4)
-  expect_equal(spectrum_obj$fundamental_component, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$idealized_wavelength, c(69.84565, 87.30706), tolerance = 0.1)
+  expect_equal(spectrum_obj$extent_rate, EXTENT_RATE$extent)
+  expect_equal(spectrum_obj$rationalized_cycles_per_reference, 4)
+  expect_equal(spectrum_obj$rationalized_fundamental, 349.22, tolerance = 0.1)
   expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
-  expect_equal(spectrum_obj$fundamental_cycle_length, 349.22, tolerance = 0.1)
+  expect_equal(spectrum_obj$rationalized_extent, 349.22, tolerance = 0.1)
 
-  beat_wavelength = spectrum_obj$wavelength[1] * spectrum_obj$wavelength[2] /
-    abs(spectrum_obj$wavelength[1] - spectrum_obj$wavelength[2])
+  beat_idealized_wavelength = spectrum_obj$idealized_wavelength[1] * spectrum_obj$idealized_wavelength[2] /
+    abs(spectrum_obj$idealized_wavelength[1] - spectrum_obj$idealized_wavelength[2])
 
-  expect_equal(beat_wavelength, spectrum_obj$fundamental_wavelength,
+  expect_equal(beat_idealized_wavelength, spectrum_obj$fundamental_wavelength,
                tolerance = 0.1)
 
-
-})
-test_that("wavelength spectrum with beats makes sense", {
-  l = SPEED_OF_SOUND / c(4,5, abs(4-5))
-  a = c(1,1,1)
-
-  wavelength_spectrum_with_beats = wavelength_spectrum(
-    wavelength = l,
-    amplitude  = a
-  )
-
-  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
-  spectrum_obj <- frequency_spectrum(
-    frequency = c( 4, 5),  # Frequency components in Hz
-    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
-  )
-  superposed_wave = superposed_wave(spectrum_obj)
-  expected_wavelength_spectrum = superposed_wave$wavelength_spectrum
-  expect_equal(wavelength_spectrum_with_beats$wavelength, expected_wavelength_spectrum$wavelength)
-
-  spectrum_obj = superposed_wave$wavelength_spectrum
-
-  beat_wavelength = spectrum_obj$wavelength[1] * spectrum_obj$wavelength[2] /
-    abs(spectrum_obj$wavelength[1] - spectrum_obj$wavelength[2])
-
-  expect_equal(spectrum_obj$wavelength, c(69.84565, 87.30706, beat_wavelength), tolerance = 0.1)
-  expect_equal(spectrum_obj$inverted, T)
-  expect_equal(spectrum_obj$relative_cycle_length, 4)
-  expect_equal(spectrum_obj$fundamental_wavelength, 349.22, tolerance = 0.1)
-  expect_equal(spectrum_obj$fundamental_cycle_length, 349.22, tolerance = 0.1)
-})
-test_that("wavelength plot of feynman waves with superposition", {
-  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
-  spectrum_obj <- frequency_spectrum(
-    frequency = c( 4, 5),  # Frequency components in Hz
-    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
-  )
-
-  superposed_wave = superposed_wave(spectrum_obj)
-
-  label <- "Feynman's Beats Superposed 3 cycle"
-  # Capture the plot with vdiffr and check the default behavior
-  vdiffr::expect_doppelganger(label, function() plot(superposed_wave$wavelength_spectrum,
-                                                     title = label))
 
 })
 
 test_that("reference is calculated correctly when NULL in the wavelength_spectrum class", {
   # Create a wavelength_spectrum object with inverted = FALSE (default)
   spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1.0, 0.5, 0.33),
+    idealized_wavelength = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5)
   )
 
   # Expect the calculated reference to be min(wavelength)
-  expected_reference = max(spectrum_obj$wavelength)
+  expected_reference = max(spectrum_obj$idealized_wavelength)
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$fundamental_component,
-               expected_reference * spectrum_obj$relative_cycle_length)
+  expect_equal(spectrum_obj$rationalized_fundamental,
+               expected_reference * spectrum_obj$rationalized_cycles_per_reference)
 
 })
 
 test_that("reference can be explicitly set in the wavelength_spectrum class", {
   expected_reference = 0.5
   spectrum_obj <- wavelength_spectrum(
-    wavelength = c(1.0, 0.5, 0.33),
+    idealized_wavelength = c(1.0, 0.5, 0.33),
     amplitude = c(1.0, 0.8, 0.5),
     reference = expected_reference
   )
 
   # Expect the explicitly set reference to be used
   expect_equal(spectrum_obj$reference_component, expected_reference)
-  expect_equal(spectrum_obj$fundamental_component,
-               expected_reference * spectrum_obj$relative_cycle_length)
+  expect_equal(spectrum_obj$rationalized_fundamental,
+               expected_reference * spectrum_obj$rationalized_cycles_per_reference)
 
-})
-
-test_that("detailed signal plot matches expected output for specified coordinate range", {
-  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
-  spectrum_obj <- wavelength_spectrum(
-    wavelength = SPEED_OF_SOUND / c(4, 5),      # Frequencies in Hz
-    amplitude = c(1.0, 1.0)   # Equal amplitudes for both components
-  )
-
-  # Create the signal object from the spectrum
-  signal_obj <- space_signal(spectrum_obj)
-
-  # Define label and coordinate range
-  label <- "Feynman's Beats Details"
-
-  plot_details.signal(signal_obj)
-
-  # Use vdiffr to capture and test the plot output
-  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })

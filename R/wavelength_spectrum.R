@@ -1,44 +1,44 @@
 #' Create a Wavelength Spectrum
 #'
 #' Extends the `spectrum` class specifically for wavelength spectra.
-#' Accepts either direct numeric vectors or a list containing `wavelength` and `amplitude`.
+#' Accepts either direct numeric vectors or a list containing `idealized_wavelength` and `amplitude`.
 #'
-#' @param wavelength Either a numeric vector of wavelengths or a list with named `wavelength` and `amplitude` vectors.
-#' @param amplitude A numeric vector of amplitudes, if `wavelength` is a numeric vector.
+#' @param idealized_wavelength Either a numeric vector of idealized_wavelengths or a list with named `idealized_wavelength` and `amplitude` vectors.
+#' @param amplitude A numeric vector of amplitudes, if `idealized_wavelength` is a numeric vector.
 #' @param reference_component To compute the fundamental wavelength
 #' @return An object of class \code{wavelength_spectrum} that inherits from \code{spectrum}.
 #' @export
-wavelength_spectrum <- function(wavelength, amplitude = NULL, reference_component=NULL) {
+wavelength_spectrum <- function(idealized_wavelength, amplitude = NULL, reference_component=NULL) {
   # Check for non-numeric or inconsistent input directly in wavelength_spectrum
-  if (is.list(wavelength) && is.null(amplitude)) {
-    if (!is.numeric(wavelength$wavelength) || !is.numeric(wavelength$amplitude)) {
-      stop("Both `wavelength` and `amplitude` in the list must be numeric.")
+  if (is.list(idealized_wavelength) && is.null(amplitude)) {
+    if (!is.numeric(idealized_wavelength$idealized_wavelength) || !is.numeric(idealized_wavelength$amplitude)) {
+      stop("Both `idealized_wavelength` and `amplitude` in the list must be numeric.")
     }
-  } else if (!is.numeric(wavelength) || (!is.null(amplitude) && !is.numeric(amplitude))) {
-    stop("Both `wavelength` and `amplitude` must be numeric vectors.")
+  } else if (!is.numeric(idealized_wavelength) || (!is.null(amplitude) && !is.numeric(amplitude))) {
+    stop("Both `idealized_wavelength` and `amplitude` must be numeric vectors.")
   }
 
   # Delegate to `spectrum()` for main functionality
-  if (is.list(wavelength) && is.null(amplitude)) {
+  if (is.list(idealized_wavelength) && is.null(amplitude)) {
     # Handle list input
     stopifnot(
-      length(wavelength$wavelength) == length(wavelength$amplitude)
+      length(idealized_wavelength$idealized_wavelength) == length(idealized_wavelength$amplitude)
     )
-    spectrum_obj <- spectrum(component = wavelength$wavelength,
-                             amplitude = wavelength$amplitude,
+    spectrum_obj <- spectrum(idealized_component = idealized_wavelength$idealized_wavelength,
+                             amplitude = idealized_wavelength$amplitude,
                              reference_component = reference_component,
-                             inverted  = T)
+                             extent_rate = EXTENT_RATE$extent)
   } else {
     # Direct numeric vectors
-    spectrum_obj <- spectrum(component = wavelength,
+    spectrum_obj <- spectrum(idealized_component = idealized_wavelength,
                              amplitude = amplitude,
                              reference_component = reference_component,
-                             inverted  = T)
+                             extent_rate = EXTENT_RATE$extent)
   }
 
   # Add wavelength-specific fields
-  spectrum_obj$wavelength <- spectrum_obj$component
-  spectrum_obj$fundamental_wavelength <- spectrum_obj$fundamental_component
+  spectrum_obj$idealized_wavelength <- spectrum_obj$idealized_component
+  spectrum_obj$fundamental_wavelength <- spectrum_obj$rationalized_fundamental
   spectrum_obj$reference_component <- spectrum_obj$reference_component
 
   # Set class to wavelength_spectrum

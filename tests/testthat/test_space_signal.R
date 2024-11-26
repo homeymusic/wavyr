@@ -30,8 +30,8 @@ test_that("space_signal stores the wavelength spectrum components and amplitudes
   space_signal_obj <- space_signal(wavelength_spectrum_obj)
 
   # Verify that the stored spectrum has correct wavelengths and amplitudes
-  expect_equal(space_signal_obj$wavelength_spectrum$wavelength, c(400, 800, 1200))
-  expect_equal(space_signal_obj$spectrum$wavelength, c(400, 800, 1200))
+  expect_equal(space_signal_obj$idealized_wavelength_spectrum$idealized_wavelength, c(400, 800, 1200))
+  expect_equal(space_signal_obj$spectrum$idealized_wavelength, c(400, 800, 1200))
   expect_equal(space_signal_obj$spectrum$amplitude, c(0.5, 0.7, 0.3))
 })
 
@@ -108,19 +108,19 @@ test_that("signal amplitude with Feynman's 4 Hz and 5 Hz example includes expect
   expect_equal(signal_obj$amplitude(coordinate_1), expected_amplitude_1)
 
   # Confirm a minimum at half the beat period due to out-of-phase cancellation
-  coordinate_2 <- 0.25 * signal_obj$wavelength_spectrum$fundamental_wavelength  # seconds
+  coordinate_2 <- 0.25 * signal_obj$idealized_wavelength_spectrum$fundamental_wavelength  # seconds
   expected_amplitude_2 <- 1
   expect_equal(signal_obj$amplitude(coordinate_2), expected_amplitude_2,
                tolerance=0.1)
 
   # Confirm a minimum at half the beat period due to out-of-phase cancellation
-  coordinate_3 <- 0.5 * signal_obj$wavelength_spectrum$fundamental_wavelength  # seconds
+  coordinate_3 <- 0.5 * signal_obj$idealized_wavelength_spectrum$fundamental_wavelength  # seconds
   expected_amplitude_3 <- 0
   expect_equal(signal_obj$amplitude(coordinate_3), expected_amplitude_3,
                tolerance=0.1)
 
   # Verify full beat cycle at 1 second
-  coordinate_4 <- signal_obj$wavelength_spectrum$fundamental_wavelength  # seconds
+  coordinate_4 <- signal_obj$idealized_wavelength_spectrum$fundamental_wavelength  # seconds
   expected_amplitude_4 <- 2
   expect_equal(signal_obj$amplitude(coordinate_4), expected_amplitude_4, tolerance = 0.1)
 })
@@ -179,7 +179,7 @@ test_that("space signal plot of feynman waves with superposition", {
   superposed_wave = superposed_wave(spectrum_obj)
 
   # Create the signal object from the spectrum
-  space_signal_obj <- superposed_wave$wavelength_spectrum %>% space_signal()
+  space_signal_obj <- superposed_wave$idealized_wavelength_spectrum %>% space_signal()
   # Check that the object is of class "space_signal"
   expect_s3_class(space_signal_obj, "space_signal")
 

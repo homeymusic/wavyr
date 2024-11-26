@@ -23,8 +23,8 @@ test_that("veryifry what happen with 11 harmonics", {
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
-  expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
+  wavelength_spectrum <- superposed_wave_obj$idealized_wavelength_spectrum
+  expect_true(any(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance))
 
   sub_t = 'All Harmonics'
   t = paste(sub_t, '~ Frequency Spectrum')
@@ -69,12 +69,12 @@ test_that("superposed_wave recovers missing fundamental in wavelength spectrum w
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
-  expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
+  wavelength_spectrum <- superposed_wave_obj$idealized_wavelength_spectrum
+  expect_true(any(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance))
 
   # Check that the amplitude for this fundamental wavelength is the sum of all frequency amplitudes
   total_amplitude <- sum(amplitudes)
-  fundamental_amplitude <- wavelength_spectrum$amplitude[which(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance)]
+  fundamental_amplitude <- wavelength_spectrum$amplitude[which(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance)]
   expect_true(fundamental_amplitude > total_amplitude)
 
   t = 'Missing Fundamental ~ Frequency Spectrum'
@@ -122,12 +122,12 @@ test_that("superposed_wave recovers missing fundamental in wavelength spectrum w
   tolerance <- 1e-6  # Set a small tolerance for floating-point comparison
 
   # Confirm that the fundamental wavelength is present in the wavelength_spectrum within tolerance
-  wavelength_spectrum <- superposed_wave_obj$wavelength_spectrum
-  expect_true(any(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance))
+  wavelength_spectrum <- superposed_wave_obj$idealized_wavelength_spectrum
+  expect_true(any(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance))
 
   # Check that the amplitude for this fundamental wavelength is the sum of all frequency amplitudes
   total_amplitude <- sum(amplitudes)
-  fundamental_amplitude <- wavelength_spectrum$amplitude[which(abs(wavelength_spectrum$wavelength - fundamental_wavelength) < tolerance)]
+  fundamental_amplitude <- wavelength_spectrum$amplitude[which(abs(wavelength_spectrum$idealized_wavelength - fundamental_wavelength) < tolerance)]
   expect_true(fundamental_amplitude > 0.5)
 
   missing_freqs = setdiff(1:11, harmonics) * fundamental_freq

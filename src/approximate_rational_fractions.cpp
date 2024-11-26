@@ -167,14 +167,14 @@ using namespace Rcpp;
 
    // Create the main result DataFrame
    DataFrame result = DataFrame::create(
-     _("x")             = x,
-     _("rationalized_x")    = approximations,
-     _("pseudo_x")      = pseudo_x,
-     _("pseudo_octave") = pseudo_octave_double,
-     _("num")           = nums,
-     _("den")           = dens,
-     _("error")         = errors,
-     _("uncertainty")   = uncertainty
+     _("idealized_x")    = x,
+     _("rationalized_x") = approximations,
+     _("pseudo_x")       = pseudo_x,
+     _("pseudo_octave")  = pseudo_octave_double,
+     _("num")            = nums,
+     _("den")            = dens,
+     _("error")          = errors,
+     _("uncertainty")    = uncertainty
    );
 
    // Append metadata if provided

@@ -38,7 +38,7 @@ superposed_wave <- function(
       stop("wavelength_spectrum must be of class 'wavelength_spectrum'")
     }
     # Ensure that the size of wavelength_spectrum is greater than or equal to frequency_spectrum
-    if (length(wavelength_spectrum$wavelength) < length(frequency_spectrum$frequency)) {
+    if (length(wavelength_spectrum$idealized_wavelength) < length(frequency_spectrum$frequency)) {
       stop("wavelength_spectrum must have a size greater than or equal to frequency_spectrum")
     }
     base_wavelength_spectrum <- wavelength_spectrum
@@ -58,7 +58,7 @@ superposed_wave <- function(
   combined_wavelength_spectrum <- combine_spectra(
     base_wavelength_spectrum,
     beat_wavelength_spectrum,
-    reference_component = max(base_wavelength_spectrum$wavelength),
+    reference_component = max(base_wavelength_spectrum$idealized_wavelength),
     tolerance = FLOATING_POINT_TOLERANCE
   )
 
