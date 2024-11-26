@@ -9,8 +9,11 @@ combine_spectra_cpp <- function(component, amplitude, tolerance) {
     .Call(`_wavyr_combine_spectra_cpp`, component, amplitude, tolerance)
 }
 
-compute_beats_cpp <- function(wavelength, amplitude, tolerance = 1e-6) {
-    .Call(`_wavyr_compute_beats_cpp`, wavelength, amplitude, tolerance)
+#' Calculate Beats from Components
+NULL
+
+compute_beats_cpp <- function(component, amplitude, extent_rate, tolerance = 1e-6) {
+    .Call(`_wavyr_compute_beats_cpp`, component, amplitude, extent_rate, tolerance)
 }
 
 shannon_entropy_cpp <- function(bits) {

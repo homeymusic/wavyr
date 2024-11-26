@@ -9,12 +9,13 @@ test_that("approximate_rational_fractions_cpp works for simple inputs", {
 
   # Check structure
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("x", "pseudo_x",
-                    "pseudo_octave", "num", "den",
-                    "rationalized_x", "error", "uncertainty") %in% names(result)))
+
+  expect_equal(result %>% names(),
+               c("idealized_x","rationalized_x","pseudo_x","pseudo_octave",
+                 "num","den","error","uncertainty" ))
 
   # Check that input is preserved
-  expect_equal(result$x, x)
+  expect_equal(result$idealized_x, x)
 
   # Check that errors are within uncertainty
   expect_true(all(abs(result$error) <= uncertainty))
@@ -131,15 +132,16 @@ test_that("approximate_rational_fractions_cpp handles metadata round-tripping", 
 
   # Check structure
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("x", "pseudo_x", "pseudo_octave", "num", "den",
-                    "rationalized_x", "error", "uncertainty", "id", "notes") %in% names(result)))
+  expect_equal(names(result), c("idealized_x","rationalized_x","pseudo_x",
+                                "pseudo_octave","num","den","error","uncertainty",
+                                "id","notes" ))
 
   # Check that metadata is preserved
   expect_equal(result$id, metadata$id)
   expect_equal(result$notes, metadata$notes)
 
   # Check that input is preserved
-  expect_equal(result$x, x)
+  expect_equal(result$idealized_x, x)
 
   # Check that errors are within uncertainty
   expect_true(all(abs(result$error) <= uncertainty))
@@ -158,7 +160,7 @@ test_that("approximate_rational_fractions_cpp handles missing metadata gracefull
   expect_false(any(c("id", "notes") %in% names(result)))
 
   # Check that input is preserved
-  expect_equal(result$x, x)
+  expect_equal(result$idealized_x, x)
 
   # Check that errors are within uncertainty
   expect_true(all(abs(result$error) <= uncertainty))
@@ -188,7 +190,7 @@ test_that("approximate_rational_fractions_cpp adds new columns to metadata", {
   expect_equal(result$additional, metadata$additional)
 
   # Check that input is preserved
-  expect_equal(result$x, x)
+  expect_equal(result$idealized_x, x)
 
   # Check that errors are within uncertainty
   expect_true(all(abs(result$error) <= uncertainty))
