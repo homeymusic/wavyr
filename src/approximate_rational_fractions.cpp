@@ -168,7 +168,7 @@ using namespace Rcpp;
    // Create the main result DataFrame
    DataFrame result = DataFrame::create(
      _("x")             = x,
-     _("rational_x")    = approximations,
+     _("rationalized_x")    = approximations,
      _("pseudo_x")      = pseudo_x,
      _("pseudo_octave") = pseudo_octave_double,
      _("num")           = nums,

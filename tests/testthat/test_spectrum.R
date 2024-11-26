@@ -49,7 +49,7 @@ test_that("spectrum fractions inlcudes original component, ref component and amp
 
   # Test fractions output
   fractions <- spectrum_obj$fractions
-  expect_equal(names(fractions), c("x","rational_x","pseudo_x","pseudo_octave",
+  expect_equal(names(fractions), c("x","rationalized_x","pseudo_x","pseudo_octave",
                                    "num","den","error","uncertainty",
                                    "component","denominator_component","amplitude"))
   expect_equal(fractions$x, c(1.000000, 1.515152, 3.030303),
@@ -77,12 +77,12 @@ test_that('heisen compmonent works as expected', {
                tolerance=0.1)
   expect_equal(fractions$amplitude, c(1.0, 0.8, 0.5))
 
-  expect_equal(spectrum_obj$heisen_component,
+  expect_equal(spectrum_obj$rationalized_component,
                min(expected_component) * c(1/1, 4/3, 3/2),
                tolerance=0.1)
 
-  expect_equal(spectrum_obj$heisen_component,
-               min(expected_component) * fractions$rational_x,
+  expect_equal(spectrum_obj$rationalized_component,
+               min(expected_component) * fractions$rationalized_x,
                tolerance=0.1)
 
 })

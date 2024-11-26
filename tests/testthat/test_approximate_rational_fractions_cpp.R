@@ -11,7 +11,7 @@ test_that("approximate_rational_fractions_cpp works for simple inputs", {
   expect_s3_class(result, "data.frame")
   expect_true(all(c("x", "pseudo_x",
                     "pseudo_octave", "num", "den",
-                    "rational_x", "error", "uncertainty") %in% names(result)))
+                    "rationalized_x", "error", "uncertainty") %in% names(result)))
 
   # Check that input is preserved
   expect_equal(result$x, x)
@@ -20,7 +20,7 @@ test_that("approximate_rational_fractions_cpp works for simple inputs", {
   expect_true(all(abs(result$error) <= uncertainty))
 
   # Check that approximations are ratios of integers
-  expect_equal(result$num / result$den, result$rational_x)
+  expect_equal(result$num / result$den, result$rationalized_x)
 })
 
 test_that("approximate_rational_fractions_cpp handles edge cases", {
@@ -44,7 +44,7 @@ test_that("approximate_rational_fractions_cpp handles identical inputs", {
   result <- approximate_rational_fractions_cpp(x, uncertainty, deviation)
 
   # Expect only one unique approximation
-  unique_approximations <- unique(result$rational_x)
+  unique_approximations <- unique(result$rationalized_x)
   expect_length(unique_approximations, 1)
 
   # Ensure approximation is close to the input
@@ -132,7 +132,7 @@ test_that("approximate_rational_fractions_cpp handles metadata round-tripping", 
   # Check structure
   expect_s3_class(result, "data.frame")
   expect_true(all(c("x", "pseudo_x", "pseudo_octave", "num", "den",
-                    "rational_x", "error", "uncertainty", "id", "notes") %in% names(result)))
+                    "rationalized_x", "error", "uncertainty", "id", "notes") %in% names(result)))
 
   # Check that metadata is preserved
   expect_equal(result$id, metadata$id)

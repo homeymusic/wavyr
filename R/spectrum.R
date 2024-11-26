@@ -85,7 +85,7 @@ spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) 
     metadata    = metadata
   )
 
-  heisen_component <- fractions$denominator_component * fractions$rational_x
+  rationalized_component <- fractions$denominator_component * fractions$rationalized_x
 
   relative_cycle_length <- lcm_integers(fractions$den)
 
@@ -105,13 +105,13 @@ spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) 
 
   # Adjust component based on whether the spectrum is inverted
   signal_component <- if (inverted)  1 / component else component
-  signal_heisen_component <- if (inverted)  1 / heisen_component else heisen_component
+  signal_rationalized_component <- if (inverted)  1 / rationalized_component else rationalized_component
 
   # Return the spectrum object
   structure(
     list(
       component = component,
-      heisen_component = heisen_component,
+      rationalized_component = rationalized_component,
       reference_component = reference_component,
       amplitude = amplitude,
       cycle_length = fractions$den,
@@ -119,7 +119,7 @@ spectrum.list <- function(x, inverted = FALSE, reference_component = NULL, ...) 
       fundamental_component = fundamental_component,
       fundamental_cycle_length = fundamental_cycle_length,
       signal_component = signal_component,
-      signal_heisen_component = signal_heisen_component,
+      signal_rationalized_component = signal_rationalized_component,
       fractions = fractions,
       inverted = inverted
     ),
