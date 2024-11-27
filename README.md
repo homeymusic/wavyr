@@ -30,51 +30,45 @@ rational approximations for any signal or spectra. This process, the
 Stern-Brocot Fourier Transform, offers a fresh perspective on signal
 processing and spectral analysis.
 
-#### Time-Frequency Domain
-
 **The Stern-Brocot Fourier Transform:**
+
+*Time-Frequency Domain*
 
 $$
 \phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) e^{-i \omega t} \, dt
-$$
-
-**The Inverse Stern-Brocot Fourier Transform:**
-
-$$
-\psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \phi(\omega) e^{i \omega t} \, d\omega
-$$
-
-#### Space-Wavenumber Domain
-
-**The Stern-Brocot Spatial Transform:**
+$$ *Space-Wavenumber Domain*
 
 $$
 \phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) e^{-i k x} \, dx
 $$
 
-**The Inverse Stern-Brocot Spatial Transform:**
+**The Inverse Stern-Brocot Fourier Transform:**
+
+*Time-Frequency Domain*
+
+$$
+\psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \phi(\omega) e^{i \omega t} \, d\omega
+$$ *Space-Wavenumber Domain*
 
 $$
 \psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \phi(k) e^{i k x} \, dk
 $$
 
-------------------------------------------------------------------------
-
 #### Uncertainty Principles
 
-**Time-Frequency Uncertainty:**
+*Time-Frequency Uncertainty:*
 
 $$
 \Delta t \Delta \omega \geq \frac{1}{2}
 $$
 
-**Space-Wavenumber Uncertainty:**
+*Space-Wavenumber Uncertainty:*
 
 $$
 \Delta x \Delta k \geq \frac{1}{2}
 $$
 
-**Combined Time-Frequency and Space-Wavenumber Uncertainty:**
+*Combined Time-Frequency and Space-Wavenumber Uncertainty:*
 
 $$
 \Delta t \Delta \omega \Delta x \Delta k \geq \frac{1}{4}
