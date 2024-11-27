@@ -32,13 +32,13 @@ than the Gabor uncertainty product, the uncertainty principle enables us
 to reliably generate rationalized waveforms, without needing to account
 for the intricacies of those sensors or even the uncertainty trade-offs
 between the physical and spectral domains. This uncertainty-bounded,
-rational-approximations kernel is parameter-free, offering a Fourier
-transform technique for complex signals and spectra. This new method,
-the **Stern-Brocot-Gabor Fourier Transform**, offers a novel approach
-for fundamental wave discovery and feature extraction. By comparing our
-model to neural models and experimental studies, we propose that for
-signals and spectra, the ambiguity that arises from the Gabor
-uncertainty principle could be an enabler of pattern perception.
+rational-approximation is a parameter-free kernel for Fourier
+transformations. This new method, the **Stern-Brocot-Gabor Fourier
+Transform**, offers a novel approach for fundamental wave discovery and
+feature extraction. By comparing our model to neural models and
+experimental studies, we propose that for signals and spectra, the
+ambiguity that arises from the Gabor uncertainty principle could be an
+enabler of pattern perception.
 
 **The Stern-Brocot-Gabor Fourier Transform:**
 
