@@ -27,12 +27,18 @@ rational fraction approximations of complex waves. We use the
 Stern-Brocot tree to locate rational fractions within the Gabor
 uncertainty limit, allowing us to create signals and spectra that are
 both rational and bounded by the uncertainty product of the entire
-waveform. It provides a parameter-free rational approximation for any
-signal or spectrum. This new method, the **Stern-Brocot-Gabor Fourier
-Transform**, offers a novel approach for fundamental wave discovery and
-feature extraction. By comparing our model to experimental studies, we
-propose that for signals and spectra, the ambiguity that arises from the
-Gabor uncertainty principle could be an enabler of pattern perception.
+waveform. As long as the uncertainty of the sensor system is smaller
+than the Gabor uncertainty product, the uncertainty principle enables us
+to reliably generate rationalized waveforms, without needing to account
+for the intricacies of those sensors or even the uncertainty trade-offs
+between the physical and spectral domains. This uncertainty-bounded,
+rational-approximations kernel provides a parameter-free transform
+technique for any signal or spectrum. This new method, the
+**Stern-Brocot-Gabor Fourier Transform**, offers a novel approach for
+fundamental wave discovery and feature extraction. By comparing our
+model to neural models and experimental studies, we propose that for
+signals and spectra, the ambiguity that arises from the Gabor
+uncertainty principle could be an enabler of pattern perception.
 
 **The Stern-Brocot-Gabor Fourier Transform:**
 
