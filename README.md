@@ -25,20 +25,20 @@ signal provide valuable insights into wave structures, but they are
 often difficult to find or feel arbitrary. In our new method, we combine
 transform uncertainty with the power of rational fractions. We use the
 infinite complete binary Stern-Brocot tree to locate rational fractions
-within the bounds of uncertainty so that we can create parameter-free
-rational approximations for any signal or spectra. This process, the
-Stern-Brocot Fourier Transform, offers a fresh perspective on signal
-processing and spectral analysis.
+within the bounds of the uncertainty limit so that we can create
+parameter-free rational approximations for any signal or spectra. This
+process, the Stern-Brocot Fourier Transform, offers a novel approach to
+discovering fundamental waves and feature extraction.
 
 **The Stern-Brocot Fourier Transform:**
 
-*Time-Frequency Domain*
+*Time-Frequency Dimension*
 
 $$
 \phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) e^{-i \omega t} \, dt
 $$
 
-*Space-Wavenumber Domain*
+*Space-Wavenumber Dimension*
 
 $$
 \phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) e^{-i k x} \, dx
@@ -46,13 +46,13 @@ $$
 
 **The Inverse Stern-Brocot Fourier Transform:**
 
-*Time-Frequency Domain*
+*Time-Frequency Dimension*
 
 $$
 \psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \phi(\omega) e^{i \omega t} \, d\omega
 $$
 
-*Space-Wavenumber Domain*
+*Space-Wavenumber Dimension*
 
 $$
 \psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \phi(k) e^{i k x} \, dk
