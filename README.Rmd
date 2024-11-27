@@ -13,45 +13,45 @@ title: "wavyr"
 
 ### Rational Signals and Rational Spectra
 
-When we transform a traveling wave from the physical domain to the spectral domain, uncertainty is introduced. Gabor described this limit in the time-frequency dimension as $\Delta t \Delta \omega \geq \frac{1}{2}$. Rational fraction representations of waves are used for feature extraction and fundamental frequency detection, providing a way to analyze signal structures. In our new method, we combine uncertainty with rational fraction approximations. We use the infinite complete binary Stern-Brocot tree to locate rational fractions within the bounds of the uncertainty limit so that we can create parameter-free rational approximations for any signal or spectra. This process, the Stern-Brocot Fourier Transform, offers a novel approach for fundamental wave discovery and feature extraction.
+When we transform a wave from the physical domain to the spectral domain, uncertainty is introduced. Gabor established the uncertainty limit for the time-frequency dimension, a principle that also applies to space-wavenumber dimensions. Rational fraction representations of waves have proven helpful for feature extraction and fundamental frequency detection. In our novel method, we combine Gabor uncertainty with rational fraction approximations of complex waves. We use the Stern-Brocot tree to locate rational fractions within the Gabor uncertainty limit, allowing us to create signals and spectra that are both rational and bounded by the uncertainty product of the entire waveform. It provides a parameter-free rational approximation for any signal or spectrum. This new method, the **Stern-Brocot-Gabor Fourier Transform**, offers a novel approach for fundamental wave discovery and feature extraction. By comparing our model to experimental studies, we propose that for signals and spectra, the ambiguity that arises from the Gabor uncertainty principle could be an enabler of pattern perception.
 
-**The Stern-Brocot Fourier Transform:**
+**The Stern-Brocot-Gabor Fourier Transform:**
 
 *Time-Frequency Dimension*
 
 $$
-\phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) \ e^{-i \omega t} \ dt
+\phi(\omega) = Q_{SB}(\Delta t \Delta \omega, \ \omega) \int_{-\infty}^\infty \psi(t) \ e^{-i \omega t} \ dt
 $$
 
 *Space-Wavenumber Dimension*
 
 $$
-\phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) \ e^{-i k x} \ dx
+\phi(k) = Q_{SB}(\Delta x \Delta k, \ k) \int_{-\infty}^\infty \psi(x) \ e^{-i k x} \ dx
 $$
 
-**The Inverse Stern-Brocot Fourier Transform:**
+**The Inverse Stern-Brocot-Gabor Fourier Transform:**
 
 *Time-Frequency Dimension*
 
 $$
-\psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \ \phi(\omega) \ e^{i \omega t} \ d\omega
+\psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\Delta t \Delta \omega, \ \omega) \ \phi(\omega) \ e^{i \omega t} \ d\omega
 $$
 
 *Space-Wavenumber Dimension*
 
 $$
-\psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \ \phi(k) \ e^{i k x} \ dk
+\psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\Delta x \Delta k, \ k) \ \phi(k) \ e^{i k x} \ dk
 $$
 
-**The Stern-Brocot Quantizer:**
+**The Stern-Brocot-Gabor Quantizer:**
 
-The Stern-Brocot Quantizer $Q_{SB}$ traverses all rational numbers $\mathbb{Q}$ in order, where fractions with smaller denominators appear earlier in the traversal, and returns the first rational number that approximates $r$ within the uncertainty range $\Delta$.
+The Stern-Brocot-Gabor quantizer $Q_{SB}(\Delta_G, r)$ traverses the Stern-Brocot tree of all rational numbers $\mathbb{Q}$ in order, where fractions with smaller denominators appear earlier in the traversal, and returns the first rational number that approximates $r$ within the Gabor uncertainty limit $\Delta_G$.
 
 $$
-Q_{SB}(r, \Delta) = \frac{p}{q}, \quad \text{where } \left| r - \frac{p}{q} \right| \le \Delta \quad \text{and } \gcd(p, q) = 1
+Q_{SB}(\Delta_G, r) = \frac{p}{q}, \quad \text{where } \left| r - \frac{p}{q} \right| \le \Delta_G \quad \text{and } \gcd(p, q) = 1
 $$
 
-This ensures that $\frac{p}{q}$ is a co-prime fraction in simplest form, providing a rational approximation of $r$ within the specified uncertainty.
+The Stern-Brocot-Gabor quantizer ensures that $\frac{p}{q}$ is a co-prime fraction in simplest form, providing a rational approximation of $r$ within the specified uncertainty.
 
 #### Uncertainty Principles
 
