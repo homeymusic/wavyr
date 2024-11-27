@@ -36,7 +36,9 @@ processing and spectral analysis.
 
 $$
 \phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) e^{-i \omega t} \, dt
-$$ *Space-Wavenumber Domain*
+$$
+
+*Space-Wavenumber Domain*
 
 $$
 \phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) e^{-i k x} \, dx
@@ -48,7 +50,9 @@ $$
 
 $$
 \psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \phi(\omega) e^{i \omega t} \, d\omega
-$$ *Space-Wavenumber Domain*
+$$
+
+*Space-Wavenumber Domain*
 
 $$
 \psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \phi(k) e^{i k x} \, dk

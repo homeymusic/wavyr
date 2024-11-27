@@ -22,8 +22,8 @@ When we transform a traveling wave from the physical domain to the spectral doma
 $$
 \phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) e^{-i \omega t} \, dt
 $$
-*Space-Wavenumber Domain*
 
+*Space-Wavenumber Domain*
 
 $$
 \phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) e^{-i k x} \, dx
@@ -36,6 +36,7 @@ $$
 $$
 \psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \phi(\omega) e^{i \omega t} \, d\omega
 $$
+
 *Space-Wavenumber Domain*
 
 $$
@@ -61,7 +62,6 @@ $$
 $$
 \Delta t \Delta \omega \Delta x \Delta k \geq \frac{1}{4}
 $$
-
 
 ### Relationships among Wave Properties
 
