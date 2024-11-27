@@ -20,15 +20,15 @@ processing system.</figcaption>
 When we transform a traveling wave from the physical domain to the
 spectral domain, uncertainty is introduced. Gabor described this limit
 in the time-frequency dimension as
-$\Delta t \Delta \omega \geq \frac{1}{2}$. Rational fractions in a
-signal provide valuable insights into wave structures, but they are
-often difficult to find or feel arbitrary. In our new method, we combine
-transform uncertainty with the power of rational fractions. We use the
-infinite complete binary Stern-Brocot tree to locate rational fractions
-within the bounds of the uncertainty limit so that we can create
-parameter-free rational approximations for any signal or spectra. This
-process, the Stern-Brocot Fourier Transform, offers a novel approach to
-discovering fundamental waves and feature extraction.
+$\Delta t \Delta \omega \geq \frac{1}{2}$. Rational fraction
+representations of waves are used for feature extraction and fundamental
+frequency detection, providing a way to analyze signal structures. In
+our new method, we combine uncertainty with rational fraction
+approximations. We use the infinite complete binary Stern-Brocot tree to
+locate rational fractions within the bounds of the uncertainty limit so
+that we can create parameter-free rational approximations for any signal
+or spectra. This process, the Stern-Brocot Fourier Transform, offers a
+novel approach for fundamental wave discovery and feature extraction.
 
 **The Stern-Brocot Fourier Transform:**
 
@@ -57,6 +57,21 @@ $$
 $$
 \psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \ \phi(k) \ e^{i k x} \ dk
 $$
+
+**The Stern-Brocot Quantizer:**
+
+The Stern-Brocot Quantizer $Q_{SB}$ traverses all rational numbers
+$\mathbb{Q}$ in order, where fractions with smaller denominators appear
+earlier in the traversal, and returns the first rational number that
+approximates $r$ within the uncertainty range $\Delta$.
+
+$$
+Q_{SB}(r, \Delta) = \frac{p}{q}, \quad \text{where } \left| r - \frac{p}{q} \right| \le \Delta \quad \text{and } \gcd(p, q) = 1
+$$
+
+This ensures that $\frac{p}{q}$ is a co-prime fraction in simplest form,
+providing a rational approximation of $r$ within the specified
+uncertainty.
 
 #### Uncertainty Principles
 
