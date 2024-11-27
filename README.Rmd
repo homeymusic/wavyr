@@ -20,13 +20,13 @@ When we transform a traveling wave from the physical domain to the spectral doma
 *Time-Frequency Dimension*
 
 $$
-\phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) e^{-i \omega t} \, dt
+\phi(\omega) = Q_{SB}(\omega, \Delta t \Delta \omega) \int_{-\infty}^\infty \psi(t) \ e^{-i \omega t} \ dt
 $$
 
 *Space-Wavenumber Dimension*
 
 $$
-\phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) e^{-i k x} \, dx
+\phi(k) = Q_{SB}(k, \Delta x \Delta k) \int_{-\infty}^\infty \psi(x) \ e^{-i k x} \ dx
 $$
 
 **The Inverse Stern-Brocot Fourier Transform:**
@@ -34,13 +34,13 @@ $$
 *Time-Frequency Dimension*
 
 $$
-\psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \phi(\omega) e^{i \omega t} \, d\omega
+\psi(t) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(\omega, \Delta t \Delta \omega) \ \phi(\omega) \ e^{i \omega t} \ d\omega
 $$
 
 *Space-Wavenumber Dimension*
 
 $$
-\psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \phi(k) e^{i k x} \, dk
+\psi(x) = \frac{1}{2\pi} \int_{-\infty}^\infty Q_{SB}(k, \Delta x \Delta k) \ \phi(k) \ e^{i k x} \ dk
 $$
 
 #### Uncertainty Principles
