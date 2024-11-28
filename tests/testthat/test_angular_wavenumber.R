@@ -10,6 +10,7 @@ test_that("angular_wavenumber subclass has correct classes", {
   expect_equal(k_ang$extent_rate,   EXTENT_RATE$rate)
   expect_equal(k_ang$unit, "rad/m")
   expect_equal(k_ang$unit_latex, "\\frac{\\text{rad}}{\\text{m}}")
+  expect_equal(k_ang$unit_expression, "rad / m")
   expect_equal(k_ang$symbol, "k_angular")
   expect_equal(k_ang$symbol_latex, "k_\\text{angular}")
   expect_equal(k_ang$symbol_expression, "italic(k)")

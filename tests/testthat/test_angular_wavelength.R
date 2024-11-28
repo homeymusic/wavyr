@@ -7,6 +7,7 @@ test_that("angular_wavelength subclass has correct classes", {
   expect_equal(l_a$class_name, "angular_wavelength")
   expect_equal(l_a$unit, "m/rad")
   expect_equal(l_a$unit_latex, "\\frac{\\text{m}}{\\text{rad}}")
+  expect_equal(l_a$unit_expression, "m / rad")
   expect_equal(l_a$symbol, "l_angular")
   expect_equal(l_a$symbol_latex, "\\lambda_\\text{angular}")
   expect_equal(l_a$symbol_expression, 'italic(ƛ)["angular"]')

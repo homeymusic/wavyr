@@ -9,6 +9,7 @@ test_that("linear_wavelength subclass has correct classes", {
   expect_equal(l$extent_rate,   EXTENT_RATE$extent)
   expect_equal(l$unit, "m")
   expect_equal(l$unit_latex, "\\text{m}")
+  expect_equal(l$unit_expression, "m")
   expect_equal(l$symbol, "\u03BB")
   expect_equal(l$symbol_latex, "\\lambda")
   expect_equal(l$symbol_expression, "italic(λ)")

@@ -13,6 +13,7 @@ ANGULAR_FREQUENCY <- data.frame(
   class_name = "angular_frequency",
   unit = "rad/s",
   unit_latex = "\\frac{\\text{rad}}{\\text{s}}",
+  unit_expression = "rad / s",
   symbol = "\u03C9",
   symbol_latex = "\\omega",
   symbol_expression = "italic(ω)",
@@ -26,6 +27,7 @@ ANGULAR_PERIOD <- data.frame(
   class_name = 'angular_period',
   unit = "s/rad",
   unit_latex = "\\frac{\\text{s}}{\\text{rad}}",
+  unit_expression = "s / rad",
   symbol = "T_angular",
   symbol_latex = "\\Tau_\\text{angular}",
   symbol_expression = 'italic(T)["angular"]',
@@ -34,20 +36,21 @@ ANGULAR_PERIOD <- data.frame(
   extent_rate = EXTENT_RATE$extent
 )
 
-ANGULAR_WAVELENGTH <-data.frame(
-  name         = "angular wavelength",
-  class_name   = "angular_wavelength",
-  unit         = "m/rad",
-  unit_latex   = "\\frac{\\text{m}}{\\text{rad}}",
-  symbol       = "l_angular",
+ANGULAR_WAVELENGTH <- data.frame(
+  name = "angular wavelength",
+  class_name = "angular_wavelength",
+  unit = "m/rad",
+  unit_latex = "\\frac{\\text{m}}{\\text{rad}}",
+  unit_expression = "m / rad",
+  symbol = "l_angular",
   symbol_latex = "\\lambda_\\text{angular}",
   symbol_expression = 'italic(ƛ)["angular"]',
-  linear_angular    = LINEAR_ANGULAR$angular,
-  space_time        = SPACE_TIME$space,
-  extent_rate       = EXTENT_RATE$extent
+  linear_angular = LINEAR_ANGULAR$angular,
+  space_time = SPACE_TIME$space,
+  extent_rate = EXTENT_RATE$extent
 )
 
-ANGULAR_WAVENUMBER <-data.frame(
+ANGULAR_WAVENUMBER <- data.frame(
   name = "angular wavenumber",
   class_name = "angular_wavenumber",
   space_time = SPACE_TIME$space,
@@ -55,6 +58,7 @@ ANGULAR_WAVENUMBER <-data.frame(
   extent_rate = EXTENT_RATE$rate,
   unit = "rad/m",
   unit_latex = "\\frac{\\text{rad}}{\\text{m}}",
+  unit_expression = "rad / m",
   symbol = "k_angular",
   symbol_latex = "k_\\text{angular}",
   symbol_expression = "italic(k)"
@@ -65,6 +69,7 @@ LINEAR_FREQUENCY <- data.frame(
   class_name = 'linear_frequency',
   unit = "Hz",
   unit_latex = "\\text{Hz}",
+  unit_expression = "Hz",
   symbol = "f",
   symbol_latex = "f",
   symbol_expression = "italic(f)",
@@ -78,6 +83,7 @@ LINEAR_PERIOD <- data.frame(
   class_name = 'linear_period',
   unit = "s",
   unit_latex = "\\text{s}",
+  unit_expression = "s",
   symbol = "T",
   symbol_latex = "T",
   symbol_expression = "italic(T)",
@@ -93,6 +99,7 @@ LINEAR_WAVELENGTH <- data.frame(
   extent_rate = EXTENT_RATE$extent,
   unit = "m",
   unit_latex = "\\text{m}",
+  unit_expression = "m",
   symbol = "\u03BB",
   symbol_latex = "\\lambda",
   symbol_expression = "italic(λ)",
@@ -106,6 +113,7 @@ LINEAR_WAVENUMBER <- data.frame(
   extent_rate = EXTENT_RATE$rate,
   unit = "1/m",
   unit_latex = "\\text{m}^{-1}",
+  unit_expression = "m^-1",
   symbol = "k_linear",
   symbol_latex = "k_{\\text{linear}}",
   symbol_expression = 'italic(k)["linear"]',
@@ -123,13 +131,12 @@ PROPERTIES <- rbind(
   angular_wavelength = ANGULAR_WAVELENGTH
 )
 
-# Define the assemble_label function
 assemble_label <- function(property) {
   paste0(
     'atop(',
     property$symbol_expression, ', ',
-    'atop("', property$name, '", ',
-    '"[', property$linear_angular, ' ', property$space_time, ' ', property$extent_rate, ']"))'
+    'atop(paste("', property$name, ' [", ', property$unit_expression, ', "]"),',
+    'italic("', property$linear_angular, ' ', property$space_time, ' ', property$extent_rate, '")))'
   )
 }
 

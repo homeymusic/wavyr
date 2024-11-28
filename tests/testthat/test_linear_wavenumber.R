@@ -9,6 +9,7 @@ test_that("linear_wavenumber subclass has correct classes", {
   expect_equal(k_lin$extent_rate,   EXTENT_RATE$rate)
   expect_equal(k_lin$unit, "1/m")
   expect_equal(k_lin$unit_latex, "\\text{m}^{-1}")
+  expect_equal(k_lin$unit_expression, "m^-1")
   expect_equal(k_lin$symbol, "k_linear")
   expect_equal(k_lin$symbol_latex, "k_{\\text{linear}}")
   expect_equal(k_lin$symbol_expression, 'italic(k)["linear"]')

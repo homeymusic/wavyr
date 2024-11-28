@@ -7,6 +7,7 @@ test_that("angular_period subclass has correct classes", {
   expect_equal(T_ang$class_name, 'angular_period')
   expect_equal(T_ang$unit, "s/rad")
   expect_equal(T_ang$unit_latex, "\\frac{\\text{s}}{\\text{rad}}")
+  expect_equal(T_ang$unit_expression, "s / rad")
   expect_equal(T_ang$symbol, "T_angular")
   expect_equal(T_ang$symbol_latex, "\\Tau_\\text{angular}")
   expect_equal(T_ang$symbol_expression, 'italic(T)["angular"]')

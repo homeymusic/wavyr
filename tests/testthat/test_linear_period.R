@@ -8,6 +8,7 @@ test_that("linear_period subclass has correct classes", {
   expect_equal(P$class_name, 'linear_period')
   expect_equal(P$unit, "s")
   expect_equal(P$unit_latex, "\\text{s}")
+  expect_equal(P$unit_expression, "s")
   expect_equal(P$symbol, "T")
   expect_equal(P$symbol_latex, "T")
   expect_equal(P$symbol_expression, "italic(T)")

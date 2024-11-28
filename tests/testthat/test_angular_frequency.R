@@ -7,6 +7,7 @@ test_that("w subclass has correct classes", {
   expect_equal(w$class_name, "angular_frequency")
   expect_equal(w$unit, "rad/s")
   expect_equal(w$unit_latex, "\\frac{\\text{rad}}{\\text{s}}")
+  expect_equal(w$unit_expression, "rad / s")
   expect_equal(w$symbol, "\u03C9")
   expect_equal(w$symbol_latex, "\\omega")
   expect_equal(w$symbol_expression, 'italic(ω)')

@@ -7,6 +7,7 @@ test_that("linear_frequency subclass has correct classes", {
   expect_equal(f$class_name, 'linear_frequency')
   expect_equal(f$unit, "Hz")
   expect_equal(f$unit_latex, "\\text{Hz}")
+  expect_equal(f$unit_expression, "Hz")
   expect_equal(f$symbol, "f")
   expect_equal(f$symbol_latex, "f")
   expect_equal(f$symbol_expression, "italic(f)")
