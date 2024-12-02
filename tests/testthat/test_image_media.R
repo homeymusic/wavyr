@@ -11,11 +11,11 @@ test_that("Image_media object has correct class, stores the original media conte
   expect_equal(class(expected_idealized_spectrum), c('matrix','array'))
   element <- expected_idealized_spectrum[100,100]
   expect_equal(class(element), c('complex'))
-  expect_equal(Re(element), 97.228, tolerance=0.1)
-  expect_equal(Im(element), 49.62, tolerance=0.1)
-  expect_equal(Mod(element), 109.162, tolerance=0.1)
-  expect_equal(Arg(element), 0.4719509, tolerance=0.1)
-  expect_equal(Conj(element), 97.22871-49.62774i , tolerance=0.1)
+  expect_equal(Re(element), 6.11, tolerance=0.1)
+  expect_equal(Im(element), -14.05, tolerance=0.1)
+  expect_equal(Mod(element), 15.32, tolerance=0.1)
+  expect_equal(Arg(element), -1.16, tolerance=0.1)
+  expect_equal(Conj(element), 6.11047+14.05616i , tolerance=0.1)
   expected_idealized_dim <- expected_original_dim
   expected_idealized_dim[length(expected_idealized_dim)] <- 1
   expected_idealized_signal <- fftwtools::fftw2d(expected_idealized_spectrum, inverse = 1)
@@ -33,8 +33,13 @@ test_that("Image_media object has correct class, stores the original media conte
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
   expect_equal(image_media_obj$idealized_image, expected_idealized_image)
+
   label = 'idealized image'
   vdiffr::expect_doppelganger(label, function() plot(image_media_obj$idealized_image,
+                                                     axes = F))
+
+  label = 'gabor filtered image'
+  vdiffr::expect_doppelganger(label, function() plot(image_media_obj$gabor_filtered_image,
                                                      axes = F))
 
 })
