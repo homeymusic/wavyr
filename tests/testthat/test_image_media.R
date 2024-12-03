@@ -1,3 +1,5 @@
+source(testthat::test_path("helper.R"))
+
 test_that("Image_media object has correct class, stores the original media content, computes idealized_spectrum, idealized_signal, and verifies dimensions", {
 
   image_file_path <- test_path("images", "MaDukes.png")
@@ -21,14 +23,20 @@ test_that("Image_media object has correct class, stores the original media conte
   expected_idealized_image <- imager::as.cimg(Re(expected_idealized_signal),
                                               dim = expected_idealized_dim)
 
-
-
   image_media_obj <- image_media(image_file_path)
 
   expect_s3_class(image_media_obj, "image_media")
   expect_equal(image_media_obj$original_image, expected_original)
   expect_equal(image_media_obj$original_dimensions, expected_original_dim)
   expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum)
+
+  label = 'MaDukes Idealized Spectrum'
+  vdiffr::expect_doppelganger(label, function() plot(spectrum_image(image_media_obj$idealized_spectrum),
+                                                     axes = F))
+  label = 'MaDukes Rationalized Spectrum'
+  vdiffr::expect_doppelganger(label, function() plot(spectrum_image(image_media_obj$rationalized_spectrum),
+                                                     axes = F))
+
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
   expect_equal(image_media_obj$idealized_image, expected_idealized_image)
@@ -40,6 +48,7 @@ test_that("Image_media object has correct class, stores the original media conte
   label = 'MaDukes_Rationalized'
   vdiffr::expect_doppelganger(label, function() plot(image_media_obj$rationalized_image,
                                                      axes = F))
+
 })
 
 test_that("Image_media object has correct class, stores the original media content, computes idealized_spectrum, idealized_signal, and verifies dimensions", {
@@ -73,6 +82,14 @@ test_that("Image_media object has correct class, stores the original media conte
   expect_equal(image_media_obj$original_image, expected_original)
   expect_equal(image_media_obj$original_dimensions, expected_original_dim)
   expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum)
+
+  label = 'Lenna Idealized Spectrum'
+  vdiffr::expect_doppelganger(label, function() plot(spectrum_image(image_media_obj$idealized_spectrum),
+                                                     axes = F))
+  label = 'Lenna Rationalized Spectrum'
+  vdiffr::expect_doppelganger(label, function() plot(spectrum_image(image_media_obj$rationalized_spectrum),
+                                                     axes = F))
+
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
   expect_equal(image_media_obj$idealized_image, expected_idealized_image)
@@ -142,10 +159,10 @@ test_that("the various maps for a 5x5 matrix make sense", {
 
   # Expected idealized spatial frequency map
   expected_frequencies <- matrix(list(
-    c(x = 0, y = 0),  c(x = 1, y = 0),  c(x = 2, y = 0),  c(x = -2, y = 0),  c(x = -1, y = 0),
+    c(x = 0, y = 0),  c(x = 1, y = 0),  c(x = 1, y = 0),  c(x = -1, y = 0),  c(x = -1, y = 0),
     c(x = 0, y = 1),  c(x = 1, y = 1),  c(x = 2, y = 1),  c(x = -2, y = 1),  c(x = -1, y = 1),
-    c(x = 0, y = 2),  c(x = 1, y = 2),  c(x = 1, y = 1),  c(x = -1, y = 1),  c(x = -1, y = 2),
-    c(x = 0, y = -2), c(x = 1, y = -2), c(x = 1, y = -1), c(x = -1, y = -1), c(x = -1, y = -2),
+    c(x = 0, y = 1),  c(x = 1, y = 2),  c(x = 1, y = 1),  c(x = -1, y = 1),  c(x = -1, y = 2),
+    c(x = 0, y = -1), c(x = 1, y = -2), c(x = 1, y = -1), c(x = -1, y = -1), c(x = -1, y = -2),
     c(x = 0, y = -1), c(x = 1, y = -1), c(x = 2, y = -1), c(x = -2, y = -1), c(x = -1, y = -1)
   ), nrow = 5, byrow = TRUE)
 
@@ -159,11 +176,11 @@ test_that("the various maps for a 5x5 matrix make sense", {
 
   expected_rationalized_spectrum <- matrix(
     c(
-      6.1361961 + 0.0000000i,                             0.1477849 + 1.0480768i, -0.08568688 + 0.05459868i, -0.08568688 - 0.05459868i,                            0.1477849 - 1.0480768i,
-      0.7944703 + 0.5699178i, 0.5525445 - 0.2506504i + -0.01142689 - 0.11058409i,  0.12778788 - 0.01742626i,  0.29475756 + 0.21481316i, 0.0622026 - 0.4496432i + 0.06430717 + 0.17928514i,
-      0.1696866 + 0.0538504i,                             0.3160660 + 0.0995171i,                    0 + 0i,                    0 + 0i,                            0.1871533 - 0.2141558i,
-      0.1696866 - 0.0538504i,                             0.1871533 + 0.2141558i,                    0 + 0i,                    0 + 0i,                            0.3160660 - 0.0995171i,
-      0.7944703 - 0.5699178i, 0.0622026 + 0.4496432i +  0.06430717 - 0.17928514i,  0.29475756 - 0.21481316i,  0.12778788 + 0.01742626i, 0.5525445 + 0.2506504i + -0.01142689 + 0.11058409i
+                               6.1361961 + 0.0000000i, 0.1477849 + 1.0480768i + -0.08568688 + 0.05459868i,                    0 + 0i,                    0 + 0i, 0.1477849 - 1.0480768i + -0.08568688 - 0.05459868i,
+      0.7944703 + 0.5699178i + 0.1696866 + 0.0538504i, 0.5525445 - 0.2506504i + -0.01142689 - 0.11058409i,  0.12778788 - 0.01742626i,  0.29475756 + 0.21481316i, 0.0622026 - 0.4496432i +  0.06430717 + 0.17928514i,
+                                               0 + 0i,                             0.3160660 + 0.0995171i,                    0 + 0i,                    0 + 0i,                           0.1871533  - 0.2141558i,
+                                               0 + 0i,                             0.1871533 + 0.2141558i,                    0 + 0i,                    0 + 0i,                           0.3160660  - 0.0995171i,
+      0.7944703 - 0.5699178i + 0.1696866 - 0.0538504i, 0.0622026 + 0.4496432i +  0.06430717 - 0.17928514i,  0.29475756 - 0.21481316i,  0.12778788 + 0.01742626i, 0.5525445 + 0.2506504i + -0.01142689 + 0.11058409i
     ),
     nrow = 5,
     byrow = TRUE

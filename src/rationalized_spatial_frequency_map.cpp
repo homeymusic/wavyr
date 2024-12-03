@@ -17,9 +17,23 @@ ListMatrix rationalized_spatial_frequency_map_cpp(const ListMatrix& spatial_freq
       double x = k["x"];
       double y = k["y"];
 
-      if (x == 0 || y == 0) {
+      if (x == 0 && y == 0) {
         // Handle zero values: copy original spatial frequencies
         rationalized_frequencies(i, j) = k;
+      } else if (x == 0) {
+        // Set x = 0 and y = +1 or -1 based on sign of y
+        NumericVector rationalized = NumericVector::create(
+          Named("x") = 0,
+          Named("y") = std::copysign(1, y)
+        );
+        rationalized_frequencies(i, j) = rationalized;
+      } else if (y == 0) {
+        // Set y = 0 and x = +1 or -1 based on sign of x
+        NumericVector rationalized = NumericVector::create(
+          Named("x") = std::copysign(1, x),
+          Named("y") = 0
+        );
+        rationalized_frequencies(i, j) = rationalized;
       } else {
         // Compute the absolute ratio
         double abs_ratio = std::abs(y / x);
