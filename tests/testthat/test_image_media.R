@@ -99,28 +99,26 @@ test_that("Image_media object creates Gabor-filtered images with verified parame
 
 })
 
-# test_that("Image_media object creates SBG quantized images", {
-#
-#   image_filenames = c('MaDukesRightEye', 'MaDukes', 'Lenna')
-#
-#   for (image_filename in image_filenames) {
-#     image_file_path <- test_path("images", paste0(image_filename, ".png"))
-#     image_media_obj <- image_media(image_file_path)
-#     # Test each orientation
-#     label <- paste0(image_filename, "-SBG-")
-#     vdiffr::expect_doppelganger(label, function() {
-#       plot(image_media_obj$sbg_image(), axes = FALSE)
-#     })
-#   }
-#
-# })
-
-test_that("the correct spatial frequency map for a 5x5 matrix", {
+test_that("the various maps for a 5x5 matrix make sense", {
   image_filename = "MaDukesRightEye"
   image_file_path <- test_path("images", paste0(image_filename, ".png"))
   image_media_obj <- image_media(image_file_path)
 
-    # Expected spatial frequency map
+  expected_idealized_spectrum <- matrix(
+    c(
+      6.1361961 + 0.0000000i, 0.1477849 + 1.0480768i, -0.08568688 + 0.05459868i, -0.08568688 - 0.05459868i, 0.1477849 - 1.0480768i,
+      0.7944703 + 0.5699178i, 0.5525445 - 0.2506504i,  0.12778788 - 0.01742626i,  0.29475756 + 0.21481316i, 0.0622026 - 0.4496432i,
+      0.1696866 + 0.0538504i, 0.3160660 + 0.0995171i, -0.01142689 - 0.11058409i,  0.06430717 + 0.17928514i, 0.1871533 - 0.2141558i,
+      0.1696866 - 0.0538504i, 0.1871533 + 0.2141558i,  0.06430717 - 0.17928514i, -0.01142689 + 0.11058409i, 0.3160660 - 0.0995171i,
+      0.7944703 - 0.5699178i, 0.0622026 + 0.4496432i,  0.29475756 - 0.21481316i,  0.12778788 + 0.01742626i, 0.5525445 + 0.2506504i
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum, tolerance=0.01)
+
+  # Expected spatial frequency map
   expected_frequencies <- matrix(list(
     c(x = 0, y = 0),  c(x = 1, y = 0),  c(x = 2, y = 0),  c(x = -2, y = 0),  c(x = -1, y = 0),
     c(x = 0, y = 1),  c(x = 1, y = 1),  c(x = 2, y = 1),  c(x = -2, y = 1),  c(x = -1, y = 1),
@@ -135,4 +133,36 @@ test_that("the correct spatial frequency map for a 5x5 matrix", {
       expect_equal(image_media_obj$idealized_spatial_frequencies[[i, j]], expected_frequencies[[i, j]])
     }
   }
+
+  # Expected idealized spatial frequency map
+  expected_frequencies <- matrix(list(
+    c(x = 0, y = 0),  c(x = 1, y = 0),  c(x = 2, y = 0),  c(x = -2, y = 0),  c(x = -1, y = 0),
+    c(x = 0, y = 1),  c(x = 1, y = 1),  c(x = 2, y = 1),  c(x = -2, y = 1),  c(x = -1, y = 1),
+    c(x = 0, y = 2),  c(x = 1, y = 2),  c(x = 1, y = 1),  c(x = -1, y = 1),  c(x = -1, y = 2),
+    c(x = 0, y = -2), c(x = 1, y = -2), c(x = 1, y = -1), c(x = -1, y = -1), c(x = -1, y = -2),
+    c(x = 0, y = -1), c(x = 1, y = -1), c(x = 2, y = -1), c(x = -2, y = -1), c(x = -1, y = -1)
+  ), nrow = 5, byrow = TRUE)
+
+  # Compare each element of the matrices
+  for (i in seq_len(nrow(expected_frequencies))) {
+    for (j in seq_len(ncol(expected_frequencies))) {
+      expect_equal(image_media_obj$rationalized_spatial_frequencies[[i, j]], expected_frequencies[[i, j]],
+                   info=paste("i: ", i, "j: ", j))
+    }
+  }
+
+  expected_rationalized_spectrum <- matrix(
+    c(
+      6.1361961 + 0.0000000i,                             0.1477849 + 1.0480768i, -0.08568688 + 0.05459868i, -0.08568688 - 0.05459868i,                            0.1477849 - 1.0480768i,
+      0.7944703 + 0.5699178i, 0.5525445 - 0.2506504i + -0.01142689 - 0.11058409i,  0.12778788 - 0.01742626i,  0.29475756 + 0.21481316i, 0.0622026 - 0.4496432i + 0.06430717 + 0.17928514i,
+      0.1696866 + 0.0538504i,                             0.3160660 + 0.0995171i,                    0 + 0i,                    0 + 0i,                            0.1871533 - 0.2141558i,
+      0.1696866 - 0.0538504i,                             0.1871533 + 0.2141558i,                    0 + 0i,                    0 + 0i,                            0.3160660 - 0.0995171i,
+      0.7944703 - 0.5699178i, 0.0622026 + 0.4496432i +  0.06430717 - 0.17928514i,  0.29475756 - 0.21481316i,  0.12778788 + 0.01742626i, 0.5525445 + 0.2506504i + -0.01142689 + 0.11058409i
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  expect_equal(image_media_obj$rationalized_spectrum, expected_rationalized_spectrum,
+               tolerance=0.01)
+
 })

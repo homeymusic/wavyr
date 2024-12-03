@@ -18,13 +18,15 @@ An S3 object of class \code{"image_media"} containing:
 - \code{idealized_dimensions}: Dimensions of the idealized image (after inverse FFT).
 - \code{idealized_signal}: The inverse FFT result of the idealized spectrum.
 - \code{idealized_image}: The reconstructed image after applying the inverse FFT.
+- \code{idealized_spatial_frequencies}: A matrix mapping each cell to its spatial frequency values (x, y).
+- \code{rationalized_spatial_frequencies}: A matrix where each cell contains a rational approximation of y / x.
 - \code{gabor_filtered_image}: A method to generate Gabor-filtered images.
 }
 \description{
 The \code{image_media} function creates an S3 object representing an image media file.
 This object stores the original image, its idealized spectrum (FFT), the inverse
-FFT result (idealized signal), the idealized image after inverse FFT, and a method
-to generate Gabor-filtered images for specific orientations.
+FFT result (idealized signal), the idealized image after inverse FFT, and methods
+for Gabor filtering and spatial frequency mappings.
 }
 \examples{
 # Example usage:

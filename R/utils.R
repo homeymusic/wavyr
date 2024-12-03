@@ -27,6 +27,9 @@ DEFAULT_SPEED_OF_MEDIUM <- SPEED_OF_SOUND
 #' @export
 FLOATING_POINT_TOLERANCE <- 1e-6
 
+#' @export
+GABOR_UNCERTAINTY <- 1 / (4 * pi)
+
 # Define colors and helper functions
 colors_homey <- list(
   'background'        = '#664433',

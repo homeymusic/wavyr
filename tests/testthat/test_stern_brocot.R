@@ -15,27 +15,33 @@ expected_columns <- c(
   "run_length_encoding"
 )
 
+test_that("0.5 returns 1/2", {
+  result <- stern_brocot_cpp(1/2, GABOR_UNCERTAINTY)
+  expect_equal(result$num, 1)
+  expect_equal(result$den, 2)
+})
+
 test_that("if x is less than unceratinty it returns interesting stuff", {
 
-  result <- stern_brocot_cpp(1, 2)  # Replace with actual test case if needed
+  result <- stern_brocot_cpp(1, 2)
   expect_equal(names(result), expected_columns)
-  expect_equal(result$num, 1)  # Replace with actual expected value
-  expect_equal(result$den, 1)  # Replace with actual expected value
+  expect_equal(result$num, 1)
+  expect_equal(result$den, 1)
 
-  result <- stern_brocot_cpp(50.234, 60)  # Replace with actual test case if needed
+  result <- stern_brocot_cpp(50.234, 60)
   expect_equal(names(result), expected_columns)
-  expect_equal(result$num, 50)  # Replace with actual expected value
-  expect_equal(result$den, 1)  # Replace with actual expected value
+  expect_equal(result$num, 50)
+  expect_equal(result$den, 1)
 
-  result <- stern_brocot_cpp(0.25, 0.5)  # Replace with actual test case if needed
+  result <- stern_brocot_cpp(0.25, 0.5)
   expect_equal(names(result), expected_columns)
-  expect_equal(result$num, 1)  # Replace with actual expected value
-  expect_equal(result$den, 2)  # Replace with actual expected value
+  expect_equal(result$num, 1)
+  expect_equal(result$den, 2)
 
-  result <- stern_brocot_cpp(0.25, 0.5)  # Replace with actual test case if needed
+  result <- stern_brocot_cpp(0.25, 0.5)
   expect_equal(names(result), expected_columns)
-  expect_equal(result$num, 1)  # Replace with actual expected value
-  expect_equal(result$den, 2)  # Replace with actual expected value
+  expect_equal(result$num, 1)
+  expect_equal(result$den, 2)
 
 })
 
@@ -99,39 +105,40 @@ test_that("stern_brocot_cpp does not return zero numerator or denominator", {
 gabor_uncertainty = 1 / (4 * pi)
 
 tritone_ratio     = midi_to_freq(66) / midi_to_freq(60)
-tritone_result    = stern_brocot_cpp(tritone_ratio, gabor_uncertainty)  # Replace with actual test case if needed
+tritone_result    = stern_brocot_cpp(tritone_ratio, gabor_uncertainty)
 
 P8_ratio          = midi_to_freq(72) / midi_to_freq(60)
-P8_result         = stern_brocot_cpp(P8_ratio, gabor_uncertainty)  # Replace with actual test case if needed
+P8_result         = stern_brocot_cpp(P8_ratio, gabor_uncertainty)
 
 test_that("depth_cpp computes correct values", {
-  expect_equal(tritone_result$depth, 4)  # Replace with actual expected value
-  expect_equal(P8_result$depth, 1)  # Replace with actual expected value
+  expect_equal(tritone_result$depth, 4)
+  expect_equal(P8_result$depth, 1)
 })
 
 test_that("path_cpp computes correct values", {
-  expect_equal(tritone_result$path, "1010")  # Replace with actual expected value
-  expect_equal(P8_result$path, "1")  # Replace with actual expected value
+  expect_equal(tritone_result$path, "1010")
+  expect_equal(P8_result$path, "1")
 })
 
 test_that("path_id_cpp computes correct values", {
-  expect_equal(tritone_result$path_id, 10)  # Replace with actual expected value
-  expect_equal(P8_result$path_id, 1)  # Replace with actual expected value
+  expect_equal(tritone_result$path_id, 10)
+  expect_equal(P8_result$path_id, 1)
 })
 
 test_that("shannon_entropy_cpp computes correct values", {
   expect_equal(tritone_result$shannon_entropy, 0.9182958,
-               tolerance=0.1)  # Replace with actual expected value
+               tolerance=0.1)
   expect_equal(P8_result$shannon_entropy, 0,
-               tolerance=0.1)  # Replace with actual expected value
+               tolerance=0.1)
 })
 
 test_that("hamming_weight_cpp computes correct values", {
-  expect_equal(tritone_result$hamming_weight, 2)  # Replace with actual expected value
-  expect_equal(P8_result$hamming_weight, 1)  # Replace with actual expected value
+  expect_equal(tritone_result$hamming_weight, 2)
+  expect_equal(P8_result$hamming_weight, 1)
 })
 
 test_that("run_length_encoding_cpp computes correct values", {
-  expect_equal(tritone_result$run_length_encoding, 4)  # Replace with actual expected value
-  expect_equal(P8_result$run_length_encoding, 1)  # Replace with actual expected value
+  expect_equal(tritone_result$run_length_encoding, 4)
+  expect_equal(P8_result$run_length_encoding, 1)
 })
+

@@ -74,7 +74,7 @@ spectrum.list <- function(x, extent_rate = EXTENT_RATE$rate, reference_component
   # Calculate additional properties
   fractions <- approximate_rational_fractions_cpp(
     idealized_component / metadata$denominator_component[1],
-    uncertainty = 1 / (4 * pi),
+    uncertainty = GABOR_UNCERTAINTY,
     deviation   = 0.11,
     metadata    = metadata
   )
