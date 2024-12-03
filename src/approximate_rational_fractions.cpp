@@ -4,109 +4,8 @@
 
 using namespace Rcpp;
 
- //' compute_pseudo_octave
- //'
- //' Find the highest fundamental freq
- //'
- //' @param fn freq to eval
- //' @param f0 fundamental freq
- //' @param n  harmonic number
- //'
- //' @return Calculated pseudo octave
- const double compute_pseudo_octave(const double fn, const double f0, const int n) {
-   if (n==1) {
-     return 1.0;
-   } else {
-     const int r = 1000000;
-     return std::round(r * pow(2, log(fn / f0) / log(n))) / r;
-   }
- }
-
- //' approximate_harmonics
- //'
- //' Determine pseudo octave of all frequencies relative to lowest frequency
- //'
- //' @param x Chord frequencies
- //' @param deviation Deviation for estimating least common multiples
- //'
- //' @return A double of the best guess of the pseudo octave
- DataFrame approximate_harmonics(const NumericVector x,
-                                 const double deviation) {
-   const int x_size   = x.size();
-   const double f_max = max(x);
-   NumericVector harmonic_number(x_size * x_size * x_size);
-   NumericVector evaluation_freq(x_size * x_size * x_size);
-   NumericVector reference_freq(x_size * x_size * x_size);
-   NumericVector reference_amp(x_size * x_size * x_size);
-   NumericVector pseudo_octave(x_size * x_size * x_size);
-   NumericVector highest_freq(x_size * x_size * x_size);
-
-
-   const DataFrame default_pseudo_octave = DataFrame::create(
-     _("harmonic_number") = 1,
-     _("evaluation_freq") = f_max,
-     _("reference_freq")  = f_max,
-     _("pseudo_octave")   = 2.0,
-     _("highest_freq")    = f_max
-   );
-
-   if (x_size <= 2) {
-     return default_pseudo_octave;
-   }
-
-   int num_matches=0;
-
-   for (int eval_freq_index = 0; eval_freq_index < x_size; ++eval_freq_index) {
-     for (int ref_freq_index = 0; ref_freq_index < x_size; ++ref_freq_index) {
-       for (int harmonic_num = 2; harmonic_num <= x_size; ++harmonic_num) {
-         const double p_octave = compute_pseudo_octave(x[eval_freq_index], x[ref_freq_index], harmonic_num);
-         if (2.0 - deviation < p_octave && p_octave < 2.0 + deviation) {
-           harmonic_number[num_matches] = harmonic_num;
-           evaluation_freq[num_matches] = x[eval_freq_index];
-           reference_freq[num_matches]  = x[ref_freq_index];
-           highest_freq[num_matches]    = f_max;
-           pseudo_octave[num_matches]   = p_octave;
-           num_matches++;
-         }
-       }
-     }
-   }
-
-   if (num_matches == 0) {
-     return default_pseudo_octave;
-   } else {
-     return DataFrame::create(
-       _("harmonic_number") = harmonic_number[Rcpp::Range(0, num_matches-1)],
-       _("evaluation_freq") = evaluation_freq[Rcpp::Range(0, num_matches-1)],
-       _("reference_freq")  = reference_freq[Rcpp::Range(0, num_matches-1)],
-       _("pseudo_octave")   = pseudo_octave[Rcpp::Range(0, num_matches-1)],                                                                                                                                                            _("highest_freq")    = highest_freq[Rcpp::Range(0, num_matches-1)]
-     );
-   }
- }
-
- //' pseudo_octave
- //'
- //' Finds the pseudo octave from approximate harmonics.
- //'
- //' @param approximate_harmonics List of candidate pseudo octaves
- //'
- //' @return A data frame of rational numbers and metadata
- const double pseudo_octave(NumericVector approximate_harmonics) {
-   const IntegerVector counts = table(approximate_harmonics);
-   IntegerVector idx = seq_along(counts) - 1;
-   std::sort(idx.begin(), idx.end(), [&](int i, int j){return counts[i] > counts[j];});
-   CharacterVector names_of_count = counts.names();
-   names_of_count = names_of_count[idx];
-   return std::stod(std::string(names_of_count[0]));
- }
-
  inline bool is_close(double a, double b, double tol = 1e-9) {
    return std::abs(a - b) <= tol;
- }
-
- inline double round_to_precision(double value, int precision = 12) {
-   double scale = std::pow(10.0, precision);
-   return std::round(value * scale) / scale;
  }
 
  //' _approximate_rational_fractions_cpp
@@ -150,50 +49,36 @@ using namespace Rcpp;
      }
    }
 
-   // Precompute pseudo octave and ensure it's valid
-   const DataFrame approximate_harmonics_df = approximate_harmonics(x, deviation);
-   const double pseudo_octave_double = pseudo_octave(approximate_harmonics_df["pseudo_octave"]);
-
-   if (pseudo_octave_double <= 1) {
-     stop("Pseudo octave must be greater than 1. The deviation value is likely too large.");
-   }
-
-   double log_pseudo_octave = log(pseudo_octave_double);
-   if (std::abs(log_pseudo_octave) < 1e-12) {
-     stop("Pseudo octave is too close to 1, causing instability.");
-   }
-
    // Vectors to store the results
-   NumericVector pseudo_x(n);
    NumericVector approximations(n);
    NumericVector errors(n);
    NumericVector nums(n);
    NumericVector dens(n);
 
    for (int i = 0; i < n; ++i) {
-     pseudo_x[i] = pow(2.0, log(x[i]) / log_pseudo_octave);
-
-     // Call updated stern_brocot_cpp to get DataFrame output
-     DataFrame sb_result = stern_brocot_cpp(pseudo_x[i], uncertainty);
+     DataFrame sb_result = stern_brocot_cpp(x[i], uncertainty);
 
      // Extract numerator and denominator
-     nums[i] = sb_result["num"];
-     dens[i] = sb_result["den"];
+     nums[i] = (int)sb_result["num"];
+     dens[i] = (int)sb_result["den"];
 
      if (dens[i] == 0) {
        stop("Denominator cannot be zero in rational fraction approximation.");
      }
 
-     approximations[i] = nums[i] / dens[i];
-     errors[i] = round_to_precision(approximations[i] - pseudo_x[i]);
+     const double sb_x = (double)sb_result["original_value"];
+     if (!is_close(sb_x, x[i])) {
+       stop("Original values disagree. SB x: " + std::to_string(sb_x) + " x: " + std::to_string(x[i]));
+     }
+
+     approximations[i] = (double)sb_result["approximation"];
+     errors[i] = (double)sb_result["error"];
    }
 
    // Create the main result DataFrame
    DataFrame result = DataFrame::create(
      _("idealized_x")    = x,
      _("rationalized_x") = approximations,
-     _("pseudo_x")       = pseudo_x,
-     _("pseudo_octave")  = pseudo_octave_double,
      _("num")            = nums,
      _("den")            = dens,
      _("error")          = errors,

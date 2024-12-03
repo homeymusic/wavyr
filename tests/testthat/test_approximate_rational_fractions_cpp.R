@@ -11,7 +11,7 @@ test_that("approximate_rational_fractions_cpp works for simple inputs", {
   expect_s3_class(result, "data.frame")
 
   expect_equal(result %>% names(),
-               c("idealized_x","rationalized_x","pseudo_x","pseudo_octave",
+               c("idealized_x","rationalized_x",
                  "num","den","error","uncertainty" ))
 
   # Check that input is preserved
@@ -62,8 +62,6 @@ test_that("approximate_rational_fractions_cpp handles large numbers", {
   # Check that approximations are close to inputs
   expect_true(all(abs(result$error) <= uncertainty))
 
-  # Check that pseudo_octave is computed
-  expect_true(is.numeric(result$pseudo_octave))
 })
 
 test_that("approximate_rational_fractions_cpp handles small uncertainties", {
@@ -105,12 +103,8 @@ test_that("approximate_rational_fractions_cpp handles large but valid deviations
   x <- c(1.5, 2.25, 3.33)
   uncertainty <- 1e-3
   deviation <- 1e2  # Large but valid deviation
-
-  # Expect an error if deviation is less than or equal to uncertainty
-  expect_error(
-    approximate_rational_fractions_cpp(x, uncertainty, deviation),
-    "Pseudo octave must be greater than 1. The deviation value is likely too large."
-  )
+  result = approximate_rational_fractions_cpp(x, uncertainty, deviation)
+  expect_equal(result$idealized_x, x)
 })
 
 ###
@@ -132,8 +126,8 @@ test_that("approximate_rational_fractions_cpp handles metadata round-tripping", 
 
   # Check structure
   expect_s3_class(result, "data.frame")
-  expect_equal(names(result), c("idealized_x","rationalized_x","pseudo_x",
-                                "pseudo_octave","num","den","error","uncertainty",
+  expect_equal(names(result), c("idealized_x","rationalized_x",
+                                "num","den","error","uncertainty",
                                 "id","notes" ))
 
   # Check that metadata is preserved

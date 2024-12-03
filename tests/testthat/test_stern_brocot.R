@@ -4,6 +4,8 @@ expected_columns <- c(
   "original_value",
   "num",
   "den",
+  "approximation",
+  "error",
   "uncertainty",
   "depth",
   "path",
@@ -47,6 +49,9 @@ test_that("stern_brocot_cpp function returns correct rational approximation", {
   approx_value <- result$num / result$den
   expect_true(abs(approx_value - 2.5) <= result$uncertainty)
 
+  expect_equal(result$approximation, approx_value)
+  expect_equal(result$error, 0)
+
   # Test case 2: Edge case for small x
   result <- stern_brocot_cpp(0.001, 0.0001)
   expect_equal(result$num, 1)
@@ -85,6 +90,10 @@ test_that("stern_brocot_cpp does not return zero numerator or denominator", {
   expect_true(result$num != 0, info = "Stern-Brocot should never return a 0 numerator")
   expect_true(result$den != 0, info = "Stern-Brocot should never return a 0 denominator")
   expect_equal(result$original_value, x, info = "The original value should match the input")
+
+  expect_equal(result$approximation, 0)
+  expect_equal(result$error, -x)
+
 })
 
 gabor_uncertainty = 1 / (4 * pi)

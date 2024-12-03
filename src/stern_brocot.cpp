@@ -5,11 +5,17 @@
 
 using namespace Rcpp;
 
+inline double round_to_precision(double value, int precision = 12) {
+  double scale = std::pow(10.0, precision);
+  return std::round(value * scale) / scale;
+}
+
 // Helper function to create the DataFrame with all columns and calculated metrics
 DataFrame create_stern_brocot_df(
     const double x,
     const int num,
     const int den,
+    const double approximation,
     const double uncertainty,
     const std::vector<int>& path
 ) {
@@ -18,11 +24,14 @@ DataFrame create_stern_brocot_df(
   int hamming_weight = hamming_weight_cpp(path);    // Calculate Hamming weight
   double run_length_encoding = run_length_encoding_cpp(path);  // Calculate run length encoding
   int path_id = as_integer_cpp(path);  // Derive path_id from path
+  double error = round_to_precision(approximation - x);
 
   return DataFrame::create(
     _["original_value"] = x,
     _["num"] = num,
     _["den"] = den,
+    _["approximation"] = approximation,
+    _["error"] = error,
     _["uncertainty"] = uncertainty,
     _["depth"] = path.size(),  // Depth corresponds to the length of the path
     _["path"] = as_string_cpp(path),  // Convert path vector to string
@@ -85,7 +94,7 @@ DataFrame create_stern_brocot_df(
 
      // Return the DataFrame with the estimated values, metrics calculated inside the function
      return create_stern_brocot_df(
-       x, num, den, uncertainty, path
+       x, num, den, approximation, uncertainty, path
      );
    }
 
@@ -124,6 +133,6 @@ DataFrame create_stern_brocot_df(
    }
    // Return the DataFrame with the estimated values and metrics calculated
    return create_stern_brocot_df(
-     x, mediant_num, mediant_den, uncertainty, path
+     x, mediant_num, mediant_den, approximation, uncertainty, path
    );
  }

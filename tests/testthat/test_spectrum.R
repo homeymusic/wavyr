@@ -52,7 +52,7 @@ test_that("spectrum fractions inlcudes original component, ref component and amp
 
   # Test fractions output
   fractions <- spectrum_obj$fractions
-  expect_equal(names(fractions), c("idealized_x","rationalized_x","pseudo_x","pseudo_octave",
+  expect_equal(names(fractions), c("idealized_x","rationalized_x",
                                    "num","den","error","uncertainty",
                                    "denominator_component","amplitude"))
   expect_equal(fractions$idealized_x, c(1.000000, 1.515152, 3.030303),
