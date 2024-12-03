@@ -1,9 +1,33 @@
+#' Create an Image Media Object
+#'
+#' The `image_media` function creates an S3 object representing an image media file.
+#' This object stores the original image, its idealized spectrum (FFT), the inverse
+#' FFT result (idealized signal), the idealized image after inverse FFT, and a method
+#' to generate Gabor-filtered images for specific orientations.
+#'
+#' @param x A file path (character string) pointing to the image media file.
+#'          The file must exist and be a valid format supported by `imager::load.image`.
+#' @return An S3 object of class `"image_media"` containing:
+#'         - `original_image`: The original media content.
+#'         - `original_dimensions`: Dimensions of the original image (height, width, depth, channels).
+#'         - `idealized_spectrum`: The FFT of the grayscale version of the image.
+#'         - `idealized_dimensions`: Dimensions of the idealized image (after inverse FFT).
+#'         - `idealized_signal`: The inverse FFT result of the idealized spectrum.
+#'         - `idealized_image`: The reconstructed image after applying the inverse FFT.
+#'         - `gabor_filtered_image`: A method to generate Gabor-filtered images.
+#' @examples
+#' # Example usage:
+#' image_file <- "path/to/image.png"
+#' image_media_obj <- image_media(image_file)
+#' plot(image_media_obj$idealized_image)
+#'
 image_media <- function(x) {
+  # Validate input
   if (!(is.character(x) && file.exists(x))) {
     stop("Invalid input: Expected a valid file path to a media file.")
   }
 
-  # Load and process the image
+  # Load and preprocess the image
   original_image <- imager::load.image(x)
   original_dimensions <- dim(original_image)
   grayscale_image <- imager::grayscale(original_image)
@@ -18,22 +42,7 @@ image_media <- function(x) {
 
   # Method for Gabor-filtered images
   gabor_filtered_image <- function(orientation, f = 0.2, kernel_size = 31) {
-    # params from J. Ilonen, J.-K. Kamarainen, and H. K¨ alvi¨ ainen, “Fast extraction of multi-resolution gabor features,” in 14th Int Conf on Image Analysis and Processing (ICIAP), 2007, pp. 481–486.
-    k     <- 2
-    p     <- 0.5
-    n     <- 4
-    gamma <- (1/pi) * (k+1)/(k-1) * sqrt(-log(p))
-    eta   <- (1/pi) * sqrt(-log(p)) / (pi / (2 * n))
-
-    # Generate a single complex Gabor kernel
-    complex_kernel <- create_gabor_kernel(kernel_size, gamma, eta, orientation, f, psi = 0)
-
-    # Perform convolution
-    response <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Re(complex_kernel))) +
-      1i * imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Im(complex_kernel)))
-
-    # Return as an image
-    return(imager::as.cimg(Mod(response), dim = dim(grayscale_matrix)))
+    apply_gabor_filter(grayscale_matrix, orientation, f, kernel_size)
   }
 
   # Create the S3 object
@@ -52,6 +61,58 @@ image_media <- function(x) {
   return(obj)
 }
 
+#' Calculate Gabor Parameters
+#'
+#' Computes the parameters for the Gabor kernel based on predefined constants
+#' from the reference paper.
+#'
+#' @return A list containing:
+#'         - `gamma`: Scale factor for the Gaussian envelope in x.
+#'         - `eta`: Scale factor for the Gaussian envelope in y.
+calculate_gabor_params <- function() {
+  k <- 2
+  p <- 0.5
+  n <- 4
+  gamma <- (1 / pi) * (k + 1) / (k - 1) * sqrt(-log(p))
+  eta <- (1 / pi) * sqrt(-log(p)) / (pi / (2 * n))
+  list(gamma = gamma, eta = eta)
+}
+
+#' Apply Gabor Filter
+#'
+#' Applies a Gabor filter to a grayscale image matrix.
+#'
+#' @param grayscale_matrix A matrix representation of the grayscale image.
+#' @param orientation Orientation of the Gabor filter in radians.
+#' @param f Frequency of the sinusoidal wave.
+#' @param kernel_size Size of the Gabor kernel.
+#' @return A filtered image as a `cimg` object.
+apply_gabor_filter <- function(grayscale_matrix, orientation, f, kernel_size) {
+  # Compute Gabor parameters
+  params <- calculate_gabor_params()
+
+  # Generate a single complex Gabor kernel
+  complex_kernel <- create_gabor_kernel(kernel_size, params$gamma, params$eta, orientation, f, psi = 0)
+
+  # Perform convolution with real and imaginary components
+  response <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Re(complex_kernel))) +
+    1i * imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Im(complex_kernel)))
+
+  # Return the magnitude of the response as an image
+  imager::as.cimg(Mod(response), dim = dim(grayscale_matrix))
+}
+
+#' Create Gabor Kernel
+#'
+#' Generates a Gabor kernel with specific parameters.
+#'
+#' @param kernel_size Size of the kernel (must be odd).
+#' @param gamma Scale factor for the Gaussian envelope in x.
+#' @param eta Scale factor for the Gaussian envelope in y.
+#' @param orientation Orientation of the filter in radians.
+#' @param f Frequency of the sinusoidal wave.
+#' @param psi Phase offset of the sinusoidal wave.
+#' @return A 2D matrix representing the Gabor kernel.
 create_gabor_kernel <- function(kernel_size, gamma, eta, orientation, f, psi) {
   if (kernel_size %% 2 == 0) {
     stop("Kernel size must be odd.")
