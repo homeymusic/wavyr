@@ -98,3 +98,41 @@ test_that("Image_media object creates Gabor-filtered images with verified parame
   }
 
 })
+
+# test_that("Image_media object creates SBG quantized images", {
+#
+#   image_filenames = c('MaDukesRightEye', 'MaDukes', 'Lenna')
+#
+#   for (image_filename in image_filenames) {
+#     image_file_path <- test_path("images", paste0(image_filename, ".png"))
+#     image_media_obj <- image_media(image_file_path)
+#     # Test each orientation
+#     label <- paste0(image_filename, "-SBG-")
+#     vdiffr::expect_doppelganger(label, function() {
+#       plot(image_media_obj$sbg_image(), axes = FALSE)
+#     })
+#   }
+#
+# })
+
+test_that("the correct spatial frequency map for a 5x5 matrix", {
+  image_filename = "MaDukesRightEye"
+  image_file_path <- test_path("images", paste0(image_filename, ".png"))
+  image_media_obj <- image_media(image_file_path)
+
+    # Expected spatial frequency map
+  expected_frequencies <- matrix(list(
+    c(kx = 0, ky = 0),  c(kx = 1, ky = 0),  c(kx = 2, ky = 0),  c(kx = -2, ky = 0),  c(kx = -1, ky = 0),
+    c(kx = 0, ky = 1),  c(kx = 1, ky = 1),  c(kx = 2, ky = 1),  c(kx = -2, ky = 1),  c(kx = -1, ky = 1),
+    c(kx = 0, ky = 2),  c(kx = 1, ky = 2),  c(kx = 2, ky = 2),  c(kx = -2, ky = 2),  c(kx = -1, ky = 2),
+    c(kx = 0, ky = -2), c(kx = 1, ky = -2), c(kx = 2, ky = -2), c(kx = -2, ky = -2), c(kx = -1, ky = -2),
+    c(kx = 0, ky = -1), c(kx = 1, ky = -1), c(kx = 2, ky = -1), c(kx = -2, ky = -1), c(kx = -1, ky = -1)
+  ), nrow = 5, byrow = TRUE)
+
+  # Compare each element of the matrices
+  for (i in seq_len(nrow(expected_frequencies))) {
+    for (j in seq_len(ncol(expected_frequencies))) {
+      expect_equal(image_media_obj$spatial_frequencies[[i, j]], expected_frequencies[[i, j]])
+    }
+  }
+})
