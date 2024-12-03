@@ -122,17 +122,17 @@ test_that("the correct spatial frequency map for a 5x5 matrix", {
 
     # Expected spatial frequency map
   expected_frequencies <- matrix(list(
-    c(kx = 0, ky = 0),  c(kx = 1, ky = 0),  c(kx = 2, ky = 0),  c(kx = -2, ky = 0),  c(kx = -1, ky = 0),
-    c(kx = 0, ky = 1),  c(kx = 1, ky = 1),  c(kx = 2, ky = 1),  c(kx = -2, ky = 1),  c(kx = -1, ky = 1),
-    c(kx = 0, ky = 2),  c(kx = 1, ky = 2),  c(kx = 2, ky = 2),  c(kx = -2, ky = 2),  c(kx = -1, ky = 2),
-    c(kx = 0, ky = -2), c(kx = 1, ky = -2), c(kx = 2, ky = -2), c(kx = -2, ky = -2), c(kx = -1, ky = -2),
-    c(kx = 0, ky = -1), c(kx = 1, ky = -1), c(kx = 2, ky = -1), c(kx = -2, ky = -1), c(kx = -1, ky = -1)
+    c(x = 0, y = 0),  c(x = 1, y = 0),  c(x = 2, y = 0),  c(x = -2, y = 0),  c(x = -1, y = 0),
+    c(x = 0, y = 1),  c(x = 1, y = 1),  c(x = 2, y = 1),  c(x = -2, y = 1),  c(x = -1, y = 1),
+    c(x = 0, y = 2),  c(x = 1, y = 2),  c(x = 2, y = 2),  c(x = -2, y = 2),  c(x = -1, y = 2),
+    c(x = 0, y = -2), c(x = 1, y = -2), c(x = 2, y = -2), c(x = -2, y = -2), c(x = -1, y = -2),
+    c(x = 0, y = -1), c(x = 1, y = -1), c(x = 2, y = -1), c(x = -2, y = -1), c(x = -1, y = -1)
   ), nrow = 5, byrow = TRUE)
 
   # Compare each element of the matrices
   for (i in seq_len(nrow(expected_frequencies))) {
     for (j in seq_len(ncol(expected_frequencies))) {
-      expect_equal(image_media_obj$spatial_frequencies[[i, j]], expected_frequencies[[i, j]])
+      expect_equal(image_media_obj$idealized_spatial_frequencies[[i, j]], expected_frequencies[[i, j]])
     }
   }
 })
