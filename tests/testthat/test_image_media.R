@@ -37,6 +37,9 @@ test_that("Image_media object has correct class, stores the original media conte
   vdiffr::expect_doppelganger(label, function() plot(image_media_obj$idealized_image,
                                                      axes = F))
 
+  label = 'MaDukes_Rationalized'
+  vdiffr::expect_doppelganger(label, function() plot(image_media_obj$rationalized_image,
+                                                     axes = F))
 })
 
 test_that("Image_media object has correct class, stores the original media content, computes idealized_spectrum, idealized_signal, and verifies dimensions", {
@@ -78,6 +81,9 @@ test_that("Image_media object has correct class, stores the original media conte
   vdiffr::expect_doppelganger(label, function() plot(image_media_obj$idealized_image,
                                                      axes = F))
 
+  label = 'Lenna_Rationalized'
+  vdiffr::expect_doppelganger(label, function() plot(image_media_obj$rationalized_image,
+                                                     axes = F))
 })
 
 test_that("Image_media object creates Gabor-filtered images with verified parameters", {
@@ -164,5 +170,13 @@ test_that("the various maps for a 5x5 matrix make sense", {
   )
   expect_equal(image_media_obj$rationalized_spectrum, expected_rationalized_spectrum,
                tolerance=0.01)
+
+  vdiffr::expect_doppelganger(paste(image_filename, 'idealized'), function() {
+    plot(image_media_obj$idealized_image, axes = FALSE)
+  })
+
+  vdiffr::expect_doppelganger(paste(image_filename, 'rationalized'), function() {
+    plot(image_media_obj$rationalized_image, axes = FALSE)
+  })
 
 })

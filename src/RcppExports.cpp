@@ -51,6 +51,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// idealized_spatial_frequency_map_cpp
+ListMatrix idealized_spatial_frequency_map_cpp(int nrows, int ncols);
+RcppExport SEXP _wavyr_idealized_spatial_frequency_map_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
+    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
+    rcpp_result_gen = Rcpp::wrap(idealized_spatial_frequency_map_cpp(nrows, ncols));
+    return rcpp_result_gen;
+END_RCPP
+}
 // shannon_entropy_cpp
 double shannon_entropy_cpp(const std::vector<int>& bits);
 RcppExport SEXP _wavyr_shannon_entropy_cpp(SEXP bitsSEXP) {
@@ -117,6 +129,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rationalized_spatial_frequency_map_cpp
+ListMatrix rationalized_spatial_frequency_map_cpp(const ListMatrix& spatial_frequencies, double uncertainty);
+RcppExport SEXP _wavyr_rationalized_spatial_frequency_map_cpp(SEXP spatial_frequenciesSEXP, SEXP uncertaintySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const ListMatrix& >::type spatial_frequencies(spatial_frequenciesSEXP);
+    Rcpp::traits::input_parameter< double >::type uncertainty(uncertaintySEXP);
+    rcpp_result_gen = Rcpp::wrap(rationalized_spatial_frequency_map_cpp(spatial_frequencies, uncertainty));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rationalized_spectrum_cpp
+ComplexMatrix rationalized_spectrum_cpp(const ComplexMatrix& idealized_spectrum, const List& rationalized_spatial_frequencies);
+RcppExport SEXP _wavyr_rationalized_spectrum_cpp(SEXP idealized_spectrumSEXP, SEXP rationalized_spatial_frequenciesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const ComplexMatrix& >::type idealized_spectrum(idealized_spectrumSEXP);
+    Rcpp::traits::input_parameter< const List& >::type rationalized_spatial_frequencies(rationalized_spatial_frequenciesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rationalized_spectrum_cpp(idealized_spectrum, rationalized_spatial_frequencies));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stern_brocot_cpp
 DataFrame stern_brocot_cpp(const double x, const double uncertainty);
 RcppExport SEXP _wavyr_stern_brocot_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
@@ -134,12 +170,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 4},
     {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 3},
     {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 4},
+    {"_wavyr_idealized_spatial_frequency_map_cpp", (DL_FUNC) &_wavyr_idealized_spatial_frequency_map_cpp, 2},
     {"_wavyr_shannon_entropy_cpp", (DL_FUNC) &_wavyr_shannon_entropy_cpp, 1},
     {"_wavyr_hamming_weight_cpp", (DL_FUNC) &_wavyr_hamming_weight_cpp, 1},
     {"_wavyr_run_length_encoding_cpp", (DL_FUNC) &_wavyr_run_length_encoding_cpp, 1},
     {"_wavyr_depth_cpp", (DL_FUNC) &_wavyr_depth_cpp, 1},
     {"_wavyr_as_string_cpp", (DL_FUNC) &_wavyr_as_string_cpp, 1},
     {"_wavyr_as_integer_cpp", (DL_FUNC) &_wavyr_as_integer_cpp, 1},
+    {"_wavyr_rationalized_spatial_frequency_map_cpp", (DL_FUNC) &_wavyr_rationalized_spatial_frequency_map_cpp, 2},
+    {"_wavyr_rationalized_spectrum_cpp", (DL_FUNC) &_wavyr_rationalized_spectrum_cpp, 2},
     {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}
 };
