@@ -18,23 +18,22 @@ image_media <- function(x) {
 
   # Method for Gabor-filtered images
   gabor_filtered_image <- function(orientation, f = 0.2, kernel_size = 31) {
+    # params from J. Ilonen, J.-K. Kamarainen, and H. K¨ alvi¨ ainen, “Fast extraction of multi-resolution gabor features,” in 14th Int Conf on Image Analysis and Processing (ICIAP), 2007, pp. 481–486.
     k     <- 2
     p     <- 0.5
     n     <- 4
     gamma <- (1/pi) * (k+1)/(k-1) * sqrt(-log(p))
     eta   <- (1/pi) * sqrt(-log(p)) / (pi / (2 * n))
 
-    # Generate Gabor kernels
-    kernel_real <- create_gabor_kernel(kernel_size, gamma, eta, orientation, f, 0)
-    kernel_imag <- create_gabor_kernel(kernel_size, gamma, eta, orientation, f, pi / 2)
+    # Generate a single complex Gabor kernel
+    complex_kernel <- create_gabor_kernel(kernel_size, gamma, eta, orientation, f, psi = 0)
 
     # Perform convolution
-    response_real <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(kernel_real))
-    response_imag <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(kernel_imag))
+    response <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Re(complex_kernel))) +
+      1i * imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Im(complex_kernel)))
 
-    # Compute magnitude of the response
-    response <- sqrt(as.matrix(response_real)^2 + as.matrix(response_imag)^2)
-    return(imager::as.cimg(response, dim = dim(grayscale_matrix)))
+    # Return as an image
+    return(imager::as.cimg(Mod(response), dim = dim(grayscale_matrix)))
   }
 
   # Create the S3 object
@@ -58,24 +57,25 @@ create_gabor_kernel <- function(kernel_size, gamma, eta, orientation, f, psi) {
     stop("Kernel size must be odd.")
   }
 
+  # Generate a grid of coordinates
   half_size <- (kernel_size - 1) / 2
   x <- seq(-half_size, half_size, length.out = kernel_size)
   y <- seq(-half_size, half_size, length.out = kernel_size)
   grid <- expand.grid(x = x, y = y)
 
-  # Rotate coordinates
+  # Rotate coordinates based on orientation
   xr <- grid$x * cos(orientation) + grid$y * sin(orientation)
   yr <- -grid$x * sin(orientation) + grid$y * cos(orientation)
 
   # Scaling factor for the Gaussian envelope
   scaling_factor <- f^2 / (pi * gamma * eta)
 
-  # Generate the Gabor kernel
+  # Generate the Gabor kernel using the complex exponential
   gabor <- scaling_factor *
-    exp(-((f^2 * xr^2) / (gamma^2) + (f^2 * yr^2) / (eta^2))) *  # No factor 2
-    cos(2 * pi * f * xr + psi)
+    exp(-((f^2 * xr^2) / (gamma^2) + (f^2 * yr^2) / (eta^2))) *
+    exp(1i * 2 * pi * f * xr)  # Use 1i for the imaginary unit
 
-  # Reshape into a matrix
+  # Reshape the Gabor kernel into a matrix
   kernel <- matrix(gabor, nrow = kernel_size, ncol = kernel_size)
   return(kernel)
 }

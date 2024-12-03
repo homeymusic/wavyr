@@ -39,22 +39,6 @@ test_that("Image_media object has correct class, stores the original media conte
 
 })
 
-test_that("Image_media object creates Gabor-filtered images of Lenna with verified parameters", {
-  # Load the test image
-  image_file_path <- test_path("images", "MaDukes.png")
-  image_media_obj <- image_media(image_file_path)
-
-  orientations <- c(0, pi/4, pi/2, 3*pi/4)  # 0°, 45°, 90°, 135° in radians
-
-  # Test each orientation
-  for (orientation in orientations) {
-    label <- paste0("MaDukes_GaborFilters_", orientation * 180 / pi)
-    vdiffr::expect_doppelganger(label, function() {
-      plot(image_media_obj$gabor_filtered_image(orientation), axes = FALSE)
-    })
-  }
-})
-
 test_that("Image_media object has correct class, stores the original media content, computes idealized_spectrum, idealized_signal, and verifies dimensions", {
 
   image_file_path <- test_path("images", "Lenna.png")
@@ -96,18 +80,21 @@ test_that("Image_media object has correct class, stores the original media conte
 
 })
 
-test_that("Image_media object creates Gabor-filtered images of Lenna with verified parameters", {
-  # Load the test image
-  image_file_path <- test_path("images", "Lenna.png")
-  image_media_obj <- image_media(image_file_path)
+test_that("Image_media object creates Gabor-filtered images with verified parameters", {
 
+  image_filenames = c('Lenna', 'MaDukes')
   orientations <- c(0, pi/4, pi/2, 3*pi/4)  # 0°, 45°, 90°, 135° in radians
 
-  # Test each orientation
-  for (orientation in orientations) {
-    label <- paste0("Lenna_GaborFilters_", orientation * 180 / pi)
-    vdiffr::expect_doppelganger(label, function() {
-      plot(image_media_obj$gabor_filtered_image(orientation), axes = FALSE)
-    })
+  for (image_filename in image_filenames) {
+    image_file_path <- test_path("images", paste0(image_filename, ".png"))
+    image_media_obj <- image_media(image_file_path)
+    # Test each orientation
+    for (orientation in orientations) {
+      label <- paste0(image_filename, "_GaborFilters_", orientation * 180 / pi)
+      vdiffr::expect_doppelganger(label, function() {
+        plot(image_media_obj$gabor_filtered_image(orientation), axes = FALSE)
+      })
+    }
   }
+
 })
