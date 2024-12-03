@@ -90,7 +90,7 @@ test_that("Image_media object creates Gabor-filtered images with verified parame
     image_media_obj <- image_media(image_file_path)
     # Test each orientation
     for (orientation in orientations) {
-      label <- paste0(image_filename, "_GaborFilters_", orientation * 180 / pi)
+      label <- paste0(image_filename, "-Gabor-Filters-", orientation * 180 / pi)
       vdiffr::expect_doppelganger(label, function() {
         plot(image_media_obj$gabor_filtered_image(orientation), axes = FALSE)
       })
