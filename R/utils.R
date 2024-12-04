@@ -100,3 +100,37 @@ theme_homey <- function(aspect.ratio = NULL, font = "Helvetica", panel_backgroun
       aspect.ratio = aspect.ratio
     )
 }
+
+#' A utility function to cache RDS files in the project's data directory
+#'
+#' This function checks for the existence of an RDS file in the project's
+#' data directory. If it exists, the RDS file is loaded. If not, the
+#' function passed to `code` is executed, and the result is saved to
+#' an RDS file in the data directory.
+#'
+#' @param code The code to execute if the RDS file does not exist.
+#' @param filename The filename for the RDS file (without path).
+#' @return The result of either loading the RDS file or executing the code.
+#' @export
+data_rds <- function(code, filename) {
+  # Ensure the data directory exists
+  data_dir <- here::here("data")
+  if (!dir.exists(data_dir)) {
+    dir.create(data_dir, recursive = TRUE)
+  }
+
+  # Full path to the RDS file
+  file_path <- file.path(data_dir, filename)
+
+  # Check if the RDS file exists
+  if (file.exists(file_path)) {
+    message("\nLoading cached data from: ", file_path)
+    return(readRDS(file_path))
+  }
+
+  # If not, execute the code and save the result
+  message("\nCaching data to: ", file_path)
+  result <- code
+  saveRDS(result, file_path)
+  return(result)
+}
