@@ -44,8 +44,8 @@ image_media <- function(x) {
   idealized_image <- imager::as.cimg(Re(idealized_signal), dim = idealized_dimensions)
 
   # Create spatial frequency maps
-  idealized_spatial_frequencies <- idealized_spatial_frequency_map_cpp(nrow(grayscale_matrix), ncol(grayscale_matrix))
-  rationalized_spatial_frequencies <- rationalized_spatial_frequency_map_cpp(idealized_spatial_frequencies, GABOR_UNCERTAINTY ^ 2)
+  idealized_spatial_frequencies <- idealized_matrix(nrow(grayscale_matrix), ncol(grayscale_matrix))$matrix
+  rationalized_spatial_frequencies <- rationalized_matrix(nrow(grayscale_matrix), ncol(grayscale_matrix))$matrix
 
   # Create rationalized spectrum
   rationalized_spectrum <- rationalized_spectrum_cpp(idealized_spectrum, rationalized_spatial_frequencies)

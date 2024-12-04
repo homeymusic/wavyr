@@ -41,8 +41,8 @@ as_integer_cpp <- function(bits) {
     .Call(`_wavyr_as_integer_cpp`, bits)
 }
 
-rationalized_spatial_frequency_map_cpp <- function(spatial_frequencies, uncertainty) {
-    .Call(`_wavyr_rationalized_spatial_frequency_map_cpp`, spatial_frequencies, uncertainty)
+rationalized_spatial_frequency_map_cpp <- function(nrows, ncols, uncertainty) {
+    .Call(`_wavyr_rationalized_spatial_frequency_map_cpp`, nrows, ncols, uncertainty)
 }
 
 rationalized_spectrum_cpp <- function(idealized_spectrum, rationalized_spatial_frequencies) {

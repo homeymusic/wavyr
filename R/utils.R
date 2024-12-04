@@ -124,12 +124,10 @@ data_rds <- function(code, filename) {
 
   # Check if the RDS file exists
   if (file.exists(file_path)) {
-    message("\nLoading cached data from: ", file_path)
     return(readRDS(file_path))
   }
 
   # If not, execute the code and save the result
-  message("\nCaching data to: ", file_path)
   result <- code
   saveRDS(result, file_path)
   return(result)

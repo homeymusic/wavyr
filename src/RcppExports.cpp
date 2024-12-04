@@ -130,14 +130,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // rationalized_spatial_frequency_map_cpp
-ListMatrix rationalized_spatial_frequency_map_cpp(const ListMatrix& spatial_frequencies, double uncertainty);
-RcppExport SEXP _wavyr_rationalized_spatial_frequency_map_cpp(SEXP spatial_frequenciesSEXP, SEXP uncertaintySEXP) {
+DataFrame rationalized_spatial_frequency_map_cpp(int nrows, int ncols, double uncertainty);
+RcppExport SEXP _wavyr_rationalized_spatial_frequency_map_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP uncertaintySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const ListMatrix& >::type spatial_frequencies(spatial_frequenciesSEXP);
+    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
+    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
     Rcpp::traits::input_parameter< double >::type uncertainty(uncertaintySEXP);
-    rcpp_result_gen = Rcpp::wrap(rationalized_spatial_frequency_map_cpp(spatial_frequencies, uncertainty));
+    rcpp_result_gen = Rcpp::wrap(rationalized_spatial_frequency_map_cpp(nrows, ncols, uncertainty));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -177,7 +178,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_depth_cpp", (DL_FUNC) &_wavyr_depth_cpp, 1},
     {"_wavyr_as_string_cpp", (DL_FUNC) &_wavyr_as_string_cpp, 1},
     {"_wavyr_as_integer_cpp", (DL_FUNC) &_wavyr_as_integer_cpp, 1},
-    {"_wavyr_rationalized_spatial_frequency_map_cpp", (DL_FUNC) &_wavyr_rationalized_spatial_frequency_map_cpp, 2},
+    {"_wavyr_rationalized_spatial_frequency_map_cpp", (DL_FUNC) &_wavyr_rationalized_spatial_frequency_map_cpp, 3},
     {"_wavyr_rationalized_spectrum_cpp", (DL_FUNC) &_wavyr_rationalized_spectrum_cpp, 2},
     {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}

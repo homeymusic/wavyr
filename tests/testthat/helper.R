@@ -64,3 +64,37 @@ spectrum_image <- function(spectrum) {
   # Convert the normalized spectrum to an imager cimg object
   imager::as.cimg(normalized_log_magnitude)
 }
+
+plot_matrix <- function(matrix) {
+  # Convert complex values to magnitudes
+  magnitude_matrix <- Mod(fft_shift(matrix))
+
+  # Plot the matrix as an image
+  image(
+    1:ncol(magnitude_matrix),
+    1:nrow(magnitude_matrix),
+    t(magnitude_matrix[nrow(magnitude_matrix):1, ]),  # Flip y-axis for correct orientation
+    col = gray.colors(256, start = 0, end = 1),  # Grayscale color scheme
+    asp = 1,  # Ensure square cells
+    axes = FALSE,  # Turn off axes
+    xlab = "",  # Remove x-axis label
+    ylab = ""   # Remove y-axis label
+  )
+}
+
+fft_shift <- function(matrix) {
+  nr <- nrow(matrix)
+  nc <- ncol(matrix)
+
+  # Split the matrix into quadrants
+  top_left     <- matrix[1:(nr %/% 2), 1:(nc %/% 2)]
+  top_right    <- matrix[1:(nr %/% 2), (nc %/% 2 + 1):nc]
+  bottom_left  <- matrix[(nr %/% 2 + 1):nr, 1:(nc %/% 2)]
+  bottom_right <- matrix[(nr %/% 2 + 1):nr, (nc %/% 2 + 1):nc]
+
+  # Rearrange quadrants to center DC
+  rbind(
+    cbind(bottom_right, bottom_left),
+    cbind(top_right, top_left)
+  )
+}
