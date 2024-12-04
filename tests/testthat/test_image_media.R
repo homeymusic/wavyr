@@ -141,6 +141,10 @@ test_that("the various maps for a 5x5 matrix make sense", {
 
   expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum, tolerance=0.01)
 
+  label = 'MaDukesRightEye Idealized Spectrum'
+  vdiffr::expect_doppelganger(label, function() plot(spectrum_image(image_media_obj$idealized_spectrum),
+                                                     axes = F))
+
   # Expected spatial frequency map
   expected_frequencies <- matrix(list(
     c(x = 0, y = 0),  c(x = 1, y = 0),  c(x = 2, y = 0),  c(x = -2, y = 0),  c(x = -1, y = 0),
@@ -187,6 +191,10 @@ test_that("the various maps for a 5x5 matrix make sense", {
   )
   expect_equal(image_media_obj$rationalized_spectrum, expected_rationalized_spectrum,
                tolerance=0.01)
+
+  label = 'MaDukesRightEye Rationalized Spectrum'
+  vdiffr::expect_doppelganger(label, function() plot(spectrum_image(image_media_obj$rationalized_spectrum),
+                                                    axes=F))
 
   vdiffr::expect_doppelganger(paste(image_filename, 'idealized'), function() {
     plot(image_media_obj$idealized_image, axes = FALSE)
