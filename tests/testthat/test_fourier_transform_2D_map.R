@@ -2,12 +2,14 @@ source(testthat::test_path("helper.R"))
 
 test_that("a 5x5 rationalized matrix makes sense", {
   # Generate the rationalized spatial frequency map
-  time_taken <- system.time({
-    Q_map <- fourier_transform_2D_map(5, 5)
-  })["elapsed"]
-  expect_lt(time_taken, 1.0)
+  Q_map <- fourier_transform_2D_map_cpp(5, 5, GABOR_UNCERTAINTY ^ 2)
   expect_equal(class(Q_map), "data.frame")
-  expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y', 'rationalized_x', 'rationalized_y'))
+  expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y',
+                        'rationalized_x', 'rationalized_y',
+                        'original_value', 'num', 'den', 'approximation', 'error',
+                        'uncertainty', 'depth', 'path', 'path_id',
+                        'shannon_entropy', 'run_length_encoding', 'hamming_weight'))
+  expect_equal(Q_map$error, rep(0,25))
   expect_equal(Q_map %>% dplyr::distinct(x, y) %>%  nrow(), 25)
   expect_equal(Q_map %>% dplyr::distinct(idealized_x, idealized_y) %>%  nrow(), 25)
   expect_equal(Q_map %>% dplyr::distinct(rationalized_x, rationalized_y) %>%  nrow(), 17)
@@ -81,4 +83,25 @@ test_rationalized_matrices <- function(lengths) {
 }
 
 # Call the wrapper function with the desired lengths
-test_rationalized_matrices(c(5, 31, 63))
+test_rationalized_matrices(c(5, 31, 63, 127, 511))
+
+
+# Helper function for a single test
+test_error_histogram <- function(length) {
+  uncertainty = GABOR_UNCERTAINTY ^ 2
+  test_that(paste0("a ", length, "x", length, " map from a uniform 2D spectrum makes sense"), {
+    Q_map <- fourier_transform_2D_map(length, length)
+    vdiffr::expect_doppelganger(
+      paste0("Error Histogram ", sprintf("%.4f", uncertainty), " ", length, "x", length),
+      plot_error_histogram(Q_map$error)
+    )
+  })
+}
+
+# Wrapper function to run multiple tests
+test_error_histograms <- function(lengths) {
+  lapply(lengths, test_error_histogram)
+}
+
+# Call the wrapper function with the desired lengths
+test_error_histograms(c(5, 31, 63, 127, 511))

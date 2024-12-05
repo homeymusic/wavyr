@@ -65,6 +65,34 @@ spectrum_image <- function(spectrum) {
   imager::as.cimg(normalized_log_magnitude)
 }
 
+plot_error_histogram <- function(errors) {
+  if (all(errors == 0)) {
+    # Special case where all errors are zero
+    hist(errors,
+         breaks = c(-0.5, 0.5),  # A single bin centered around 0
+         main = "Error Histogram",
+         xlab = "Errors",
+         ylab = "Frequency",
+         col = "darkgray",
+         border = "black")
+    return()
+  }
+
+  # General case
+  max_error <- max(abs(errors))  # Get the maximum absolute error
+  bin_width <- 2 * max_error / 20  # Divide the range into 20 bins
+  # Adjust breaks to ensure 0 is at the center of a bin
+  breaks <- seq(-max_error - bin_width / 2, max_error + bin_width / 2, by = bin_width)
+
+  hist(errors,
+       breaks = breaks,
+       main = "Error Histogram",
+       xlab = "Errors",
+       ylab = "Frequency",
+       col = "darkgray",
+       border = "black")
+}
+
 plot_matrix <- function(matrix) {
   # Convert complex values to magnitudes
   magnitude_matrix <- Mod(fft_shift(matrix))
