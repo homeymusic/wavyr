@@ -70,6 +70,7 @@ plot_matrix <- function(matrix) {
   magnitude_matrix <- Mod(fft_shift(matrix))
 
   # Plot the matrix as an image
+  par(mar = c(0, 0, 0, 0))  # Remove margins to ensure no additional space
   image(
     1:ncol(magnitude_matrix),
     1:nrow(magnitude_matrix),
@@ -78,23 +79,26 @@ plot_matrix <- function(matrix) {
     asp = 1,  # Ensure square cells
     axes = FALSE,  # Turn off axes
     xlab = "",  # Remove x-axis label
-    ylab = ""   # Remove y-axis label
+    ylab = "",  # Remove y-axis label
+    useRaster = TRUE  # Use rasterized rendering for smooth output
   )
 }
 
-fft_shift <- function(matrix) {
-  nr <- nrow(matrix)
-  nc <- ncol(matrix)
+fft_shift <- function(input_matrix) {
 
-  # Split the matrix into quadrants
-  top_left     <- matrix[1:(nr %/% 2), 1:(nc %/% 2)]
-  top_right    <- matrix[1:(nr %/% 2), (nc %/% 2 + 1):nc]
-  bottom_left  <- matrix[(nr %/% 2 + 1):nr, 1:(nc %/% 2)]
-  bottom_right <- matrix[(nr %/% 2 + 1):nr, (nc %/% 2 + 1):nc]
+  rows <- dim(input_matrix)[1]
+  cols <- dim(input_matrix)[2]
 
-  # Rearrange quadrants to center DC
-  rbind(
-    cbind(bottom_right, bottom_left),
-    cbind(top_right, top_left)
-  )
+  swap_up_down <- function(input_matrix) {
+    rows_half <- ceiling(rows/2)
+    return(rbind(input_matrix[((rows_half+1):rows), (1:cols)], input_matrix[(1:rows_half), (1:cols)]))
+  }
+
+  swap_left_right <- function(input_matrix) {
+    cols_half <- ceiling(cols/2)
+    return(cbind(input_matrix[1:rows, ((cols_half+1):cols)], input_matrix[1:rows, 1:cols_half]))
+  }
+
+  input_matrix <- swap_up_down(input_matrix)
+  return(swap_left_right(input_matrix))
 }

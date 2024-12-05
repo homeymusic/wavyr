@@ -13,8 +13,8 @@ compute_beats_cpp <- function(component, amplitude, extent_rate, tolerance = 1e-
     .Call(`_wavyr_compute_beats_cpp`, component, amplitude, extent_rate, tolerance)
 }
 
-idealized_spatial_frequency_map_cpp <- function(nrows, ncols) {
-    .Call(`_wavyr_idealized_spatial_frequency_map_cpp`, nrows, ncols)
+fourier_transform_2D_map_cpp <- function(nrows, ncols, uncertainty) {
+    .Call(`_wavyr_fourier_transform_2D_map_cpp`, nrows, ncols, uncertainty)
 }
 
 shannon_entropy_cpp <- function(bits) {
@@ -41,12 +41,8 @@ as_integer_cpp <- function(bits) {
     .Call(`_wavyr_as_integer_cpp`, bits)
 }
 
-rationalized_spatial_frequency_map_cpp <- function(nrows, ncols, uncertainty) {
-    .Call(`_wavyr_rationalized_spatial_frequency_map_cpp`, nrows, ncols, uncertainty)
-}
-
-rationalized_spectrum_cpp <- function(idealized_spectrum, rationalized_spatial_frequencies) {
-    .Call(`_wavyr_rationalized_spectrum_cpp`, idealized_spectrum, rationalized_spatial_frequencies)
+rationalized_spectrum_cpp <- function(source) {
+    .Call(`_wavyr_rationalized_spectrum_cpp`, source)
 }
 
 stern_brocot_cpp <- function(x, uncertainty) {

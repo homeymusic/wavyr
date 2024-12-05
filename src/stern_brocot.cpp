@@ -99,7 +99,7 @@ DataFrame create_stern_brocot_df(
    }
 
    // Main computation loop for Stern-Brocot
-   while (((approximation < valid_min) || (valid_max < approximation)) && cycles < insane) {
+   while ((approximation < valid_min) || (valid_max < approximation)) {
      double x0 = 2 * x - approximation;
 
      if (approximation < valid_min) {
@@ -122,6 +122,13 @@ DataFrame create_stern_brocot_df(
      mediant_den = left_den + right_den;
      approximation = (double) mediant_num / mediant_den;
      cycles++;
+     if (cycles > insane) {
+       Rcpp::Rcout << "Cycle: " << cycles
+                   << ", Approximation: " << approximation
+                   << ", Bounds: [" << left_num << "/" << left_den << ", "
+                   << right_num << "/" << right_den << "]\n";
+       stop("STOP: too many cycles: " + std::to_string(cycles));
+     }
    }
 
    if (mediant_num <= 0) stop("STOP: mediant_num is less than or equal to zero");

@@ -1,0 +1,95 @@
+source(testthat::test_path("helper.R"))
+
+test_that("a 5x5 rationalized matrix makes sense", {
+  # Generate the rationalized spatial frequency map
+  time_taken <- system.time({
+    Q_map <- fourier_transform_2D_map(5, 5)
+  })["elapsed"]
+  expect_lt(time_taken, 1.0)
+  expect_equal(class(Q_map), "data.frame")
+  expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y', 'rationalized_x', 'rationalized_y'))
+  expect_equal(Q_map %>% dplyr::distinct(x, y) %>%  nrow(), 25)
+  expect_equal(Q_map %>% dplyr::distinct(idealized_x, idealized_y) %>%  nrow(), 25)
+  expect_equal(Q_map %>% dplyr::distinct(rationalized_x, rationalized_y) %>%  nrow(), 17)
+
+  # Expected idealized spatial frequency map
+  expected_frequencies <- matrix(list(
+    c(0, 0),  c(1, 0),  c(2, 0),  c(-2, 0),  c(-1, 0),
+    c(0, 1),  c(1, 1),  c(2, 1),  c(-2, 1),  c(-1, 1),
+    c(0, 2),  c(1, 2),  c(2, 2),  c(-2, 2),  c(-1, 2),
+    c(0, -2), c(1, -2), c(2, -2), c(-2, -2), c(-1, -2),
+    c(0, -1), c(1, -1), c(2, -1), c(-2, -1), c(-1, -1)
+  ), nrow = 5, byrow = TRUE)
+
+  # Check if each entry matches expected values
+  for (i in seq_len(nrow(expected_frequencies))) {
+    for (j in seq_len(ncol(expected_frequencies))) {
+      # Convert to 1-based indices for R
+      x_r <- j
+      y_r <- i
+
+      # Extract the corresponding row from Q_map
+      Q_cell <- Q_map[Q_map$x == x_r & Q_map$y == y_r, ]
+
+      # Ensure exactly one match
+      expect_equal(nrow(Q_cell), 1)
+
+      # Validate idealized_x and idealized_y
+      expected <- expected_frequencies[[i, j]]
+      expect_equal(unname(Q_cell$idealized_x), expected[1], label = paste("Mismatch at (", x_r, ",", y_r, ") for idealized_x"))
+      expect_equal(unname(Q_cell$idealized_y), expected[2], label = paste("Mismatch at (", x_r, ",", y_r, ") for idealized_y"))
+    }
+  }
+})
+
+test_that("a 5x5 map from a uniform 2D spectrum make sense", {
+  uniform_matrix <- matrix(1 + 0i, nrow = 5, ncol = 5)
+
+  rationalized_matrix = rationalized_spectrum_cpp(uniform_matrix)
+
+  vdiffr::expect_doppelganger(
+    "Uniform Matrix 5x5",
+    plot_matrix(uniform_matrix)
+  )
+
+  expected_rationalized_spectrum_cpp <- matrix(
+    c(
+      1 + 0i, 2 + 0i, 0 + 0i, 0 + 0i, 2 + 0i,
+      2 + 0i, 2 + 0i, 1 + 0i, 1 + 0i, 2 + 0i,
+      0 + 0i, 1 + 0i, 0 + 0i, 0 + 0i, 1 + 0i,
+      0 + 0i, 1 + 0i, 0 + 0i, 0 + 0i, 1 + 0i,
+      2 + 0i, 2 + 0i, 1 + 0i, 1 + 0i, 2 + 0i
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  expect_equal(rationalized_matrix, expected_rationalized_spectrum_cpp, tolerance=0.01)
+
+  vdiffr::expect_doppelganger(
+    "Rationalized Matrix 5x5",
+    plot_matrix(rationalized_matrix)
+  )
+})
+
+test_that("a 31x31 map from a uniform 2D spectrum make sense", {
+  uniform_matrix <- matrix(1 + 0i, nrow = 31, ncol = 31)
+
+  rationalized_matrix = rationalized_spectrum_cpp(uniform_matrix)
+
+  vdiffr::expect_doppelganger(
+    "Rationalized Matrix 31x31",
+    plot_matrix(rationalized_matrix)
+  )
+})
+
+test_that("a 63x63 map from a uniform 2D spectrum make sense", {
+  uniform_matrix <- matrix(1 + 0i, nrow = 63, ncol = 63)
+
+  rationalized_matrix = rationalized_spectrum_cpp(uniform_matrix)
+
+  vdiffr::expect_doppelganger(
+    "Rationalized Matrix 63x63",
+    plot_matrix(rationalized_matrix)
+  )
+})

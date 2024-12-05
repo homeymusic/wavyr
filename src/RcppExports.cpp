@@ -51,15 +51,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// idealized_spatial_frequency_map_cpp
-ListMatrix idealized_spatial_frequency_map_cpp(int nrows, int ncols);
-RcppExport SEXP _wavyr_idealized_spatial_frequency_map_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP) {
+// fourier_transform_2D_map_cpp
+DataFrame fourier_transform_2D_map_cpp(int nrows, int ncols, double uncertainty);
+RcppExport SEXP _wavyr_fourier_transform_2D_map_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP uncertaintySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
     Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
-    rcpp_result_gen = Rcpp::wrap(idealized_spatial_frequency_map_cpp(nrows, ncols));
+    Rcpp::traits::input_parameter< double >::type uncertainty(uncertaintySEXP);
+    rcpp_result_gen = Rcpp::wrap(fourier_transform_2D_map_cpp(nrows, ncols, uncertainty));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -129,28 +130,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rationalized_spatial_frequency_map_cpp
-DataFrame rationalized_spatial_frequency_map_cpp(int nrows, int ncols, double uncertainty);
-RcppExport SEXP _wavyr_rationalized_spatial_frequency_map_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP uncertaintySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
-    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
-    Rcpp::traits::input_parameter< double >::type uncertainty(uncertaintySEXP);
-    rcpp_result_gen = Rcpp::wrap(rationalized_spatial_frequency_map_cpp(nrows, ncols, uncertainty));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rationalized_spectrum_cpp
-ComplexMatrix rationalized_spectrum_cpp(const ComplexMatrix& idealized_spectrum, const List& rationalized_spatial_frequencies);
-RcppExport SEXP _wavyr_rationalized_spectrum_cpp(SEXP idealized_spectrumSEXP, SEXP rationalized_spatial_frequenciesSEXP) {
+ComplexMatrix rationalized_spectrum_cpp(const ComplexMatrix& source);
+RcppExport SEXP _wavyr_rationalized_spectrum_cpp(SEXP sourceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const ComplexMatrix& >::type idealized_spectrum(idealized_spectrumSEXP);
-    Rcpp::traits::input_parameter< const List& >::type rationalized_spatial_frequencies(rationalized_spatial_frequenciesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rationalized_spectrum_cpp(idealized_spectrum, rationalized_spatial_frequencies));
+    Rcpp::traits::input_parameter< const ComplexMatrix& >::type source(sourceSEXP);
+    rcpp_result_gen = Rcpp::wrap(rationalized_spectrum_cpp(source));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -171,15 +158,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 4},
     {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 3},
     {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 4},
-    {"_wavyr_idealized_spatial_frequency_map_cpp", (DL_FUNC) &_wavyr_idealized_spatial_frequency_map_cpp, 2},
+    {"_wavyr_fourier_transform_2D_map_cpp", (DL_FUNC) &_wavyr_fourier_transform_2D_map_cpp, 3},
     {"_wavyr_shannon_entropy_cpp", (DL_FUNC) &_wavyr_shannon_entropy_cpp, 1},
     {"_wavyr_hamming_weight_cpp", (DL_FUNC) &_wavyr_hamming_weight_cpp, 1},
     {"_wavyr_run_length_encoding_cpp", (DL_FUNC) &_wavyr_run_length_encoding_cpp, 1},
     {"_wavyr_depth_cpp", (DL_FUNC) &_wavyr_depth_cpp, 1},
     {"_wavyr_as_string_cpp", (DL_FUNC) &_wavyr_as_string_cpp, 1},
     {"_wavyr_as_integer_cpp", (DL_FUNC) &_wavyr_as_integer_cpp, 1},
-    {"_wavyr_rationalized_spatial_frequency_map_cpp", (DL_FUNC) &_wavyr_rationalized_spatial_frequency_map_cpp, 3},
-    {"_wavyr_rationalized_spectrum_cpp", (DL_FUNC) &_wavyr_rationalized_spectrum_cpp, 2},
+    {"_wavyr_rationalized_spectrum_cpp", (DL_FUNC) &_wavyr_rationalized_spectrum_cpp, 1},
     {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}
 };

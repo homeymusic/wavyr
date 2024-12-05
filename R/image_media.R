@@ -43,12 +43,8 @@ image_media <- function(x) {
   idealized_signal <- fftwtools::fftw2d(idealized_spectrum, inverse = 1)
   idealized_image <- imager::as.cimg(Re(idealized_signal), dim = idealized_dimensions)
 
-  # Create spatial frequency maps
-  idealized_spatial_frequencies <- idealized_matrix(nrow(grayscale_matrix), ncol(grayscale_matrix))$matrix
-  rationalized_spatial_frequencies <- rationalized_matrix(nrow(grayscale_matrix), ncol(grayscale_matrix))$matrix
-
   # Create rationalized spectrum
-  rationalized_spectrum <- rationalized_spectrum_cpp(idealized_spectrum, rationalized_spatial_frequencies)
+  rationalized_spectrum <- rationalized_spectrum_cpp(idealized_spectrum)
   rationalized_signal   <- fftwtools::fftw2d(rationalized_spectrum, inverse = 1)
   rationalized_image    <- imager::as.cimg(Mod(rationalized_signal), dim = idealized_dimensions)
 
@@ -65,8 +61,6 @@ image_media <- function(x) {
     idealized_dimensions             = idealized_dimensions,
     idealized_signal                 = idealized_signal,
     idealized_image                  = idealized_image,
-    idealized_spatial_frequencies    = idealized_spatial_frequencies,
-    rationalized_spatial_frequencies = rationalized_spatial_frequencies,
     rationalized_spectrum            = rationalized_spectrum,
     rationalized_signal              = rationalized_signal,
     rationalized_image               = rationalized_image,
