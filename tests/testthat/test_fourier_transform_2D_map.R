@@ -47,11 +47,6 @@ test_that("a 5x5 map from a uniform 2D spectrum make sense", {
 
   rationalized_matrix = rationalized_spectrum_cpp(uniform_matrix)
 
-  vdiffr::expect_doppelganger(
-    "Uniform Matrix 5x5",
-    plot_matrix(uniform_matrix)
-  )
-
   expected_rationalized_spectrum_cpp <- matrix(
     c(
       1 + 0i, 2 + 0i, 0 + 0i, 0 + 0i, 2 + 0i,
@@ -66,30 +61,24 @@ test_that("a 5x5 map from a uniform 2D spectrum make sense", {
 
   expect_equal(rationalized_matrix, expected_rationalized_spectrum_cpp, tolerance=0.01)
 
-  vdiffr::expect_doppelganger(
-    "Rationalized Matrix 5x5",
-    plot_matrix(rationalized_matrix)
-  )
 })
 
-test_that("a 31x31 map from a uniform 2D spectrum make sense", {
-  uniform_matrix <- matrix(1 + 0i, nrow = 31, ncol = 31)
+# Helper function for a single test
+test_rationalized_matrix <- function(length) {
+  test_that(paste0("a ", length, "x", length, " map from a uniform 2D spectrum makes sense"), {
+    uniform_matrix <- matrix(1 + 0i, nrow = length, ncol = length)
+    rationalized_matrix <- rationalized_spectrum_cpp(uniform_matrix)
+    vdiffr::expect_doppelganger(
+      paste0("Rationalized Matrix ", length, "x", length),
+      plot_matrix(rationalized_matrix)
+    )
+  })
+}
 
-  rationalized_matrix = rationalized_spectrum_cpp(uniform_matrix)
+# Wrapper function to run multiple tests
+test_rationalized_matrices <- function(lengths) {
+  lapply(lengths, test_rationalized_matrix)
+}
 
-  vdiffr::expect_doppelganger(
-    "Rationalized Matrix 31x31",
-    plot_matrix(rationalized_matrix)
-  )
-})
-
-test_that("a 63x63 map from a uniform 2D spectrum make sense", {
-  uniform_matrix <- matrix(1 + 0i, nrow = 63, ncol = 63)
-
-  rationalized_matrix = rationalized_spectrum_cpp(uniform_matrix)
-
-  vdiffr::expect_doppelganger(
-    "Rationalized Matrix 63x63",
-    plot_matrix(rationalized_matrix)
-  )
-})
+# Call the wrapper function with the desired lengths
+test_rationalized_matrices(c(5, 31, 63))
