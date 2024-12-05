@@ -50,21 +50,6 @@ wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
     wave()
 }
 
-spectrum_image <- function(spectrum) {
-  # Compute the magnitude spectrum
-  spectrum_magnitude <- Mod(spectrum)
-
-  # Apply logarithmic scaling to enhance visibility
-  log_magnitude <- log1p(spectrum_magnitude) # log(1 + x) avoids log(0)
-
-  # Normalize the logarithmic magnitude spectrum to [0, 1]
-  normalized_log_magnitude <- (log_magnitude - min(log_magnitude)) /
-    (max(log_magnitude) - min(log_magnitude))
-
-  # Convert the normalized spectrum to an imager cimg object
-  imager::as.cimg(normalized_log_magnitude)
-}
-
 plot_error_histogram <- function(errors) {
   if (all(errors == 0)) {
     # Special case where all errors are zero
@@ -95,7 +80,7 @@ plot_error_histogram <- function(errors) {
 
 plot_matrix <- function(matrix) {
   # Convert complex values to magnitudes
-  magnitude_matrix <- Mod(fft_shift(matrix))
+  magnitude_matrix <- log1p(Mod(fft_shift(matrix)))
 
   # Plot the matrix as an image
   par(mar = c(0, 0, 0, 0))  # Remove margins to ensure no additional space
