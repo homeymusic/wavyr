@@ -105,14 +105,40 @@ DataFrame create_stern_brocot_df(
      if (approximation < valid_min) {
        left_num = mediant_num;
        left_den = mediant_den;
-       int k = floor((right_num - x0 * right_den) / (x0 * left_den - left_num));
+       int k = floor(round_to_precision(right_num - x0 * right_den) / (x0 * left_den - left_num));
+       // Rcpp::Rcout
+       // << "below"
+       // << "\nk: "
+       // << k
+       // << "\nx0: "
+       // << x0
+       // << "\nright_den: "
+       // << right_den
+       // << "\n(right_num - x0 * right_den): "
+       // << (right_num - x0 * right_den)
+       // << "\n(x0 * left_den - left_num): "
+       // << (x0 * left_den - left_num)
+       // << "\nright_num: "
+       // << right_num
+       // << "\nx0 * right_den: "
+       // << x0 * right_den
+       // << "\nx0 * left_den: "
+       // << x0 * left_den
+       // << "\nleft_num: "
+       // << left_num
+       // << std::endl;
        right_num += k * left_num;
        right_den += k * left_den;
        path.push_back(0);  // Left movement (append 0)
      } else {
        right_num = mediant_num;
        right_den = mediant_den;
-       int k = floor((x0 * left_den - left_num) / (right_num - x0 * right_den));
+       int k = floor(round_to_precision(x0 * left_den - left_num) / (right_num - x0 * right_den));
+       // Rcpp::Rcout
+       // << "above"
+       // << "\nk: "
+       // << k
+       // << std::endl;
        left_num += k * right_num;
        left_den += k * right_den;
        path.push_back(1);  // Right movement (append 1)
@@ -121,6 +147,23 @@ DataFrame create_stern_brocot_df(
      mediant_num = left_num + right_num;
      mediant_den = left_den + right_den;
      approximation = (double) mediant_num / mediant_den;
+
+     // Rcpp::Rcout
+     // << "x: "
+     // << x
+     // << "\napproximation: "
+     // << approximation
+     // << "\nvalid_min: "
+     // << valid_min
+     // << "\nvalid_max: "
+     // << valid_max
+     // << "\nmediant_num: "
+     // << mediant_num
+     // << "\nmediant_den: "
+     // << mediant_den
+     // << "\n==================================================="
+     // << std::endl;
+
      cycles++;
      if (cycles > insane) {
        Rcpp::Rcout << "Cycle: " << cycles

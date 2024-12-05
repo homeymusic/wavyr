@@ -21,6 +21,12 @@ test_that("0.5 returns 1/2", {
   expect_equal(result$den, 2)
 })
 
+test_that("29 / 42 works", {
+  result <- stern_brocot_cpp(29 / 42, GABOR_UNCERTAINTY ^ 2)
+  expect_equal(result$num, 9)
+  expect_equal(result$den, 13)
+})
+
 test_that("if x is less than unceratinty it returns interesting stuff", {
 
   result <- stern_brocot_cpp(1, 2)
