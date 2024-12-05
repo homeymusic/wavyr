@@ -4,7 +4,11 @@ test_that("a 5x5 rationalized matrix makes sense", {
   # Generate the rationalized spatial frequency map
   Q_map <- fourier_transform_2D_map_cpp(5, 5, GABOR_UNCERTAINTY ^ 2)
   expect_equal(class(Q_map), "data.frame")
-  expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y', 'rationalized_x', 'rationalized_y'))
+  expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y',
+                        'rationalized_x', 'rationalized_y',
+                        'original_value', 'num', 'den', 'approximation', 'error',
+                        'uncertainty', 'depth', 'path', 'path_id',
+                        'shannon_entropy', 'run_length_encoding', 'hamming_weight'))
   expect_equal(Q_map %>% dplyr::distinct(x, y) %>%  nrow(), 25)
   expect_equal(Q_map %>% dplyr::distinct(idealized_x, idealized_y) %>%  nrow(), 25)
   expect_equal(Q_map %>% dplyr::distinct(rationalized_x, rationalized_y) %>%  nrow(), 17)
