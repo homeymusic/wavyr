@@ -142,6 +142,12 @@ DataFrame fourier_transform_2D_map_cpp(int nrows, int ncols, double uncertainty)
           hamming_weights
         );
       } else {
+
+        Rcpp::Rcout
+        << "idealized_y: "
+        << idealized_y
+        << ", idealized_x: "
+        << idealized_x << std::endl;
         // Compute the absolute ratio and rationalize it
         double abs_ratio = std::abs(static_cast<double>(idealized_y) / idealized_x);
         DataFrame sb_result = stern_brocot_cpp(abs_ratio, uncertainty);
