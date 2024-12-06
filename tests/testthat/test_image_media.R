@@ -102,7 +102,7 @@ test_that("Image_media object has correct class, stores the original media conte
 test_that("Image_media object creates Gabor-filtered images with verified parameters", {
 
   image_filenames = c('Lenna', 'MaDukes')
-  orientations <- c(0, pi/4, pi/2, 3*pi/4)  # 0°, 45°, 90°, 135° in radians
+  orientations <- c(0, 1/4, 1/2, 3/4) * pi
 
   for (image_filename in image_filenames) {
     image_file_path <- test_path("images", paste0(image_filename, ".png"))

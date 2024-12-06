@@ -78,9 +78,23 @@ plot_error_histogram <- function(errors) {
        border = "black")
 }
 
-plot_matrix <- function(matrix) {
+plot_matrix <- function(matrix, fft_shift = T, magnitude = T, log_scaling = T) {
   # Convert complex values to magnitudes
-  magnitude_matrix <- log1p(Mod(fft_shift(matrix)))
+  magnitude_matrix = matrix
+
+  if (fft_shift) {
+    magnitude_matrix <- fft_shift(magnitude_matrix)
+  }
+
+  if (magnitude) {
+    magnitude_matrix <- Mod(magnitude_matrix)
+  } else {
+    magnitude_matrix <- Re(magnitude_matrix)
+  }
+
+  if (log_scaling) {
+    magnitude_matrix <- log1p(magnitude_matrix)
+  }
 
   # Plot the matrix as an image
   par(mar = c(0, 0, 0, 0))  # Remove margins to ensure no additional space

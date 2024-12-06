@@ -70,10 +70,5 @@ create_gabor_kernel <- function(kernel_size, gamma, eta, orientation, f, psi) {
 #'         - `gamma`: Scale factor for the Gaussian envelope in x.
 #'         - `eta`: Scale factor for the Gaussian envelope in y.
 calculate_gabor_params <- function() {
-  k <- 2
-  p <- 0.5
-  n <- 4
-  gamma <- (1 / pi) * (k + 1) / (k - 1) * sqrt(-log(p))
-  eta <- (1 / pi) * sqrt(-log(p)) / (pi / (2 * n))
-  list(gamma = gamma, eta = eta)
+  list(gamma = 0.8, eta = 0.8)
 }

@@ -49,7 +49,7 @@ image_media <- function(x) {
   rationalized_image    <- imager::as.cimg(Re(rationalized_signal), dim = idealized_dimensions)
 
   # Method for Gabor-filtered images
-  gabor_filtered_image <- function(orientation, f = 0.2, kernel_size = 31) {
+  gabor_filtered_image <- function(orientation, f = 0.1, kernel_size = 31) {
     apply_gabor_filter(grayscale_matrix, orientation, f, kernel_size)
   }
 
