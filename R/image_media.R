@@ -46,7 +46,7 @@ image_media <- function(x) {
   # Create rationalized spectrum
   rationalized_spectrum <- rationalized_spectrum_cpp(idealized_spectrum)
   rationalized_signal   <- fftwtools::fftw2d(rationalized_spectrum, inverse = 1)
-  rationalized_image    <- imager::as.cimg(Mod(rationalized_signal), dim = idealized_dimensions)
+  rationalized_image    <- imager::as.cimg(Re(rationalized_signal), dim = idealized_dimensions)
 
   # Method for Gabor-filtered images
   gabor_filtered_image <- function(orientation, f = 0.2, kernel_size = 31) {
