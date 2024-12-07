@@ -83,7 +83,7 @@ test_rationalized_matrices <- function(lengths) {
 }
 
 # Call the wrapper function with the desired lengths
-test_rationalized_matrices(c(5, 31, 63, 127, 511))
+test_rationalized_matrices(c(5, 35, 63, 127, 511))
 
 
 # Helper function for a single test
@@ -104,4 +104,4 @@ test_error_histograms <- function(lengths) {
 }
 
 # Call the wrapper function with the desired lengths
-test_error_histograms(c(5, 31, 63, 127, 511))
+test_error_histograms(c(5, 35, 63, 127, 511))

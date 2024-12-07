@@ -78,7 +78,7 @@ plot_error_histogram <- function(errors) {
        border = "black")
 }
 
-plot_matrix <- function(matrix, fft_shift = T, magnitude = T, log_scaling = T) {
+plot_matrix <- function(matrix, fft_shift = T, magnitude = T, log_scaling = F) {
   # Convert complex values to magnitudes
   magnitude_matrix = matrix
 
