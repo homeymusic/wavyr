@@ -45,6 +45,10 @@ rationalized_spectrum_cpp <- function(source) {
     .Call(`_wavyr_rationalized_spectrum_cpp`, source)
 }
 
+spectrum_sbg_cpp <- function(nrows, ncols, uncertainty) {
+    .Call(`_wavyr_spectrum_sbg_cpp`, nrows, ncols, uncertainty)
+}
+
 stern_brocot_cpp <- function(x, uncertainty) {
     .Call(`_wavyr_stern_brocot_cpp`, x, uncertainty)
 }

@@ -141,6 +141,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// spectrum_sbg_cpp
+DataFrame spectrum_sbg_cpp(int nrows, int ncols, double uncertainty);
+RcppExport SEXP _wavyr_spectrum_sbg_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP uncertaintySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
+    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
+    Rcpp::traits::input_parameter< double >::type uncertainty(uncertaintySEXP);
+    rcpp_result_gen = Rcpp::wrap(spectrum_sbg_cpp(nrows, ncols, uncertainty));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stern_brocot_cpp
 DataFrame stern_brocot_cpp(const double x, const double uncertainty);
 RcppExport SEXP _wavyr_stern_brocot_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
@@ -166,6 +179,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_as_string_cpp", (DL_FUNC) &_wavyr_as_string_cpp, 1},
     {"_wavyr_as_integer_cpp", (DL_FUNC) &_wavyr_as_integer_cpp, 1},
     {"_wavyr_rationalized_spectrum_cpp", (DL_FUNC) &_wavyr_rationalized_spectrum_cpp, 1},
+    {"_wavyr_spectrum_sbg_cpp", (DL_FUNC) &_wavyr_spectrum_sbg_cpp, 3},
     {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
     {NULL, NULL, 0}
 };

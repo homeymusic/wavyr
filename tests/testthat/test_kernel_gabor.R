@@ -60,7 +60,7 @@ test_that('gabor filters with varied parameters', {
             for (orientation in params$orientations) {
               suffix <- paste(kernel_size, gamma, eta, frequency, phase, orientation / pi)
 
-              gabor_kernel <- create_gabor_kernel(kernel_size, gamma, eta, orientation, frequency, phase)
+              gabor_kernel <- kernel_gabor(kernel_size, gamma, eta, orientation, frequency, phase)
               test_gabor_kernel('orig kernel', gabor_kernel, suffix)
 
               test_gabor_filter('Lenna Gabor Filtered', grayscale_matrix, gabor_kernel, suffix)
@@ -87,7 +87,7 @@ test_that('gabor filters with combined parameters', {
 
   combined_kernel <- matrix(0 + 0i, nrow = kernel_size, ncol = kernel_size)
   for (orientation in orientations) {
-    combined_kernel <- combined_kernel + create_gabor_kernel(kernel_size, gamma, eta, orientation, frequency, phase)
+    combined_kernel <- combined_kernel + kernel_gabor(kernel_size, gamma, eta, orientation, frequency, phase)
   }
 
   test_gabor_kernel('combined kernel', combined_kernel)
