@@ -8,11 +8,11 @@
 #' @param kernel_size Size of the Gabor kernel.
 #' @return A filtered image as a `cimg` object.
 apply_gabor_filter <- function(grayscale_matrix, orientation, f, kernel_size) {
-  # Compute Gabor parameters
-  params <- calculate_gabor_params()
+  gamma = 0.8
+  eta = 0.8
 
   # Generate a single complex Gabor kernel
-  complex_kernel <- create_gabor_kernel(kernel_size, params$gamma, params$eta, orientation, f, psi = 0)
+  complex_kernel <- create_gabor_kernel(kernel_size, gamma, eta, orientation, f, psi = 0)
 
   # Perform convolution with real and imaginary components
   response <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Re(complex_kernel))) +
@@ -48,27 +48,12 @@ create_gabor_kernel <- function(kernel_size, gamma, eta, orientation, f, psi) {
   xr <- grid$x * cos(orientation) + grid$y * sin(orientation)
   yr <- -grid$x * sin(orientation) + grid$y * cos(orientation)
 
-  # Scaling factor for the Gaussian envelope
-  scaling_factor <- f^2 / (pi * gamma * eta)
-
   # Generate the Gabor kernel using the complex exponential
-  gabor <- scaling_factor *
+  gabor <-
     exp(-((f^2 * xr^2) / (gamma^2) + (f^2 * yr^2) / (eta^2))) *
     exp(1i * 2 * pi * f * xr)  # Use 1i for the imaginary unit
 
   # Reshape the Gabor kernel into a matrix
   kernel <- matrix(gabor, nrow = kernel_size, ncol = kernel_size)
   return(kernel)
-}
-
-#' Calculate Gabor Parameters
-#'
-#' Computes the parameters for the Gabor kernel based on predefined constants
-#' from the reference paper.
-#'
-#' @return A list containing:
-#'         - `gamma`: Scale factor for the Gaussian envelope in x.
-#'         - `eta`: Scale factor for the Gaussian envelope in y.
-calculate_gabor_params <- function() {
-  list(gamma = 0.8, eta = 0.8)
 }
