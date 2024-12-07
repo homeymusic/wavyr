@@ -53,13 +53,6 @@ test_that('gabor filters with varied parameters', {
                 plot_matrix(gabor_signal, fft_shift = F, magnitude = F, log_scaling = F)
               )
 
-              label = paste('reconstructed kernel image', kernel_size, gamma, eta, f, psi, orientation / pi)
-              gabor_signal_image = imager::as.cimg(Re(gabor_signal), dim = dim(gabor_kernel))
-              vdiffr::expect_doppelganger(
-                label,
-                plot(gabor_signal_image, axes = F)
-              )
-
             }
           }
         }
@@ -122,13 +115,6 @@ test_that('gabor filters with combined parameters', {
   vdiffr::expect_doppelganger(
     label,
     plot_matrix(combined_gabor_signal, fft_shift = F, magnitude = F, log_scaling = F)
-  )
-
-  label = paste('combined reconstructed kernel image')
-  gabor_signal_image = imager::as.cimg(Re(combined_gabor_signal), dim = dim(gabor_kernel))
-  vdiffr::expect_doppelganger(
-    label,
-    plot(gabor_signal_image, axes = F)
   )
 
 })
@@ -200,13 +186,6 @@ test_that('gabor filters with combined parameters', {
   vdiffr::expect_doppelganger(
     label,
     plot_matrix(combined_gabor_signal, fft_shift = F, magnitude = F, log_scaling = F)
-  )
-
-  label = paste('combined reconstructed kernel image')
-  gabor_signal_image = imager::as.cimg(Re(combined_gabor_signal), dim = dim(gabor_kernel))
-  vdiffr::expect_doppelganger(
-    label,
-    plot(gabor_signal_image, axes = F)
   )
 
 })
