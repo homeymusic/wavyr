@@ -31,7 +31,7 @@ test_that("Image_media object has correct class, stores the original media conte
   expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum)
 
   label = 'MaDukes Idealized Spectrum'
-  vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$idealized_spectrum))
+  vdiffr::expect_doppelganger(label, function() plot_matrix(image_media_obj$idealized_spectrum))
 
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
@@ -75,7 +75,7 @@ test_that("Image_media object has correct class, stores the original media conte
   expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum)
 
   label = 'Lenna Idealized Spectrum'
-  vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$idealized_spectrum))
+  vdiffr::expect_doppelganger(label, function() plot_matrix(image_media_obj$idealized_spectrum))
 
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
@@ -126,7 +126,7 @@ test_that("the various maps for a 5x5 matrix make sense", {
   expect_equal(image_media_obj$idealized_spectrum, expected_idealized_spectrum, tolerance=0.01)
 
   label = 'MaDukesRightEye Idealized Spectrum'
-  vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$idealized_spectrum))
+  vdiffr::expect_doppelganger(label, function() plot_matrix(image_media_obj$idealized_spectrum))
 
   vdiffr::expect_doppelganger(paste(image_filename, 'idealized'), function() {
     plot(image_media_obj$idealized_image, axes = FALSE)

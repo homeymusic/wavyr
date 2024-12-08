@@ -15,7 +15,7 @@ test_gabor_kernel <- function(label_prefix, kernel, suffix = "", fft_shift = FAL
   label <- paste(label_prefix, suffix)
   vdiffr::expect_doppelganger(
     label,
-    plot_matrix(kernel, fft_shift = fft_shift, magnitude = magnitude, log_scaling = log_scaling)
+    function() plot_matrix(kernel, fft_shift = fft_shift, magnitude = magnitude, log_scaling = log_scaling)
   )
 }
 
@@ -26,7 +26,7 @@ test_gabor_filter <- function(label_prefix, grayscale_matrix, kernel, suffix = "
   label <- paste(label_prefix, suffix)
   vdiffr::expect_doppelganger(
     label,
-    plot(filtered_image, axes = FALSE)
+    function() plot(filtered_image, axes = FALSE)
   )
 }
 
@@ -34,7 +34,7 @@ test_gabor_filter <- function(label_prefix, grayscale_matrix, kernel, suffix = "
 test_gabor_spectrum <- function(label_prefix, kernel, suffix = "") {
   spectrum <- fftwtools::fftw2d(kernel)
   label <- paste(label_prefix, suffix)
-  vdiffr::expect_doppelganger(label, plot_matrix(spectrum))
+  vdiffr::expect_doppelganger(label, function() plot_matrix(spectrum))
   spectrum
 }
 

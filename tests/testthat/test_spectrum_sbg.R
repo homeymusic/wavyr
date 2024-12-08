@@ -125,7 +125,7 @@ test_error_histogram <- function(length) {
     Q_map <- fourier_transform_2D_map(length, length)
     vdiffr::expect_doppelganger(
       paste0("Error Histogram ", sprintf("%.4f", uncertainty), " ", length, "x", length),
-      plot_error_histogram(Q_map$error)
+      function() plot_error_histogram(Q_map$error)
     )
   })
 }

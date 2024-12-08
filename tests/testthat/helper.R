@@ -44,9 +44,9 @@ frequency_spectrum_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
 }
 
 wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
-    frequency_spectrum_for(x,
-                           num_harmonics = num_harmonics,
-                           roll_off_dB = roll_off_dB) %>%
+  frequency_spectrum_for(x,
+                         num_harmonics = num_harmonics,
+                         roll_off_dB = roll_off_dB) %>%
     wave()
 }
 
@@ -96,19 +96,19 @@ plot_matrix <- function(matrix, fft_shift = T, magnitude = T, log_scaling = F) {
     magnitude_matrix <- log1p(magnitude_matrix)
   }
 
-  # Plot the matrix as an image
-  par(mar = c(0, 0, 0, 0))  # Remove margins to ensure no additional space
-  image(
-    1:ncol(magnitude_matrix),
-    1:nrow(magnitude_matrix),
-    t(magnitude_matrix[nrow(magnitude_matrix):1, ]),  # Flip y-axis for correct orientation
-    col = gray.colors(256, start = 0, end = 1),  # Grayscale color scheme
-    asp = 1,  # Ensure square cells
-    axes = FALSE,  # Turn off axes
-    xlab = "",  # Remove x-axis label
-    ylab = "",  # Remove y-axis label
-    useRaster = TRUE  # Use rasterized rendering for smooth output
-  )
+    # Plot the matrix as an image
+    par(mar = c(0, 0, 0, 0))  # Remove margins to ensure no additional space
+    image(
+      1:ncol(magnitude_matrix),
+      1:nrow(magnitude_matrix),
+      t(magnitude_matrix[nrow(magnitude_matrix):1, ]),  # Flip y-axis for correct orientation
+      col = gray.colors(256, start = 0, end = 1),  # Grayscale color scheme
+      asp = 1,  # Ensure square cells
+      axes = FALSE,  # Turn off axes
+      xlab = "",  # Remove x-axis label
+      ylab = "",  # Remove y-axis label
+      useRaster = TRUE  # Use rasterized rendering for smooth output
+    )
 }
 
 fft_shift <- function(input_matrix) {
