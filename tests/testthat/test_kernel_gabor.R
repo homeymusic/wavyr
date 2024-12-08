@@ -21,8 +21,7 @@ test_gabor_kernel <- function(label_prefix, kernel, suffix = "", fft_shift = FAL
 
 # Helper function to apply Gabor filter and visualize the result
 test_gabor_filter <- function(label_prefix, grayscale_matrix, kernel, suffix = "") {
-  response <- imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Re(kernel))) +
-    1i * imager::convolve(imager::as.cimg(grayscale_matrix), imager::as.cimg(Im(kernel)))
+  response <- convolution_with_kernel(grayscale_matrix, kernel)
   filtered_image <- imager::as.cimg(Mod(response), dim = dim(grayscale_matrix))
   label <- paste(label_prefix, suffix)
   vdiffr::expect_doppelganger(

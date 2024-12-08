@@ -16,8 +16,6 @@ kernel_sbg <- function(kernel_size) {
                          "_", nrows, "x", ncols, ".rds"))
   }
 
-
-
   return(kernel)
 }
 

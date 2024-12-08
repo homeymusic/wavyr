@@ -43,14 +43,16 @@ image_media <- function(x) {
   idealized_signal <- fftwtools::fftw2d(idealized_spectrum, inverse = 1)
   idealized_image <- imager::as.cimg(Re(idealized_signal), dim = idealized_dimensions)
 
-  # Create rationalized spectrum
-  rationalized_spectrum <- rationalized_spectrum_cpp(idealized_spectrum)
-  rationalized_signal   <- fftwtools::fftw2d(rationalized_spectrum, inverse = 1)
-  rationalized_image    <- imager::as.cimg(Re(rationalized_signal), dim = idealized_dimensions)
-
   # Method for Gabor-filtered images
-  gabor_filtered_image <- function(orientation, f = 0.1, kernel_size = 31) {
-    apply_gabor_filter(grayscale_matrix, orientation, f, kernel_size)
+  gabor_filtered_image <- function(orientation, frequency = 0.1, kernel_size = 31) {
+    gamma = 0.8
+    eta   = 0.8
+    phase = 0
+
+    gabor_kernel <- kernel_gabor(kernel_size, gamma, eta, orientation, frequency, phase)
+    convolved <- convolution_with_kernel(grayscale_matrix, gabor_kernel)
+    filtered_image <- imager::as.cimg(Mod(convolved), dim = dim(grayscale_matrix))
+
   }
 
   # Create the S3 object
@@ -61,9 +63,6 @@ image_media <- function(x) {
     idealized_dimensions             = idealized_dimensions,
     idealized_signal                 = idealized_signal,
     idealized_image                  = idealized_image,
-    rationalized_spectrum            = rationalized_spectrum,
-    rationalized_signal              = rationalized_signal,
-    rationalized_image               = rationalized_image,
     gabor_filtered_image             = gabor_filtered_image
   )
 

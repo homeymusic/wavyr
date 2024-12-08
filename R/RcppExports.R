@@ -13,10 +13,6 @@ compute_beats_cpp <- function(component, amplitude, extent_rate, tolerance = 1e-
     .Call(`_wavyr_compute_beats_cpp`, component, amplitude, extent_rate, tolerance)
 }
 
-fourier_transform_2D_map_cpp <- function(nrows, ncols, uncertainty) {
-    .Call(`_wavyr_fourier_transform_2D_map_cpp`, nrows, ncols, uncertainty)
-}
-
 shannon_entropy_cpp <- function(bits) {
     .Call(`_wavyr_shannon_entropy_cpp`, bits)
 }

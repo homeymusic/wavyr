@@ -43,6 +43,17 @@ test_that("a 5x5 rationalized matrix makes sense", {
 
   spectrum_sbg_dense <- create_dense_matrix(spectrum_sbg_sparse, matrix_size)
 
+  expected_kernel <- matrix(
+    c(0, 1, 0, 1, 0,
+      1, 2, 2, 2, 1,
+      0, 2, 1, 2, 0,
+      1, 2, 2, 2, 1,
+      0, 1, 0, 1, 0),
+    nrow = 5, ncol = 5, byrow = TRUE
+  )
+
+  expect_equal(spectrum_sbg_dense, expected_kernel, tolerance=0.01)
+
   expect_equal(class(Q_map), "data.frame")
   expect_equal(class(spectrum_sbg_dense), c("matrix", "array"))
   expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y',
@@ -83,38 +94,28 @@ test_that("a 5x5 rationalized matrix makes sense", {
       expect_equal(unname(Q_cell$idealized_y), expected[2], label = paste("Mismatch at (", x_r, ",", y_r, ") for idealized_y"))
     }
   }
-  expected_rationalized_spectrum_cpp <- matrix(
-    c(0, 1, 0, 1, 0,
-      1, 2, 2, 2, 1,
-      0, 2, 1, 2, 0,
-      1, 2, 2, 2, 1,
-      0, 1, 0, 1, 0),
-    nrow = 5, ncol = 5, byrow = TRUE
-  )
-
-  expect_equal(spectrum_sbg_dense, expected_rationalized_spectrum_cpp, tolerance=0.01)
 
 })
 
 # Helper function for a single test
-test_rationalized_matrix <- function(length) {
-  test_that(paste0("a ", length, "x", length, " map from a uniform 2D spectrum makes sense"), {
-    uniform_matrix <- matrix(1 + 0i, nrow = length, ncol = length)
-    rationalized_matrix <- rationalized_spectrum_cpp(uniform_matrix)
-    vdiffr::expect_doppelganger(
-      paste0("Rationalized Matrix ", length, "x", length),
-      plot_matrix(rationalized_matrix)
-    )
-  })
-}
-
-# Wrapper function to run multiple tests
-test_rationalized_matrices <- function(lengths) {
-  lapply(lengths, test_rationalized_matrix)
-}
-
-# Call the wrapper function with the desired lengths
-test_rationalized_matrices(c(5, 35, 63, 127, 511))
+# test_rationalized_matrix <- function(length) {
+#   test_that(paste0("a ", length, "x", length, " map from a uniform 2D spectrum makes sense"), {
+#     uniform_matrix <- matrix(1 + 0i, nrow = length, ncol = length)
+#     rationalized_matrix <- rationalized_spectrum_cpp(uniform_matrix)
+#     vdiffr::expect_doppelganger(
+#       paste0("Rationalized Matrix ", length, "x", length),
+#       plot_matrix(rationalized_matrix)
+#     )
+#   })
+# }
+#
+# # Wrapper function to run multiple tests
+# test_rationalized_matrices <- function(lengths) {
+#   lapply(lengths, test_rationalized_matrix)
+# }
+#
+# # Call the wrapper function with the desired lengths
+# test_rationalized_matrices(c(5, 35, 63, 127, 511))
 
 
 # Helper function for a single test

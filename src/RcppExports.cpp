@@ -51,19 +51,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// fourier_transform_2D_map_cpp
-DataFrame fourier_transform_2D_map_cpp(int nrows, int ncols, double uncertainty);
-RcppExport SEXP _wavyr_fourier_transform_2D_map_cpp(SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP uncertaintySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
-    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
-    Rcpp::traits::input_parameter< double >::type uncertainty(uncertaintySEXP);
-    rcpp_result_gen = Rcpp::wrap(fourier_transform_2D_map_cpp(nrows, ncols, uncertainty));
-    return rcpp_result_gen;
-END_RCPP
-}
 // shannon_entropy_cpp
 double shannon_entropy_cpp(const std::vector<int>& bits);
 RcppExport SEXP _wavyr_shannon_entropy_cpp(SEXP bitsSEXP) {
@@ -171,7 +158,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_approximate_rational_fractions_cpp", (DL_FUNC) &_wavyr_approximate_rational_fractions_cpp, 4},
     {"_wavyr_combine_spectra_cpp", (DL_FUNC) &_wavyr_combine_spectra_cpp, 3},
     {"_wavyr_compute_beats_cpp", (DL_FUNC) &_wavyr_compute_beats_cpp, 4},
-    {"_wavyr_fourier_transform_2D_map_cpp", (DL_FUNC) &_wavyr_fourier_transform_2D_map_cpp, 3},
     {"_wavyr_shannon_entropy_cpp", (DL_FUNC) &_wavyr_shannon_entropy_cpp, 1},
     {"_wavyr_hamming_weight_cpp", (DL_FUNC) &_wavyr_hamming_weight_cpp, 1},
     {"_wavyr_run_length_encoding_cpp", (DL_FUNC) &_wavyr_run_length_encoding_cpp, 1},

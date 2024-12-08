@@ -32,8 +32,6 @@ test_that("Image_media object has correct class, stores the original media conte
 
   label = 'MaDukes Idealized Spectrum'
   vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$idealized_spectrum))
-  label = 'MaDukes Rationalized Spectrum'
-  vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$rationalized_spectrum))
 
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
@@ -42,11 +40,6 @@ test_that("Image_media object has correct class, stores the original media conte
   label = 'MaDukes_Idealized'
   vdiffr::expect_doppelganger(label, function() plot(image_media_obj$idealized_image,
                                                      axes = F))
-
-  label = 'MaDukes_Rationalized'
-  vdiffr::expect_doppelganger(label, function() plot(image_media_obj$rationalized_image,
-                                                     axes = F))
-
 })
 
 test_that("Image_media object has correct class, stores the original media content, computes idealized_spectrum, idealized_signal, and verifies dimensions", {
@@ -83,8 +76,6 @@ test_that("Image_media object has correct class, stores the original media conte
 
   label = 'Lenna Idealized Spectrum'
   vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$idealized_spectrum))
-  label = 'Lenna Rationalized Spectrum'
-  vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$rationalized_spectrum))
 
   expect_equal(image_media_obj$idealized_dimensions, expected_idealized_dim)
   expect_equal(image_media_obj$idealized_signal, expected_idealized_signal)
@@ -92,10 +83,6 @@ test_that("Image_media object has correct class, stores the original media conte
 
   label = 'Lenna_Idealized'
   vdiffr::expect_doppelganger(label, function() plot(image_media_obj$idealized_image,
-                                                     axes = F))
-
-  label = 'Lenna_Rationalized'
-  vdiffr::expect_doppelganger(label, function() plot(image_media_obj$rationalized_image,
                                                      axes = F))
 })
 
@@ -110,6 +97,7 @@ test_that("Image_media object creates Gabor-filtered images with verified parame
     # Test each orientation
     for (orientation in orientations) {
       label <- paste0(image_filename, "-Gabor-Filters-", orientation * 180 / pi)
+
       vdiffr::expect_doppelganger(label, function() {
         plot(image_media_obj$gabor_filtered_image(orientation), axes = FALSE)
       })
@@ -140,29 +128,8 @@ test_that("the various maps for a 5x5 matrix make sense", {
   label = 'MaDukesRightEye Idealized Spectrum'
   vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$idealized_spectrum))
 
-  expected_rationalized_spectrum <- matrix(
-    c(
-                               6.1361961 + 0.0000000i, 0.1477849 + 1.0480768i + -0.08568688 + 0.05459868i,                    0 + 0i,                    0 + 0i, 0.1477849 - 1.0480768i + -0.08568688 - 0.05459868i,
-      0.7944703 + 0.5699178i + 0.1696866 + 0.0538504i, 0.5525445 - 0.2506504i + -0.01142689 - 0.11058409i,  0.12778788 - 0.01742626i,  0.29475756 + 0.21481316i, 0.0622026 - 0.4496432i +  0.06430717 + 0.17928514i,
-                                               0 + 0i,                             0.3160660 + 0.0995171i,                    0 + 0i,                    0 + 0i,                           0.1871533  - 0.2141558i,
-                                               0 + 0i,                             0.1871533 + 0.2141558i,                    0 + 0i,                    0 + 0i,                           0.3160660  - 0.0995171i,
-      0.7944703 - 0.5699178i + 0.1696866 - 0.0538504i, 0.0622026 + 0.4496432i +  0.06430717 - 0.17928514i,  0.29475756 - 0.21481316i,  0.12778788 + 0.01742626i, 0.5525445 + 0.2506504i + -0.01142689 + 0.11058409i
-    ),
-    nrow = 5,
-    byrow = TRUE
-  )
-  expect_equal(image_media_obj$rationalized_spectrum, expected_rationalized_spectrum,
-               tolerance=0.01)
-
-  label = 'MaDukesRightEye Rationalized Spectrum'
-  vdiffr::expect_doppelganger(label, plot_matrix(image_media_obj$rationalized_spectrum))
-
   vdiffr::expect_doppelganger(paste(image_filename, 'idealized'), function() {
     plot(image_media_obj$idealized_image, axes = FALSE)
-  })
-
-  vdiffr::expect_doppelganger(paste(image_filename, 'rationalized'), function() {
-    plot(image_media_obj$rationalized_image, axes = FALSE)
   })
 
 })
