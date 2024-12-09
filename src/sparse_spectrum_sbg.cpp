@@ -164,14 +164,28 @@ DataFrame sparse_spectrum_sbg_cpp(int nrows, int ncols, double uncertainty) {
     }
   }
 
+  std::vector<double> idealized_angles;
+  for (size_t i = 0; i < idealized_x_values.size(); ++i) {
+    double angle = std::atan2(idealized_y_values[i], idealized_x_values[i]);
+    idealized_angles.push_back(angle);
+  }
+
+  std::vector<double> rationalized_angles;
+  for (size_t i = 0; i < rationalized_x_values.size(); ++i) {
+    double angle = std::atan2(rationalized_y_values[i], rationalized_x_values[i]);
+    rationalized_angles.push_back(angle);
+  }
+
   // Create and return the tibble
   return DataFrame::create(
     _["x"] = x_values,
     _["y"] = y_values,
     _["idealized_x"] = idealized_x_values,
     _["idealized_y"] = idealized_y_values,
+    _["idealized_angle"] = idealized_angles,
     _["rationalized_x"] = rationalized_x_values,
     _["rationalized_y"] = rationalized_y_values,
+    _["rationalized_angle"] = rationalized_angles,
     _["original_value"] = original_values,
     _["num"] = nums,
     _["den"] = dens,

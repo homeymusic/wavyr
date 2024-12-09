@@ -16,8 +16,8 @@ test_dense_spectrum_makes_sense <- function(d, label) {
 
 test_sparse_spectrum_makes_sense <- function(s, label) {
   expect_equal(class(s), "data.frame")
-  expect_named(s, c('x', 'y', 'idealized_x', 'idealized_y',
-                    'rationalized_x', 'rationalized_y',
+  expect_named(s, c('x', 'y', 'idealized_x', 'idealized_y', 'idealized_angle',
+                    'rationalized_x', 'rationalized_y', 'rationalized_angle',
                     'original_value', 'num', 'den', 'approximation', 'error',
                     'uncertainty', 'depth', 'path', 'path_id',
                     'shannon_entropy', 'run_length_encoding', 'hamming_weight'))
@@ -154,5 +154,36 @@ test_error_histogram <- function(length) {
     )
   })
 }
-
 lapply(test_sizes, test_error_histogram)
+
+test_that('angles make sense', {
+  uncertainty = GABOR_UNCERTAINTY ^ 2
+
+  s <- sparse_spectrum_sbg(5, uncertainty)
+  expect_equal(s$idealized_angle, s$rationalized_angle)
+
+  s <- sparse_spectrum_sbg(27, uncertainty)
+  expect_equal(s$idealized_angle, s$rationalized_angle)
+  rationalized <- s %>%
+    dplyr::group_by(rationalized_x, rationalized_y) %>%
+    dplyr::summarize(count = dplyr::n(), .groups = "drop")
+  idealized <- s %>%
+    dplyr::group_by(idealized_x, idealized_y) %>%
+    dplyr::summarize(count = dplyr::n(), .groups = "drop")
+  expect_lt(nrow(rationalized), nrow(idealized))
+
+  s <- sparse_spectrum_sbg(29, uncertainty)
+  s_diff = (abs(s$idealized_angle -s$rationalized_angle))
+  s_diff = (round(s_diff[s_diff != 0] * 1e6)/1e6) %>% unique() %>% sort()
+  expect_equal(s_diff, c(0.003, 0.005), tolerance = 0.01)
+  rationalized <- s %>%
+    dplyr::group_by(rationalized_x, rationalized_y) %>%
+    dplyr::summarize(count = dplyr::n(), .groups = "drop")
+
+  idealized <- s %>%
+    dplyr::group_by(idealized_x, idealized_y) %>%
+    dplyr::summarize(count = dplyr::n(), .groups = "drop")
+
+  expect_lt(nrow(rationalized), nrow(idealized))
+
+})
