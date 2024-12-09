@@ -86,6 +86,12 @@ test_image_convolution <- function(label, grayscale_matrix, kernel) {
     label,
     function() plot(filtered_image, axes = FALSE)
   )
+  thresholded_img <- imager::threshold(filtered_image, thr = "80%")
+  vdiffr::expect_doppelganger(
+    paste('thresholded', label),
+    function() plot(thresholded_img, axes = FALSE)
+  )
+
 }
 
 negate_matrix_except_center <- function(mat) {
