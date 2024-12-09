@@ -116,27 +116,27 @@ negate_matrix_except_center <- function(mat) {
 }
 
 lenna    <- (load_and_preprocess_image(test_path("images", "Lenna.png")))$grayscale_matrix
-ma_dukes <- (load_and_preprocess_image(test_path("images", "MaDukes.png")))$grayscale_matrix
+ma_dukes <- (load_and_preprocess_image(test_path("images", "MPC3000JDilla.png")))$grayscale_matrix
 
 test_kernel_spectrum_plot <- function(length) {
   uncertainty = GABOR_UNCERTAINTY ^ 2
-  label = paste0("Spectrum ", sprintf("%.4f", uncertainty), " ", length, "x", length)
+  label = paste0("Spectrum ", length, "x", length)
   test_that(paste0("a ", length, "x", length, " plot 2D spectrum"), {
     d <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$spectrum)
     vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(d, fft_shift = F))
     test_image_convolution(paste("Lenna", label), lenna, d)
-    test_image_convolution(paste("Ma Dukes", label), ma_dukes, d)
+    test_image_convolution(paste("MPC3000JDilla", label), ma_dukes, d)
   })
 }
 
 test_kernel_signal_plot <- function(length) {
   uncertainty = GABOR_UNCERTAINTY ^ 2
-  label = paste0("Signal ", sprintf("%.4f", uncertainty), " ", length, "x", length)
+  label = paste0("Signal ", length, "x", length)
   test_that(paste0("a ", length, "x", length, " plot 2D signal"), {
     d <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$signal) %>% negate_matrix_except_center()
     vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(d, fft_shift = T))
     test_image_convolution(paste("Lenna", label), lenna, d)
-    test_image_convolution(paste("Ma Dukes", label), ma_dukes, d)
+    test_image_convolution(paste("MPC3000JDilla", label), ma_dukes, d)
   })
 }
 
@@ -149,7 +149,7 @@ test_error_histogram <- function(length) {
   test_that(paste0("a ", length, "x", length, " error histogram makes sense"), {
     s <- sparse_spectrum_sbg(length, uncertainty)
     vdiffr::expect_doppelganger(
-      paste0("Error Histogram ", sprintf("%.4f", uncertainty), " ", length, "x", length),
+      paste0("Error Histogram ", length, "x", length),
       function() plot_error_histogram(s$error)
     )
   })
