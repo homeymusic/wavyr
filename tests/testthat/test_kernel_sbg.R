@@ -156,6 +156,21 @@ test_error_histogram <- function(length) {
 }
 lapply(test_sizes, test_error_histogram)
 
+test_error_uncertainty_histogram <- function(uncertainty) {
+  length = 49
+  test_that(paste0("a ", length, "x", length, "uncertainty ", sprintf("%.4f", uncertainty),
+                   " error histogram makes sense"), {
+    s <- sparse_spectrum_sbg(length, uncertainty)
+    vdiffr::expect_doppelganger(
+      paste0("Error Uncertainty Histogram ", sprintf("%.5f", uncertainty)),
+      function() plot_error_histogram(s$error)
+    )
+  })
+}
+test_uncertainties = c(GABOR_UNCERTAINTY, GABOR_UNCERTAINTY ^ 2, 2 * 10^seq(-5, 3, by = 1)) %>% sort()
+lapply(test_uncertainties, test_error_uncertainty_histogram)
+
+
 test_that('angles make sense', {
   uncertainty = GABOR_UNCERTAINTY ^ 2
 
