@@ -33,11 +33,9 @@ create_dense_matrix <- function(sparse_df, size) {
   return(dense_matrix)
 }
 
-test_that("a 5x5 rationalized matrix makes sense", {
-  matrix_size = 5
-  Q_map <- spectrum_sbg_cpp(matrix_size, matrix_size, GABOR_UNCERTAINTY ^ 2)
-
-  spectrum_sbg_sparse <- Q_map %>%
+test_spectrum_makes_sense <- function(s, label) {
+  matrix_size = dim(s)[1] %>% sqrt()
+  spectrum_sbg_sparse <- s %>%
     dplyr::group_by(rationalized_x, rationalized_y) %>%
     dplyr::summarize(count = dplyr::n(), .groups = "drop")
 
@@ -54,17 +52,19 @@ test_that("a 5x5 rationalized matrix makes sense", {
 
   expect_equal(spectrum_sbg_dense, expected_kernel, tolerance=0.01)
 
-  expect_equal(class(Q_map), "data.frame")
+  vdiffr::expect_doppelganger(label, function() plot_matrix(spectrum_sbg_dense, fft_shift = F))
+
+  expect_equal(class(s), "data.frame")
   expect_equal(class(spectrum_sbg_dense), c("matrix", "array"))
-  expect_named(Q_map, c('x', 'y', 'idealized_x', 'idealized_y',
+  expect_named(s, c('x', 'y', 'idealized_x', 'idealized_y',
                         'rationalized_x', 'rationalized_y',
                         'original_value', 'num', 'den', 'approximation', 'error',
                         'uncertainty', 'depth', 'path', 'path_id',
                         'shannon_entropy', 'run_length_encoding', 'hamming_weight'))
-  expect_equal(Q_map$error, rep(0,25))
-  expect_equal(Q_map %>% dplyr::distinct(x, y) %>%  nrow(), 25)
-  expect_equal(Q_map %>% dplyr::distinct(idealized_x, idealized_y) %>%  nrow(), 25)
-  expect_equal(Q_map %>% dplyr::distinct(rationalized_x, rationalized_y) %>%  nrow(), 17)
+  expect_equal(s$error, rep(0,25))
+  expect_equal(s %>% dplyr::distinct(x, y) %>%  nrow(), 25)
+  expect_equal(s %>% dplyr::distinct(idealized_x, idealized_y) %>%  nrow(), 25)
+  expect_equal(s %>% dplyr::distinct(rationalized_x, rationalized_y) %>%  nrow(), 17)
 
   # Expected idealized spatial frequency map
   expected_frequencies <- matrix(list(
@@ -82,8 +82,8 @@ test_that("a 5x5 rationalized matrix makes sense", {
       x_r <- j
       y_r <- i
 
-      # Extract the corresponding row from Q_map
-      Q_cell <- Q_map[Q_map$x == x_r & Q_map$y == y_r, ]
+      # Extract the corresponding row from s
+      Q_cell <- s[s$x == x_r & s$y == y_r, ]
 
       # Ensure exactly one match
       expect_equal(nrow(Q_cell), 1)
@@ -95,37 +95,30 @@ test_that("a 5x5 rationalized matrix makes sense", {
     }
   }
 
+}
+
+test_that("a 5x5 rationalized matrix from cpp makes sense", {
+  s = spectrum_sbg_cpp(5, 5, GABOR_UNCERTAINTY ^ 2)
+  test_spectrum_makes_sense(
+    s, 'sbg spectrum from cpp directly 5 x 5'
+  )
 })
 
-# Helper function for a single test
-# test_rationalized_matrix <- function(length) {
-#   test_that(paste0("a ", length, "x", length, " map from a uniform 2D spectrum makes sense"), {
-#     uniform_matrix <- matrix(1 + 0i, nrow = length, ncol = length)
-#     rationalized_matrix <- rationalized_spectrum_cpp(uniform_matrix)
-#     vdiffr::expect_doppelganger(
-#       paste0("Rationalized Matrix ", length, "x", length),
-#       plot_matrix(rationalized_matrix)
-#     )
-#   })
-# }
-#
-# # Wrapper function to run multiple tests
-# test_rationalized_matrices <- function(lengths) {
-#   lapply(lengths, test_rationalized_matrix)
-# }
-#
-# # Call the wrapper function with the desired lengths
-# test_rationalized_matrices(c(5, 35, 63, 127, 511))
-
+test_that("a 5x5 rationalized matrix from data file makes sense", {
+  s = spectrum_sbg(5, 5, GABOR_UNCERTAINTY ^ 2)
+  test_spectrum_makes_sense(
+    s, 'sbg spectrum from data file 5 x 5'
+  )
+})
 
 # Helper function for a single test
 test_error_histogram <- function(length) {
   uncertainty = GABOR_UNCERTAINTY ^ 2
   test_that(paste0("a ", length, "x", length, " map from a uniform 2D spectrum makes sense"), {
-    Q_map <- fourier_transform_2D_map(length, length)
+    s <- spectrum_sbg(length, length)
     vdiffr::expect_doppelganger(
       paste0("Error Histogram ", sprintf("%.4f", uncertainty), " ", length, "x", length),
-      function() plot_error_histogram(Q_map$error)
+      function() plot_error_histogram(s$error)
     )
   })
 }
@@ -136,4 +129,4 @@ test_error_histograms <- function(lengths) {
 }
 
 # Call the wrapper function with the desired lengths
-test_error_histograms(c(5, 35, 63, 127, 511))
+test_error_histograms(2^(1:7) + 1)

@@ -1,15 +1,5 @@
 source(testthat::test_path("helper.R"))
 
-# Helper function to load and preprocess an image
-load_and_preprocess_image <- function(image_file_path) {
-  original <- imager::load.image(image_file_path)
-  grayscale_image <- imager::grayscale(original)
-  list(
-    original_dim = dim(original),
-    grayscale_matrix = as.matrix(grayscale_image)
-  )
-}
-
 # Helper function to test and visualize a Gabor kernel
 test_gabor_kernel <- function(label_prefix, kernel, suffix = "", fft_shift = FALSE, magnitude = FALSE, log_scaling = FALSE) {
   label <- paste(label_prefix, suffix)

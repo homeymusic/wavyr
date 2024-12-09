@@ -52,14 +52,27 @@ wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
 
 plot_error_histogram <- function(errors) {
   if (all(errors == 0)) {
-    # Special case where all errors are zero
-    hist(errors,
-         breaks = c(-0.5, 0.5),  # A single bin centered around 0
-         main = "Error Histogram",
-         xlab = "Errors",
-         ylab = "Frequency",
-         col = "darkgray",
-         border = "black")
+    total_count <- length(errors)
+
+    # Generate approximately 5 evenly spaced odd labels
+    y_ticks <- seq(1, total_count, length.out = 5)
+    y_ticks <- round(y_ticks)  # Round to nearest integers
+    y_ticks <- ifelse(y_ticks %% 2 == 0, y_ticks + 1, y_ticks)  # Ensure odd labels
+
+    hist(
+      errors,
+      breaks = c(-0.5, 0.5),  # Single bin centered at 0
+      main = "Error Histogram (All Zeros)",
+      xlab = "Errors",
+      ylab = "Frequency",
+      col = "darkgray",
+      border = "black",
+      ylim = c(0, total_count),  # Ensure the bar height matches total count
+      xaxt = "n",  # Suppress x-axis
+      yaxt = "n"   # Suppress y-axis
+    )
+    axis(1, at = 0, labels = "0")  # Custom x-axis with only 0
+    axis(2, at = y_ticks, labels = y_ticks)  # Custom y-axis with odd-numbered labels
     return()
   }
 
@@ -69,13 +82,15 @@ plot_error_histogram <- function(errors) {
   # Adjust breaks to ensure 0 is at the center of a bin
   breaks <- seq(-max_error - bin_width / 2, max_error + bin_width / 2, by = bin_width)
 
-  hist(errors,
-       breaks = breaks,
-       main = "Error Histogram",
-       xlab = "Errors",
-       ylab = "Frequency",
-       col = "darkgray",
-       border = "black")
+  hist(
+    errors,
+    breaks = breaks,
+    main = "Error Histogram",
+    xlab = "Errors",
+    ylab = "Frequency",
+    col = "darkgray",
+    border = "black"
+  )
 }
 
 plot_matrix <- function(matrix, fft_shift = T, magnitude = T, log_scaling = F) {
@@ -128,4 +143,14 @@ fft_shift <- function(input_matrix) {
 
   input_matrix <- swap_up_down(input_matrix)
   return(swap_left_right(input_matrix))
+}
+
+# Helper function to load and preprocess an image
+load_and_preprocess_image <- function(image_file_path) {
+  original <- imager::load.image(image_file_path)
+  grayscale_image <- imager::grayscale(original)
+  list(
+    original_dim = dim(original),
+    grayscale_matrix = as.matrix(grayscale_image)
+  )
 }
