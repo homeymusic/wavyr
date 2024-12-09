@@ -6,6 +6,6 @@
 #' @param kernel The kernel
 #' @return A convolved matrix
 convolution_with_kernel <- function(complex_matrix, kernel) {
-  imager::convolve(imager::as.cimg(Re(complex_matrix)), imager::as.cimg(Re(kernel))) +
-    1i * imager::convolve(imager::as.cimg(Im(complex_matrix)), imager::as.cimg(Im(kernel)))
+  imager::convolve(imager::as.cimg(Re(complex_matrix)), imager::as.cimg(Re(kernel)), dirichlet = F) +
+    1i * imager::convolve(imager::as.cimg(Im(complex_matrix)), imager::as.cimg(Im(kernel)), dirichlet = F)
 }

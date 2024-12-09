@@ -4,10 +4,18 @@
 \alias{kernel_sbg}
 \title{Create SBG Kernel}
 \usage{
-kernel_sbg(kernel_size)
+kernel_sbg(
+  kernel_size,
+  uncertainty = GABOR_UNCERTAINTY^2,
+  signal_or_spectrum = SIGNAL_OR_SPECTRUM$spectrum
+)
 }
 \arguments{
 \item{kernel_size}{Size of the kernel (must be odd).}
+
+\item{uncertainty}{Uncertainty product}
+
+\item{signal_or_spectrum}{Should the gabor filter use the spectrum or signal representation}
 }
 \value{
 A 2D matrix representing the SBG kernel.

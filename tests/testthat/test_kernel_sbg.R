@@ -1,0 +1,152 @@
+source(testthat::test_path("helper.R"))
+
+test_dense_spectrum_makes_sense <- function(d, label) {
+  expected_kernel <- matrix(
+    c(0, 1, 0, 1, 0,
+      1, 2, 2, 2, 1,
+      0, 2, 1, 2, 0,
+      1, 2, 2, 2, 1,
+      0, 1, 0, 1, 0),
+    nrow = 5, ncol = 5, byrow = TRUE
+  )
+
+  expect_equal(d, expected_kernel, tolerance=0.01)
+  expect_equal(class(d), c("matrix", "array"))
+}
+
+test_sparse_spectrum_makes_sense <- function(s, label) {
+  expect_equal(class(s), "data.frame")
+  expect_named(s, c('x', 'y', 'idealized_x', 'idealized_y',
+                    'rationalized_x', 'rationalized_y',
+                    'original_value', 'num', 'den', 'approximation', 'error',
+                    'uncertainty', 'depth', 'path', 'path_id',
+                    'shannon_entropy', 'run_length_encoding', 'hamming_weight'))
+  expect_equal(s$error, rep(0,25))
+  expect_equal(s %>% dplyr::distinct(x, y) %>%  nrow(), 25)
+  expect_equal(s %>% dplyr::distinct(idealized_x, idealized_y) %>%  nrow(), 25)
+  expect_equal(s %>% dplyr::distinct(rationalized_x, rationalized_y) %>%  nrow(), 17)
+
+  # Expected idealized spatial frequency map
+  expected_frequencies <- matrix(list(
+    c(0, 0),  c(1, 0),  c(2, 0),  c(-2, 0),  c(-1, 0),
+    c(0, 1),  c(1, 1),  c(2, 1),  c(-2, 1),  c(-1, 1),
+    c(0, 2),  c(1, 2),  c(2, 2),  c(-2, 2),  c(-1, 2),
+    c(0, -2), c(1, -2), c(2, -2), c(-2, -2), c(-1, -2),
+    c(0, -1), c(1, -1), c(2, -1), c(-2, -1), c(-1, -1)
+  ), nrow = 5, byrow = TRUE)
+
+  # Check if each entry matches expected values
+  for (i in seq_len(nrow(expected_frequencies))) {
+    for (j in seq_len(ncol(expected_frequencies))) {
+      # Convert to 1-based indices for R
+      x_r <- j
+      y_r <- i
+
+      # Extract the corresponding row from s
+      Q_cell <- s[s$x == x_r & s$y == y_r, ]
+
+      # Ensure exactly one match
+      expect_equal(nrow(Q_cell), 1)
+
+      # Validate idealized_x and idealized_y
+      expected <- expected_frequencies[[i, j]]
+      expect_equal(unname(Q_cell$idealized_x), expected[1], label = paste("Mismatch at (", x_r, ",", y_r, ") for idealized_x"))
+      expect_equal(unname(Q_cell$idealized_y), expected[2], label = paste("Mismatch at (", x_r, ",", y_r, ") for idealized_y"))
+    }
+  }
+
+}
+
+test_that("a 5x5 rationalized matrix from cpp makes sense", {
+  s = sparse_spectrum_sbg_cpp(5, 5, GABOR_UNCERTAINTY ^ 2)
+  test_sparse_spectrum_makes_sense(
+    s, 'sbg sparse spectrum from cpp directly 5 x 5'
+  )
+})
+
+test_that("a 5x5 rationalized matrix from data file makes sense", {
+  s = sparse_spectrum_sbg(5, GABOR_UNCERTAINTY ^ 2)
+  test_sparse_spectrum_makes_sense(
+    s, 'sbg sparse spectrum from data file 5 x 5'
+  )
+})
+
+test_that("a 5x5 kernel matrix from data file makes sense", {
+  d = kernel_sbg(5, GABOR_UNCERTAINTY ^ 2)
+  test_dense_spectrum_makes_sense(
+    d, 'sbg dense spectrum from data file 5 x 5'
+  )
+})
+
+
+test_image_convolution <- function(label, grayscale_matrix, kernel) {
+  response <- convolution_with_kernel(grayscale_matrix, kernel)
+  filtered_image <- imager::as.cimg(Mod(response), dim = dim(grayscale_matrix))
+  vdiffr::expect_doppelganger(
+    label,
+    function() plot(filtered_image, axes = FALSE)
+  )
+}
+
+negate_matrix_except_center <- function(mat) {
+  # Ensure the matrix is square and has odd dimensions
+  if (nrow(mat) != ncol(mat)) {
+    stop("The matrix must be square.")
+  }
+  if (nrow(mat) %% 2 == 0) {
+    stop("The matrix dimensions must be odd.")
+  }
+
+  # Find the center index
+  center_index <- (nrow(mat) + 1) / 2
+
+  # Negate the entire matrix
+  negated_mat <- -mat
+
+  # Restore the center cell
+  negated_mat[center_index, center_index] <- mat[center_index, center_index]
+
+  return(negated_mat)
+}
+
+lenna    <- (load_and_preprocess_image(test_path("images", "Lenna.png")))$grayscale_matrix
+ma_dukes <- (load_and_preprocess_image(test_path("images", "MaDukes.png")))$grayscale_matrix
+
+test_kernel_spectrum_plot <- function(length) {
+  uncertainty = GABOR_UNCERTAINTY ^ 2
+  label = paste0("Spectrum ", sprintf("%.4f", uncertainty), " ", length, "x", length)
+  test_that(paste0("a ", length, "x", length, " plot 2D spectrum"), {
+    d <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$spectrum)
+    vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(d, fft_shift = F))
+    test_image_convolution(paste("Lenna", label), lenna, d)
+    test_image_convolution(paste("Ma Dukes", label), ma_dukes, d)
+  })
+}
+
+test_kernel_signal_plot <- function(length) {
+  uncertainty = GABOR_UNCERTAINTY ^ 2
+  label = paste0("Signal ", sprintf("%.4f", uncertainty), " ", length, "x", length)
+  test_that(paste0("a ", length, "x", length, " plot 2D signal"), {
+    d <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$signal) %>% negate_matrix_except_center()
+    vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(d, fft_shift = T))
+    test_image_convolution(paste("Lenna", label), lenna, d)
+    test_image_convolution(paste("Ma Dukes", label), ma_dukes, d)
+  })
+}
+
+test_sizes = seq(3, 51, by = 2)
+lapply(test_sizes, test_kernel_spectrum_plot)
+lapply(test_sizes, test_kernel_signal_plot)
+
+test_error_histogram <- function(length) {
+  uncertainty = GABOR_UNCERTAINTY ^ 2
+  test_that(paste0("a ", length, "x", length, " error histogram makes sense"), {
+    s <- sparse_spectrum_sbg(length, uncertainty)
+    vdiffr::expect_doppelganger(
+      paste0("Error Histogram ", sprintf("%.4f", uncertainty), " ", length, "x", length),
+      function() plot_error_histogram(s$error)
+    )
+  })
+}
+
+lapply(test_sizes, test_error_histogram)
