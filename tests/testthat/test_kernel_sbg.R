@@ -230,6 +230,7 @@ test_angles_kernel_signal_plot <- function(angle) {
 
 test_sizes = seq(5, 11, by = 2)
 lapply(test_sizes, test_kernel_spectrum_plot)
+test_sizes = seq(5, 51, by = 2)
 lapply(test_sizes, test_kernel_signal_plot)
 
 test_angles = c(0,1/4,1/2,3/4) * pi
