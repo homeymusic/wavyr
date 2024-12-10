@@ -78,41 +78,33 @@ test_that("a 5x5 kernel matrix from data file makes sense", {
   )
 })
 
-
 test_image_convolution <- function(label, grayscale_matrix, kernel) {
   response <- convolution_with_kernel(grayscale_matrix, kernel)
-  filtered_image <- imager::as.cimg(Mod(response), dim = dim(grayscale_matrix))
+
+  mod_image <- imager::as.cimg(Mod(response), dim = dim(grayscale_matrix))
   vdiffr::expect_doppelganger(
-    label,
-    function() plot(filtered_image, axes = FALSE)
+    paste(label, 'Mod'),
+    function() plot(mod_image, axes = FALSE)
   )
-  thresholded_img <- imager::threshold(filtered_image, thr = "80%")
+
+  re_image <- imager::as.cimg(Re(response), dim = dim(grayscale_matrix))
+  vdiffr::expect_doppelganger(
+    paste(label, 'Re'),
+    function() plot(re_image, axes = FALSE)
+  )
+
+  im_image <- imager::as.cimg(Im(response), dim = dim(grayscale_matrix))
+  vdiffr::expect_doppelganger(
+    paste(label, 'Im'),
+    function() plot(im_image, axes = FALSE)
+  )
+
+  thresholded_img <- imager::threshold(mod_image, thr = "80%")
   vdiffr::expect_doppelganger(
     paste('thresholded', label),
     function() plot(thresholded_img, axes = FALSE)
   )
 
-}
-
-negate_matrix_except_center <- function(mat) {
-  # Ensure the matrix is square and has odd dimensions
-  if (nrow(mat) != ncol(mat)) {
-    stop("The matrix must be square.")
-  }
-  if (nrow(mat) %% 2 == 0) {
-    stop("The matrix dimensions must be odd.")
-  }
-
-  # Find the center index
-  center_index <- (nrow(mat) + 1) / 2
-
-  # Negate the entire matrix
-  negated_mat <- -mat
-
-  # Restore the center cell
-  negated_mat[center_index, center_index] <- mat[center_index, center_index]
-
-  return(negated_mat)
 }
 
 apply_angle_filter <- function(fourier_matrix, angle, uncertainty=(GABOR_UNCERTAINTY^2)) {
@@ -212,10 +204,14 @@ test_kernel_signal_plot <- function(length) {
   uncertainty = GABOR_UNCERTAINTY ^ 2
   label = paste0("Signal ", length, "x", length)
   test_that(paste0("a ", length, "x", length, " plot 2D signal"), {
-    d <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$signal) %>% negate_matrix_except_center()
-    vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(d, fft_shift = T))
-    test_image_convolution(paste("Lenna", label), lenna, d)
-    test_image_convolution(paste("MPC3000JDilla", label), ma_dukes, d)
+    sbg_kernel <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$signal)
+    expect_equal(round(sum(sbg_kernel)*1e10)/1e10, 0+0i)
+    expect_true(is.complex(sbg_kernel))
+    expect_equal(max(Mod(sbg_kernel)),length^2, tolerance = 0.1)
+
+    vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(sbg_kernel, fft_shift = T))
+    test_image_convolution(paste("Lenna", label), lenna, sbg_kernel)
+    test_image_convolution(paste("MPC3000JDilla", label), ma_dukes, sbg_kernel)
   })
 }
 
