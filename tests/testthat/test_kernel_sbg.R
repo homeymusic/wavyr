@@ -298,11 +298,6 @@ test_that('angles make sense', {
 
 })
 
-normalize_matrix_to_zero_corners <- function(mat) {
-  s = mat %>% fft_shift()
-  round((s[1,1] - s) * 1e10) / 1e10
-}
-
 test_that("a 9x9 kernel relates to a Laplacian", {
   k = kernel_sbg(9, GABOR_UNCERTAINTY ^ 2, SIGNAL_OR_SPECTRUM$signal)
   k = k %>% Mod() %>% normalize_matrix_to_zero_corners()

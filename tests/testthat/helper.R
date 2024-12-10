@@ -154,3 +154,8 @@ load_and_preprocess_image <- function(image_file_path) {
     grayscale_matrix = as.matrix(grayscale_image)
   )
 }
+
+normalize_matrix_to_zero_corners <- function(mat) {
+  s = mat %>% fft_shift()
+  round((s[1,1] - s) * 1e10) / 1e10
+}
