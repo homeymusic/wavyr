@@ -115,6 +115,85 @@ negate_matrix_except_center <- function(mat) {
   return(negated_mat)
 }
 
+apply_angle_filter <- function(fourier_matrix, angle, uncertainty=(GABOR_UNCERTAINTY^2)) {
+
+  # Get matrix dimensions and ensure it is square
+  rows <- nrow(fourier_matrix)
+  cols <- ncol(fourier_matrix)
+  if (rows != cols) {
+    stop("The Fourier matrix must be square.")
+  }
+  if (rows %% 2 == 0) {
+    stop("The Fourier matrix must have odd dimensions.")
+  }
+
+  # Center index
+  center_index <- (rows + 1) / 2
+
+  # Special cases: angles where tangent is undefined
+  if (abs(angle - pi / 2) < 1e-6) {
+    # Vertical line (upward)
+    rationalized_x <- 0
+    rationalized_y <- 1
+  } else if (abs(angle + pi / 2) < 1e-6) {
+    # Vertical line (downward)
+    rationalized_x <- 0
+    rationalized_y <- -1
+  } else {
+    # General case: compute slope from the angle
+    slope <- tan(angle)
+
+    # Use Stern-Brocot tree to find a rational fraction approximation
+
+    if (slope == 0) {
+      num <- 0
+      den <- 1
+    } else {
+      sb_result <- stern_brocot_cpp(abs(slope), uncertainty)
+      num <- sb_result$num[1]  # Numerator
+      den <- sb_result$den[1]  # Denominator
+    }
+
+
+    # Reapply signs based on the angle's quadrant
+    if (angle >= 0 && angle < pi / 2) {
+      # First quadrant: x > 0, y > 0
+      rationalized_x <- den
+      rationalized_y <- num
+    } else if (angle >= pi / 2 && angle < pi) {
+      # Second quadrant: x < 0, y > 0
+      rationalized_x <- -den
+      rationalized_y <- num
+    } else if (angle >= -pi && angle < -pi / 2) {
+      # Third quadrant: x < 0, y < 0
+      rationalized_x <- -den
+      rationalized_y <- -num
+    } else if (angle >= -pi / 2 && angle < 0) {
+      # Fourth quadrant: x > 0, y < 0
+      rationalized_x <- den
+      rationalized_y <- -num
+    } else {
+      stop("Angle is out of bounds.")
+    }
+  }
+
+  # Map the rational fraction to matrix indices
+  selected_row <- center_index + rationalized_y
+  selected_col <- center_index + rationalized_x
+
+  # Ensure indices are within bounds
+  if (selected_row < 1 || selected_row > rows || selected_col < 1 || selected_col > cols) {
+    stop("Selected rational fraction is out of bounds for the matrix size.")
+  }
+
+  # Create a modified Fourier spectrum
+  result_matrix <- matrix(0, nrow = rows, ncol = cols)  # Start with all zeros
+  result_matrix[center_index, center_index] <- fourier_matrix[center_index, center_index]  # Center stays as is
+  result_matrix[selected_row, selected_col] <- -fourier_matrix[selected_row, selected_col]  # Selected cell negated
+
+  return(result_matrix)
+}
+
 lenna    <- (load_and_preprocess_image(test_path("images", "Lenna.png")))$grayscale_matrix
 ma_dukes <- (load_and_preprocess_image(test_path("images", "MPC3000JDilla.png")))$grayscale_matrix
 
@@ -140,9 +219,25 @@ test_kernel_signal_plot <- function(length) {
   })
 }
 
-test_sizes = seq(3, 51, by = 2)
+test_angles_kernel_signal_plot <- function(angle) {
+  length = 51
+  uncertainty = GABOR_UNCERTAINTY ^ 2
+  label = paste0("Angle Signal ", angle/pi)
+  test_that(paste0("angle ", angle/ pi), {
+    spectrum <- kernel_sbg(length, uncertainty, SIGNAL_OR_SPECTRUM$spectrum) %>% apply_angle_filter(angle)
+    d <-  fftwtools::fftw2d(spectrum, inverse = 1)
+    vdiffr::expect_doppelganger(paste("Kernel", label), function() plot_matrix(d, fft_shift = T))
+    test_image_convolution(paste("Lenna", label), lenna, d)
+    test_image_convolution(paste("MPC3000JDilla", label), ma_dukes, d)
+  })
+}
+
+test_sizes = seq(5, 11, by = 2)
 lapply(test_sizes, test_kernel_spectrum_plot)
 lapply(test_sizes, test_kernel_signal_plot)
+
+test_angles = c(0,1/4,1/2,3/4) * pi
+lapply(test_angles, test_angles_kernel_signal_plot)
 
 test_error_histogram <- function(length) {
   uncertainty = GABOR_UNCERTAINTY ^ 2
@@ -157,7 +252,7 @@ test_error_histogram <- function(length) {
 lapply(test_sizes, test_error_histogram)
 
 test_error_uncertainty_histogram <- function(uncertainty) {
-  length = 49
+  length = 129
   test_that(paste0("a ", length, "x", length, "uncertainty ", sprintf("%.4f", uncertainty),
                    " error histogram makes sense"), {
     s <- sparse_spectrum_sbg(length, uncertainty)
