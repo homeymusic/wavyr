@@ -304,8 +304,8 @@ normalize_matrix_to_zero_corners <- function(mat) {
 }
 
 test_that("a 9x9 kernel relates to a Laplacian", {
-  k = kernel_sbg(9, GABOR_UNCERTAINTY ^ 2, SIGNAL_OR_SPECTRUM$signal) %>%
-    Mod() %>% normalize_matrix_to_zero_corners()
+  k = kernel_sbg(9, GABOR_UNCERTAINTY ^ 2, SIGNAL_OR_SPECTRUM$signal)
+  k = k %>% Mod() %>% normalize_matrix_to_zero_corners()
 
   vdiffr::expect_doppelganger(
     paste('Laplacian Like 9x9'),
