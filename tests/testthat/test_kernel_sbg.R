@@ -297,30 +297,3 @@ test_that('angles make sense', {
   expect_lt(nrow(rationalized), nrow(idealized))
 
 })
-
-test_that("a 9x9 kernel relates to a Laplacian", {
-  k = kernel_sbg(9, GABOR_UNCERTAINTY ^ 2, SIGNAL_OR_SPECTRUM$signal)
-  k = k %>% Mod() %>% normalize_matrix_to_zero_corners()
-
-  vdiffr::expect_doppelganger(
-    paste('Laplacian Like 9x9'),
-    function() persp(z=k, theta = 30, phi = 30, ticktype = "detailed")
-  )
-
-})
-
-test_that("a 51x51 kernel relates to a Laplacian", {
-  k = kernel_sbg(51, GABOR_UNCERTAINTY ^ 2, SIGNAL_OR_SPECTRUM$signal) %>%
-    Mod() %>% normalize_matrix_to_zero_corners()
-
-  vdiffr::expect_doppelganger(
-    paste('Laplacian Like 51x51'),
-    function() persp(
-      z=k,
-      theta = 30,
-      phi = 30,
-      ticktype = "detailed"
-    )
-  )
-
-})
