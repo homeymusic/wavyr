@@ -73,3 +73,45 @@ test_that('the diff of the Laplacian the SBG kernel convolved with Lenna', {
     function() plot(blended_image, axes = FALSE)
   )
 })
+
+size = 35
+sbg_kernel = kernel_sbg(size, signal_or_spectrum = SIGNAL_OR_SPECTRUM$signal) %>% Mod() %>% fft_shift()
+sbg_kernel = sum(sbg_kernel) / size^2 - sbg_kernel
+
+test_that('3D plot of 35x35 SBG Kernel Signal', {
+  expect_equal(sum(sbg_kernel), 0)
+  expect_false(is.complex(sbg_kernel))
+  vdiffr::expect_doppelganger(
+    'SBG 2D Signal',
+    function() plot_matrix(sbg_kernel, fft_shift = F, magnitude = F, log_scaling = F)
+  )
+  vdiffr::expect_doppelganger(
+    'SBG 3D Signal from Above',
+    function() persp(z=sbg_kernel, theta = 30, phi = 30, ticktype = "detailed")
+  )
+  vdiffr::expect_doppelganger(
+    'SBG 3D Signal from Below',
+    function() persp(z=sbg_kernel, theta = 30, phi = -30, ticktype = "detailed")
+  )
+})
+
+size = 35
+sbg_kernel = kernel_sbg(size, signal_or_spectrum = SIGNAL_OR_SPECTRUM$spectrum) %>% Mod()
+sbg_kernel = sum(sbg_kernel) / size^2 - sbg_kernel
+
+test_that('3D plot of 35x35 SBG Kernel Spectrum', {
+  expect_equal(sum(sbg_kernel), 0)
+  expect_false(is.complex(sbg_kernel))
+  vdiffr::expect_doppelganger(
+    'SBG 2D Spectrum',
+    function() plot_matrix(sbg_kernel, fft_shift = F, magnitude = F, log_scaling = F)
+  )
+  vdiffr::expect_doppelganger(
+    'SBG 3D Spectrum from Above',
+    function() persp(z=sbg_kernel, theta = 30, phi = 30, ticktype = "detailed")
+  )
+  vdiffr::expect_doppelganger(
+    'SBG 3D Spectrum from Below',
+    function() persp(z=sbg_kernel, theta = 30, phi = -30, ticktype = "detailed")
+  )
+})
