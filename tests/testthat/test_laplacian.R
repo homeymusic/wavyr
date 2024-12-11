@@ -97,10 +97,8 @@ test_that('3D plot of 35x35 SBG Kernel Signal', {
 
 size = 35
 sbg_kernel = kernel_sbg(size, signal_or_spectrum = SIGNAL_OR_SPECTRUM$spectrum) %>% Mod()
-sbg_kernel = sum(sbg_kernel) / size^2 - sbg_kernel
 
 test_that('3D plot of 35x35 SBG Kernel Spectrum', {
-  expect_equal(sum(sbg_kernel), 0)
   expect_false(is.complex(sbg_kernel))
   vdiffr::expect_doppelganger(
     'SBG 2D Spectrum',
