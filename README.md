@@ -6,7 +6,7 @@ wavyr
 `wavyr` is an R package designed for studying traveling waves in space
 and time.
 
-### Signal Processing of Traveling Waves
+### Signal-Spectrum Transform Uncertainty
 
 <figure>
 <img src="man/figures/signals_spectra_schematic.png"
