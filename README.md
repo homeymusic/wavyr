@@ -15,7 +15,14 @@ alt="Schematic diagram of a general signal processing system." />
 processing system.</figcaption>
 </figure>
 
-### Rational Signals and Rational Spectra
+### Rationalizing Spectral Components within the Uncertainty Limit
+
+<figure>
+<img src="man/figures/rationalize_within_uncertainty.png"
+alt="Rationalizing an ideal spectral component within the uncertainty limit." />
+<figcaption aria-hidden="true">Rationalizing an ideal spectral component
+within the uncertainty limit.</figcaption>
+</figure>
 
 When we transform a wave from the physical domain to the spectral
 domain, uncertainty is introduced. Gabor established the uncertainty
