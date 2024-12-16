@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "stern_brocot.h"  // Include the header file for stern_brocot_cpp
+#include "stern_brocot.h"  // Include the header file for stern_brocot_for_scalar_cpp
 using namespace Rcpp;
 
 // Helper function to add placeholders for Stern-Brocot outputs
@@ -145,7 +145,7 @@ DataFrame sparse_spectrum_sbg_cpp(int nrows, int ncols, double uncertainty) {
 
         // Compute the absolute ratio and rationalize it
         double abs_ratio = std::abs(static_cast<double>(idealized_y) / idealized_x);
-        DataFrame sb_result = stern_brocot_cpp(abs_ratio, uncertainty);
+        DataFrame sb_result = stern_brocot_for_scalar_cpp(abs_ratio, uncertainty);
         process_stern_brocot_results_sbg(
           sb_result, abs_ratio, rationalized_x, rationalized_y, original_values,
           nums, dens, approximations, errors, uncertainties, depths, paths,

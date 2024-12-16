@@ -141,15 +141,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// stern_brocot_cpp
-DataFrame stern_brocot_cpp(const double x, const double uncertainty);
-RcppExport SEXP _wavyr_stern_brocot_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
+// stern_brocot_for_scalar_cpp
+DataFrame stern_brocot_for_scalar_cpp(const double x, const double uncertainty);
+RcppExport SEXP _wavyr_stern_brocot_for_scalar_cpp(SEXP xSEXP, SEXP uncertaintySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double >::type x(xSEXP);
     Rcpp::traits::input_parameter< const double >::type uncertainty(uncertaintySEXP);
-    rcpp_result_gen = Rcpp::wrap(stern_brocot_cpp(x, uncertainty));
+    rcpp_result_gen = Rcpp::wrap(stern_brocot_for_scalar_cpp(x, uncertainty));
+    return rcpp_result_gen;
+END_RCPP
+}
+// stern_brocot_for_ratio_cpp
+DataFrame stern_brocot_for_ratio_cpp(const double x, const double y, const double uncertainty);
+RcppExport SEXP _wavyr_stern_brocot_for_ratio_cpp(SEXP xSEXP, SEXP ySEXP, SEXP uncertaintySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const double >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const double >::type uncertainty(uncertaintySEXP);
+    rcpp_result_gen = Rcpp::wrap(stern_brocot_for_ratio_cpp(x, y, uncertainty));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -166,7 +179,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_wavyr_as_integer_cpp", (DL_FUNC) &_wavyr_as_integer_cpp, 1},
     {"_wavyr_rationalized_spectrum_cpp", (DL_FUNC) &_wavyr_rationalized_spectrum_cpp, 1},
     {"_wavyr_sparse_spectrum_sbg_cpp", (DL_FUNC) &_wavyr_sparse_spectrum_sbg_cpp, 3},
-    {"_wavyr_stern_brocot_cpp", (DL_FUNC) &_wavyr_stern_brocot_cpp, 2},
+    {"_wavyr_stern_brocot_for_scalar_cpp", (DL_FUNC) &_wavyr_stern_brocot_for_scalar_cpp, 2},
+    {"_wavyr_stern_brocot_for_ratio_cpp", (DL_FUNC) &_wavyr_stern_brocot_for_ratio_cpp, 3},
     {NULL, NULL, 0}
 };
 

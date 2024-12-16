@@ -56,7 +56,7 @@ using namespace Rcpp;
    NumericVector dens(n);
 
    for (int i = 0; i < n; ++i) {
-     DataFrame sb_result = stern_brocot_cpp(x[i], uncertainty);
+     DataFrame sb_result = stern_brocot_for_scalar_cpp(x[i], uncertainty);
 
      // Extract numerator and denominator
      nums[i] = (int)sb_result["num"];
@@ -66,7 +66,7 @@ using namespace Rcpp;
        stop("Denominator cannot be zero in rational fraction approximation.");
      }
 
-     const double sb_x = (double)sb_result["original_value"];
+     const double sb_x = (double)sb_result["original_x"];
      if (!is_close(sb_x, x[i])) {
        stop("Original values disagree. SB x: " + std::to_string(sb_x) + " x: " + std::to_string(x[i]));
      }

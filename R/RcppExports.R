@@ -45,7 +45,11 @@ sparse_spectrum_sbg_cpp <- function(nrows, ncols, uncertainty) {
     .Call(`_wavyr_sparse_spectrum_sbg_cpp`, nrows, ncols, uncertainty)
 }
 
-stern_brocot_cpp <- function(x, uncertainty) {
-    .Call(`_wavyr_stern_brocot_cpp`, x, uncertainty)
+stern_brocot_for_scalar_cpp <- function(x, uncertainty) {
+    .Call(`_wavyr_stern_brocot_for_scalar_cpp`, x, uncertainty)
+}
+
+stern_brocot_for_ratio_cpp <- function(x, y, uncertainty) {
+    .Call(`_wavyr_stern_brocot_for_ratio_cpp`, x, y, uncertainty)
 }
 

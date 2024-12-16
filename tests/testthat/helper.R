@@ -154,3 +154,22 @@ load_and_preprocess_image <- function(image_file_path) {
     grayscale_matrix = as.matrix(grayscale_image)
   )
 }
+
+expected_stern_brocot_columns <- c(
+  "target",
+  "original_x",
+  "original_y",
+  "num",
+  "den",
+  "approximation",
+  "error",
+  "uncertainty",
+  "valid_min",
+  "valid_max",
+  "depth",
+  "path",
+  "path_id", # Path as an integer identifier
+  "shannon_entropy",
+  "hamming_weight",
+  "run_length_encoding"
+)

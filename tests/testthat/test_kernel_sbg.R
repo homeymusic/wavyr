@@ -141,7 +141,7 @@ apply_angle_filter <- function(fourier_matrix, angle, uncertainty=(GABOR_UNCERTA
       num <- 0
       den <- 1
     } else {
-      sb_result <- stern_brocot_cpp(abs(slope), uncertainty)
+      sb_result <- stern_brocot_for_scalar_cpp(abs(slope), uncertainty)
       num <- sb_result$num[1]  # Numerator
       den <- sb_result$den[1]  # Denominator
     }
