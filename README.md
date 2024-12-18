@@ -24,6 +24,10 @@ alt="Rationalizing an ideal spectral component within the uncertainty limit." />
 within the uncertainty limit.</figcaption>
 </figure>
 
+$\mathbf{f}=\check{f}_0 \cdot \operatorname{SB} \left(\frac{\mathbf{\check{f}}}{\check{f}_0} \mid \Delta f \right)$
+
+$\mathbf{\omega}=\check{\omega}_0 \cdot \operatorname{SB} \left(\frac{\mathbf{\check{\omega}}}{\check{\omega}_0} \mid \Delta \omega \right)$
+
 When we transform a wave from the physical domain to the spectral
 domain, uncertainty is introduced. Gabor established the uncertainty
 limit for the time-frequency dimension, a principle that also applies to

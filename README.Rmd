@@ -15,6 +15,10 @@ title: "wavyr"
 
 ![Rationalizing an ideal spectral component within the uncertainty limit.](man/figures/rationalize_within_uncertainty.png)
 
+$\mathbf{f}=\check{f}_0 \cdot \operatorname{SB} \left(\frac{\mathbf{\check{f}}}{\check{f}_0} \mid \Delta f \right)$
+
+$\mathbf{\omega}=\check{\omega}_0 \cdot \operatorname{SB} \left(\frac{\mathbf{\check{\omega}}}{\check{\omega}_0} \mid \Delta \omega \right)$
+
 When we transform a wave from the physical domain to the spectral domain, uncertainty is introduced. Gabor established the uncertainty limit for the time-frequency dimension, a principle that also applies to space-wavenumber dimensions. Rational fraction representations of waves have proven helpful for feature extraction and fundamental frequency detection. In our novel method, we combine Gabor uncertainty with rational fraction approximations of complex waves. We use the Stern-Brocot tree to locate rational fractions within the Gabor uncertainty limit, allowing us to create signals and spectra that are both rational and bounded by the uncertainty product of the entire waveform. As long as the uncertainty of the sensor system is smaller than the Gabor uncertainty product, the uncertainty principle enables us to reliably generate rationalized waveforms, without needing to account for the intricacies of those sensors or even the uncertainty trade-offs between the physical and spectral domains. This uncertainty-bounded, rational-approximation is a parameter-free kernel for Fourier transformations. This new method, the **Stern-Brocot-Gabor Fourier Transform**, offers a novel approach for fundamental wave discovery and feature extraction. By comparing our model to neural models and experimental studies, we propose that for signals and spectra, the ambiguity that arises from the Gabor uncertainty principle could be an enabler of pattern perception.
 
 **The Stern-Brocot-Gabor Fourier Transform:**
