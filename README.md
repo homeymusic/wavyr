@@ -10,9 +10,9 @@ and time.
 
 <figure>
 <img src="man/figures/signals_spectra_schematic.png"
-alt="Schematic diagram of a general signal processing system." />
-<figcaption aria-hidden="true">Schematic diagram of a general signal
-processing system.</figcaption>
+alt="Schematic diagram of a general signal-spectrum transform." />
+<figcaption aria-hidden="true">Schematic diagram of a general
+signal-spectrum transform.</figcaption>
 </figure>
 
 ### Rationalizing Spectral Components within the Uncertainty Limit
@@ -24,9 +24,7 @@ alt="Rationalizing an ideal spectral component within the uncertainty limit." />
 within the uncertainty limit.</figcaption>
 </figure>
 
-$\mathbf{f}=\check{f}_0 \cdot \operatorname{SB} \left(\frac{\mathbf{\check{f}}}{\check{f}_0} \mid \Delta f \right)$
-
-$\mathbf{\omega}=\check{\omega}_0 \cdot \operatorname{SB} \left(\frac{\mathbf{\check{\omega}}}{\check{\omega}_0} \mid \Delta \omega \right)$
+$\mathbf{f}=\check{f}_{ref} \cdot \operatorname{SB} \left(\frac{\mathbf{\check{f}}}{\check{f}_{ref}} \mid \Delta f \right)$
 
 When we transform a wave from the physical domain to the spectral
 domain, uncertainty is introduced. Gabor established the uncertainty

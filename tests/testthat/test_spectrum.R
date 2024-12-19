@@ -1,4 +1,23 @@
 # tests/testthat/test_spectrum.R
+test_that("ratios within gabor combine", {
+  idealized_f = c(1.0, 2.909 / 2, 3.001 /2)
+  idealized_a = c(1.0, 0.8, 0.5)
+  # Create a spectrum object with separate vectors
+  spectrum_obj <- spectrum(
+    idealized_component = idealized_f,
+    amplitude = idealized_a
+  )
+
+  # Expectations to check spectrum creation
+  expect_s3_class(spectrum_obj, "spectrum")
+  expect_equal(sort(spectrum_obj$idealized_component), sort(idealized_f))
+  expect_equal(sort(spectrum_obj$amplitude), sort(idealized_a))
+  expect_equal(sort(spectrum_obj$fractions$num), sort(c(1, 3, 3)))
+  expect_equal(sort(spectrum_obj$fractions$den), sort(c(1, 2, 2)))
+  expect_equal(sort(spectrum_obj$fractions$den), sort(c(1, 2, 2)))
+  expect_equal(sort(spectrum_obj$amplitude), sort(idealized_a))
+  expect_equal(spectrum_obj$rationalized_cycles_per_reference, 2)
+})
 
 test_that("we can create a new spectrum with separate component and amplitude vectors", {
   # Create a spectrum object with separate vectors
