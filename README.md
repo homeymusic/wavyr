@@ -30,19 +30,19 @@ $\operatorname{SB} \left(\frac{\mathbf{f}}{f_{ref}} \mid \Delta f \right) = \fra
 
 Gabor Uncertainty
 
-$\Delta t \Delta f = \frac{1}{4 \pi}$
+$\sigma_t \sigma_f = \frac{1}{4 \pi}$
 
 Using natural units:
 
-$\Delta t = 1$
+$\sigma_t = 1$
 
 Solving for
 
-$\Delta f = \frac{1}{4 \pi}$
+$\sigma_f = \frac{1}{4 \pi}$
 
 The perturbation of $f$ to $\tilde{f}$
 
-$\epsilon \leq \Delta f$
+$\epsilon \leq \sigma_f$
 
 ### Relationships among Wave Properties
 
