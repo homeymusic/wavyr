@@ -1,6 +1,6 @@
 test_that('an n increases the probablity fns from SB make sense',{
-  resolution = 10000
-  max_quantum_number = 9
+  resolution = 100000
+  max_quantum_number = 30
   locations = seq(from=1/resolution, to=2-1/resolution, by=1/resolution)
   for (n in 0:max_quantum_number) {
     # TODO: because the std dev represents a ratio of
@@ -17,7 +17,7 @@ test_that('an n increases the probablity fns from SB make sense',{
     }, filename = paste0("sb_errors_quantum_number_", n, ".rds"))
 
     vdiffr::expect_doppelganger(
-      paste0("Quantum Number ", n),
+      paste0("Quantum Number ", n, " Uncertainty ", sprintf("%.4f", uncertainty)),
       function() plot_error_histogram(fractions$error,
                                       ceiling(2*length(fractions$error)^(1/3)))
     )
