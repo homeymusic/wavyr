@@ -35,6 +35,10 @@ The perturbation of $f$ to $\tilde{f}$
 
 $\epsilon \leq \sigma_f$
 
+### Primitive Lattice of Coprime Rational Fractions
+
+![Coprime rational fractions.](man/figures/numbers.png)
+
 ### Relationships among Wave Properties
 
 ![Directed graph of wave properties.](man/figures/wave_properties_directed_graph.png)
