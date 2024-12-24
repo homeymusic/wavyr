@@ -50,37 +50,43 @@ wave_for <- function(x, num_harmonics = 1, roll_off_dB = 1) {
     wave()
 }
 
-plot_error_histogram <- function(errors) {
+plot_error_histogram <- function(errors, num_bins = 21) {
+  # Make sure num_bins is odd
+  if (num_bins %% 2 == 0) {
+    num_bins <- num_bins + 1
+  }
+
+  # Special case if all errors are zero
   if (all(errors == 0)) {
-    total_count <- length(errors)
-
-    # Generate approximately 5 evenly spaced odd labels
-    y_ticks <- seq(1, total_count, length.out = 5)
-    y_ticks <- round(y_ticks)  # Round to nearest integers
-    y_ticks <- ifelse(y_ticks %% 2 == 0, y_ticks + 1, y_ticks)  # Ensure odd labels
-
     hist(
       errors,
-      breaks = c(-0.5, 0.5),  # Single bin centered at 0
+      breaks = c(-0.5, 0.5),  # A single bin centered at 0
       main = "Error Histogram (All Zeros)",
       xlab = "Errors",
       ylab = "Frequency",
       col = "darkgray",
       border = "black",
-      ylim = c(0, total_count),  # Ensure the bar height matches total count
-      xaxt = "n",  # Suppress x-axis
-      yaxt = "n"   # Suppress y-axis
+      xaxt = "n"
     )
     axis(1, at = 0, labels = "0")  # Custom x-axis with only 0
-    axis(2, at = y_ticks, labels = y_ticks)  # Custom y-axis with odd-numbered labels
     return()
   }
 
-  # General case
-  max_error <- max(abs(errors))  # Get the maximum absolute error
-  bin_width <- 2 * max_error / 20  # Divide the range into 20 bins
-  # Adjust breaks to ensure 0 is at the center of a bin
-  breaks <- seq(-max_error - bin_width / 2, max_error + bin_width / 2, by = bin_width)
+  # Largest absolute error
+  max_error <- max(abs(errors))
+
+  # We want num_bins equally spaced *centers* from -max_error to +max_error
+  # so the total span is 2*max_error over (num_bins - 1) intervals between centers.
+  bin_width <- 2 * max_error / (num_bins - 1)
+
+  # Define the bin centers:
+  #   The sequence of centers will be of length num_bins,
+  #   going from -max_error to +max_error.
+  centers <- seq(-max_error, max_error, length.out = num_bins)
+
+  # Now derive the breaks by shifting these centers by +/- bin_width/2.
+  # This will yield (num_bins + 1) breakpoints => num_bins bins.
+  breaks <- c(centers - bin_width/2, tail(centers, 1) + bin_width/2)
 
   hist(
     errors,

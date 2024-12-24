@@ -161,7 +161,7 @@ test_that("detailed signal plots match expected output", {
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj))
 })
-test_that("10 random frequencies looks intersting", {
+test_that("major intervals frequencies looks intersting", {
   # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
   spectrum_obj <- spectrum(
     idealized_component = c(60,64,67,79,72) %>% midi_to_freq(),
@@ -175,6 +175,25 @@ test_that("10 random frequencies looks intersting", {
 
   # Define label and coordinate range
   label <- "Super Major Chord"
+
+  # Use vdiffr to capture and test the plot output
+  vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
+})
+test_that("complex looking wave looks intersting", {
+  # Create a spectrum object with Feynman's example frequencies (4 Hz and 5 Hz)
+  freqs = c(1, sqrt(3), exp(1), pi)
+  spectrum_obj <- spectrum(
+    idealized_component = freqs,
+    amplitude =1 / (1:length(freqs))
+  )
+
+  # Create the signal object from the spectrum
+  signal_obj <- signal(spectrum_obj)
+
+  expect_equal(signal_obj$plot_color, colors_homey$neutral)
+
+  # Define label and coordinate range
+  label <- 'irrational 1, sqrt(3), e, pi'
 
   # Use vdiffr to capture and test the plot output
   vdiffr::expect_doppelganger(label, function() plot_details.signal(signal_obj, resolution = 2000))
