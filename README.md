@@ -24,9 +24,9 @@ alt="A frequency shift to the nearest co-prime rational fraction within the unce
 rational fraction within the uncertainty limit.</figcaption>
 </figure>
 
-$\mathbf{\tilde{f}}={f}_{ref} \cdot \operatorname{SB} \left(\frac{\mathbf{f}}{f_{ref}} \mid \Delta f \right)$
+$\mathbf{\tilde{f}}={f}_{ref} \cdot \operatorname{SB} \left(\frac{\mathbf{f}}{f_{ref}} \mid \sigma_f \right)$
 
-$\operatorname{SB} \left(\frac{\mathbf{f}}{f_{ref}} \mid \Delta f \right) = \frac{p}{q}, \quad \gcd(p,q) = 1$
+$\operatorname{SB} \left(\frac{\mathbf{f}}{f_{ref}} \mid \sigma_f \right) = \frac{p}{q}, \quad \gcd(p,q) = 1$
 
 Gabor Uncertainty
 
